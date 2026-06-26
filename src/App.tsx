@@ -525,29 +525,29 @@ const clearAllIndexedDB = (): Promise<void> => {
 };
 
 const defaultKitImages: Record<string, string> = {
-  "tab1-card1": "https://i.imgur.com/hYNk2dz.png", // ACORDAR
-  "tab1-card2": "https://i.imgur.com/UBfbJXS.png", // ESCOVAR OS DENTES
-  "tab1-card3": "https://i.imgur.com/B9eCf9j.png",  // TOMAR BANHO
-  "tab1-card4": "https://i.imgur.com/gVv0YCN.png",  // SE VESTIR
-  "tab1-card5": "https://i.imgur.com/jfRqcE8.png",   // CAFÉ DA MANHÃ
+  "tab1-card1": "https://i.imgur.com/JAoEHAd.jpeg", // ACORDAR
+  "tab1-card2": "https://i.imgur.com/sr2Slzb.jpeg", // ESCOVAR OS DENTES
+  "tab1-card3": "https://i.imgur.com/Q17OBEe.jpeg", // TOMAR BANHO
+  "tab1-card4": "https://i.imgur.com/mw9NSzm.jpeg", // SE VESTIR
+  "tab1-card5": "https://i.imgur.com/GNSBc0P.jpeg", // CAFÉ DA MANHÃ
 
-  "tab2-card1": "https://i.imgur.com/dwtZQuR.png", // ÁGUA
-  "tab2-card2": "https://i.imgur.com/rdiX0ZS.png", // QUERO COMER
-  "tab2-card3": "https://i.imgur.com/OOQJahR.png", // BANHEIRO
-  "tab2-card4": "https://i.imgur.com/UiDEuj1.png", // PRECISO DE AJUDA
-  "tab2-card5": "https://i.imgur.com/1kdNVAH.png",  // NÃO QUERO
+  "tab2-card1": "https://i.imgur.com/H6f0fQE.jpeg", // ÁGUA
+  "tab2-card2": "https://i.imgur.com/DYPE60k.jpeg", // QUERO COMER
+  "tab2-card3": "https://i.imgur.com/C9ynggW.jpeg", // BANHEIRO
+  "tab2-card4": "https://i.imgur.com/gfMTkYF.jpeg", // PRECISO DE AJUDA
+  "tab2-card5": "https://i.imgur.com/z69Gwcm.jpeg", // NÃO QUERO
 
-  "tab3-card1": "https://i.imgur.com/rKyFety.png", // FAZENDO AMIGOS
-  "tab3-card2": "https://i.imgur.com/Tmk755E.png", // NA ESCOLA
-  "tab3-card3": "https://i.imgur.com/ox41vPI.png", // NO MÉDICO
-  "tab3-card4": "https://i.imgur.com/xZKiSJE.png", // NO MERCADO
-  "tab3-card5": "https://i.imgur.com/TKvGVkY.png", // ESPERAR A VEZ
+  "tab3-card1": "https://i.imgur.com/inHv4OM.jpeg", // FAZENDO AMIGOS
+  "tab3-card2": "https://i.imgur.com/9BzoaAr.jpeg", // NA ESCOLA
+  "tab3-card3": "https://i.imgur.com/EvbKtFQ.jpeg", // NO MÉDICO
+  "tab3-card4": "https://i.imgur.com/W4L56Ij.jpeg", // NO MERCADO
+  "tab3-card5": "https://i.imgur.com/KjId1TC.jpeg", // ESPERAR A VEZ
 
-  "tab4-card1": "https://i.imgur.com/aygQQXE.png", // LAVAR AS MÃOS
-  "tab4-card2": "https://i.imgur.com/aUN4Glr.png", // ARRUMAR A CAMA
-  "tab4-card3": "https://i.imgur.com/DPcfP52.png", // GUARDAR BRINQUEDOS
-  "tab4-card4": "https://i.imgur.com/NClzWIc.png", // POR A MESA
-  "tab4-card5": "https://i.imgur.com/bCBwF4C.png"  // COLOCAR SAPATO
+  "tab4-card1": "https://i.imgur.com/l3vz3li.jpeg", // LAVAR AS MÃOS
+  "tab4-card2": "https://i.imgur.com/FDGOzHZ.jpeg", // ARRUMAR A CAMA
+  "tab4-card3": "https://i.imgur.com/0GvOPDb.jpeg", // GUARDAR BRINQUEDOS
+  "tab4-card4": "https://i.imgur.com/KZ62BMB.jpeg", // POR A MESA
+  "tab4-card5": "https://i.imgur.com/x2OKlAJ.jpeg"  // COLOCAR SAPATO
 };
 
 const getDirectImageUrl = (url: string): string => {
