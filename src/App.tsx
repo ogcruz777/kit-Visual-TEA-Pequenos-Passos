@@ -949,6 +949,7 @@ const MaterialsPreview = () => {
                               src={getDirectImageUrl(customImage)}
                               alt={card.label}
                               className="w-full h-full object-cover"
+                              referrerPolicy="no-referrer"
                             />
                             {/* Hover Edit Action */}
                             <div className="absolute top-2 right-2 bg-slate-900/80 text-white rounded-full w-7 h-7 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm pointer-events-none z-20">
