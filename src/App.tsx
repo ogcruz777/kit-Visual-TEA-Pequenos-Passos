@@ -21,6 +21,9 @@ import {
   Info,
   Heart,
   Play,
+  Pause,
+  Volume2,
+  VolumeX,
   Video,
   Settings,
   Tv,
@@ -36,7 +39,9 @@ import {
   Smile,
   Shirt,
   Sparkles,
-  Bookmark
+  Bookmark,
+  Loader2,
+  RotateCcw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -143,67 +148,362 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
 // --- Video Player Subcomponent ---
 const HeroVideoPlayer = () => {
   const [videoUrl, setVideoUrl] = useState(() => {
-    return localStorage.getItem('kit_visual_tea_video_url') || '';
+    const defaultUrl = 'https://vimeo.com/1205612287?share=copy&fl=sv&fe=ci';
+    const saved = localStorage.getItem('kit_visual_tea_video_url');
+    if (saved && saved.includes('vimeo.com') && !saved.includes('1205612287')) {
+      localStorage.setItem('kit_visual_tea_video_url', defaultUrl);
+      return defaultUrl;
+    }
+    return saved || defaultUrl;
   });
   const [isPlaying, setIsPlaying] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
   const [tempUrl, setTempUrl] = useState(videoUrl);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (loading) {
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 2000); // Garante que a tela de carregamento some em no máximo 2s para o usuário assistir imediatamente
+      return () => clearTimeout(timer);
+    }
+  }, [loading]);
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const [isEnded, setIsEnded] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  const handleWatchAgain = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setIsEnded(false);
+    setReloadKey(prev => prev + 1);
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.muted = false;
+      videoRef.current.play().catch(() => {});
+    }
+  };
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      try {
+        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+        if (data) {
+          // YouTube ended detection (state 0 is ended)
+          if (data.event === 'onStateChange' && data.info === 0) {
+            setIsEnded(true);
+          }
+          if (data.event === 'infoDelivery' && data.info && data.info.playerState === 0) {
+            setIsEnded(true);
+          }
+          // Vimeo ended detection
+          if (data.event === 'finish' || data.event === 'ended') {
+            setIsEnded(true);
+          }
+        }
+      } catch (err) {
+        // ignore
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
+
+  // Auto-unmute on first user interaction to bypass browser autoplay restrictions
+  useEffect(() => {
+    if (!isPlaying) return;
+    let interacted = false;
+
+    const unmuteOnInteraction = () => {
+      if (interacted) return;
+      interacted = true;
+      setIsMuted(false);
+
+      // Send postMessage to active iframe
+      const iframe = document.querySelector('iframe');
+      if (iframe && iframe.contentWindow) {
+        try {
+          // Unmute YouTube
+          iframe.contentWindow.postMessage(JSON.stringify({
+            event: 'command',
+            func: 'unMute'
+          }), '*');
+          iframe.contentWindow.postMessage(JSON.stringify({
+            event: 'command',
+            func: 'setVolume',
+            value: 100
+          }), '*');
+          
+          // Unmute Vimeo
+          iframe.contentWindow.postMessage(JSON.stringify({
+            method: 'setMuted',
+            value: false
+          }), '*');
+          iframe.contentWindow.postMessage(JSON.stringify({
+            method: 'setVolume',
+            value: 1
+          }), '*');
+        } catch (e) {
+          console.error('Error sending unmute postMessage to iframe', e);
+        }
+      }
+
+      if (videoRef.current) {
+        videoRef.current.muted = false;
+        videoRef.current.play().catch(() => {});
+      }
+
+      cleanup();
+    };
+
+    const cleanup = () => {
+      document.removeEventListener('click', unmuteOnInteraction);
+      document.removeEventListener('touchstart', unmuteOnInteraction);
+      document.removeEventListener('mousedown', unmuteOnInteraction);
+      document.removeEventListener('keydown', unmuteOnInteraction);
+    };
+
+    document.addEventListener('click', unmuteOnInteraction, { passive: true });
+    document.addEventListener('touchstart', unmuteOnInteraction, { passive: true });
+    document.addEventListener('mousedown', unmuteOnInteraction, { passive: true });
+    document.addEventListener('keydown', unmuteOnInteraction, { passive: true });
+
+    return cleanup;
+  }, [isPlaying]);
+
+  const maxTimeRef = useRef(0);
+  const lastTimeRef = useRef(0);
+
+  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const video = e.currentTarget;
+    if (video.currentTime > maxTimeRef.current + 1.5) {
+      video.currentTime = maxTimeRef.current;
+    } else {
+      maxTimeRef.current = Math.max(maxTimeRef.current, video.currentTime);
+    }
+    lastTimeRef.current = video.currentTime;
+    if (video.duration) {
+      setProgress((video.currentTime / video.duration) * 100);
+    }
+  };
+
+  const handleSeeking = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const video = e.currentTarget;
+    if (video.currentTime > maxTimeRef.current) {
+      video.currentTime = maxTimeRef.current;
+    }
+  };
+
+  const togglePlay = () => {
+    if (videoRef.current) {
+      if (videoRef.current.paused) {
+        videoRef.current.play().catch(() => {});
+        setIsPaused(false);
+      } else {
+        videoRef.current.pause();
+        setIsPaused(true);
+      }
+    }
+  };
+
+  const handleUnmute = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setIsMuted(false);
+
+    // Send postMessage to active iframe
+    const iframe = document.querySelector('iframe');
+    if (iframe && iframe.contentWindow) {
+      try {
+        iframe.contentWindow.postMessage(JSON.stringify({
+          event: 'command',
+          func: 'unMute'
+        }), '*');
+        iframe.contentWindow.postMessage(JSON.stringify({
+          event: 'command',
+          func: 'setVolume',
+          value: 100
+        }), '*');
+        iframe.contentWindow.postMessage(JSON.stringify({
+          method: 'setMuted',
+          value: false
+        }), '*');
+        iframe.contentWindow.postMessage(JSON.stringify({
+          method: 'setVolume',
+          value: 1
+        }), '*');
+      } catch (err) {
+        console.error('Error sending unmute postMessage', err);
+      }
+    }
+
+    if (videoRef.current) {
+      videoRef.current.muted = false;
+      videoRef.current.play().catch(() => {});
+    }
+  };
+
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newMuted = !isMuted;
+    setIsMuted(newMuted);
+
+    // Send postMessage to active iframe
+    const iframe = document.querySelector('iframe');
+    if (iframe && iframe.contentWindow) {
+      try {
+        if (newMuted) {
+          // Mute YouTube
+          iframe.contentWindow.postMessage(JSON.stringify({
+            event: 'command',
+            func: 'mute'
+          }), '*');
+          // Mute Vimeo
+          iframe.contentWindow.postMessage(JSON.stringify({
+            method: 'setMuted',
+            value: true
+          }), '*');
+        } else {
+          // Unmute YouTube
+          iframe.contentWindow.postMessage(JSON.stringify({
+            event: 'command',
+            func: 'unMute'
+          }), '*');
+          iframe.contentWindow.postMessage(JSON.stringify({
+            event: 'command',
+            func: 'setVolume',
+            value: 100
+          }), '*');
+          // Unmute Vimeo
+          iframe.contentWindow.postMessage(JSON.stringify({
+            method: 'setMuted',
+            value: false
+          }), '*');
+          iframe.contentWindow.postMessage(JSON.stringify({
+            method: 'setVolume',
+            value: 1
+          }), '*');
+        }
+      } catch (err) {
+        console.error('Error sending postMessage', err);
+      }
+    }
+
+    if (videoRef.current) {
+      videoRef.current.muted = newMuted;
+    }
+  };
 
   const defaults = {
-    youtubePlaceholder: 'https://www.youtube.com/embed/g2f04Uu8Gis', // Exemplo público de Introdução a Rotinas Visuais para TEA
+    drivePlaceholder: 'https://vimeo.com/1205612287?share=copy&fl=sv&fe=ci',
     previewTitle: 'Apresentação do Kit Visual TEA'
   };
 
-  const getEmbedInfo = (url: string) => {
-    if (!url) {
-      return { type: 'youtube', embedUrl: defaults.youtubePlaceholder };
+  const getEmbedInfo = (url: string, muted: boolean) => {
+    const targetUrl = url || defaults.drivePlaceholder;
+
+    // Dropbox detection and conversion
+    if (targetUrl.includes('dropbox.com')) {
+      let directUrl = targetUrl;
+      if (directUrl.includes('dl=0')) {
+        directUrl = directUrl.replace('dl=0', 'raw=1');
+      } else if (!directUrl.includes('raw=1')) {
+        directUrl = directUrl + (directUrl.includes('?') ? '&' : '?') + 'raw=1';
+      }
+      return {
+        type: 'direct',
+        embedUrl: directUrl
+      };
+    }
+
+    // Google Drive regex
+    const driveRegex = /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/i;
+    const driveMatch = targetUrl.match(driveRegex);
+    if (driveMatch && driveMatch[1]) {
+      return {
+        type: 'drive',
+        embedUrl: `https://drive.google.com/file/d/${driveMatch[1]}/preview?autoplay=1`
+      };
     }
 
     // YouTube regex
     const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-    const ytMatch = url.match(ytRegex);
+    const ytMatch = targetUrl.match(ytRegex);
     if (ytMatch && ytMatch[1]) {
       return {
         type: 'youtube',
-        embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0`
+        embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=${muted ? 1 : 0}&controls=1&enablejsapi=1`
       };
     }
 
     // Vimeo regex
     const vimeoRegex = /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/i;
-    const vimeoMatch = url.match(vimeoRegex);
+    const vimeoMatch = targetUrl.match(vimeoRegex);
     if (vimeoMatch && vimeoMatch[1]) {
       return {
         type: 'vimeo',
-        embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1`
+        embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&muted=${muted ? 1 : 0}&loop=0&autopause=0&controls=1&title=0&byline=0&portrait=0&playsinline=1&dnt=1&api=1`
       };
     }
 
     // Direct mp4 file
-    if (url.match(/\.(mp4|webm|ogg)$/i) || url.includes('.mp4') || url.includes('.webm')) {
+    if (targetUrl.match(/\.(mp4|webm|ogg)$/i) || targetUrl.includes('.mp4') || targetUrl.includes('.webm')) {
       return {
         type: 'direct',
-        embedUrl: url
+        embedUrl: targetUrl
       };
     }
 
-    if (url.includes('youtube.com/embed/') || url.includes('player.vimeo.com/video/')) {
+    if (targetUrl.includes('youtube.com/embed/') || targetUrl.includes('player.vimeo.com/video/')) {
+      const isYt = targetUrl.includes('youtube');
+      let finalUrl = targetUrl;
+      
+      // Remove any loop/playlist configurations to prevent looping
+      finalUrl = finalUrl.replace(/[?&]loop=[01]/g, '').replace(/[?&]playlist=[a-zA-Z0-9_-]+/g, '');
+      
+      if (isYt) {
+        if (finalUrl.includes('mute=')) {
+          finalUrl = finalUrl.replace(/mute=[01]/, `mute=${muted ? 1 : 0}`);
+        } else {
+          finalUrl = finalUrl + (finalUrl.includes('?') ? '&' : '?') + `mute=${muted ? 1 : 0}`;
+        }
+        if (!finalUrl.includes('enablejsapi=1')) {
+          finalUrl = finalUrl + '&enablejsapi=1';
+        }
+      } else {
+        if (finalUrl.includes('muted=')) {
+          finalUrl = finalUrl.replace(/muted=[01]/, `muted=${muted ? 1 : 0}`);
+        } else {
+          finalUrl = finalUrl + (finalUrl.includes('?') ? '&' : '?') + `muted=${muted ? 1 : 0}`;
+        }
+        if (!finalUrl.includes('api=1')) {
+          finalUrl = finalUrl + '&api=1';
+        }
+        finalUrl = finalUrl + '&loop=0';
+      }
       return {
-        type: url.includes('youtube') ? 'youtube' : 'vimeo',
-        embedUrl: url
+        type: isYt ? 'youtube' : 'vimeo',
+        embedUrl: finalUrl
       };
     }
 
-    return { type: 'direct', embedUrl: url };
+    return { type: 'direct', embedUrl: targetUrl };
   };
 
-  const currentVideo = getEmbedInfo(videoUrl);
+  const currentVideo = getEmbedInfo(videoUrl, true);
 
   const handleSave = () => {
     setVideoUrl(tempUrl);
     localStorage.setItem('kit_visual_tea_video_url', tempUrl);
     setShowConfig(false);
     setIsPlaying(true);
+    setLoading(true);
   };
 
   const handleReset = () => {
@@ -212,35 +512,53 @@ const HeroVideoPlayer = () => {
     localStorage.removeItem('kit_visual_tea_video_url');
     setShowConfig(false);
     setIsPlaying(false);
+    setLoading(false);
   };
 
   return (
-    <div className="max-w-3xl mx-auto my-8 px-2 sm:px-4">
+    <div className="max-w-[420px] mx-auto my-8 px-2 sm:px-4">
       <div className="relative group rounded-3xl overflow-hidden bg-slate-950 p-1 sm:p-2 shadow-2xl shadow-brand-dark/20 border border-slate-200/50">
         
-        {/* superior badge */}
-        <div className="absolute top-4 left-4 z-20 flex gap-2 pointer-events-none">
-          <span className="bg-brand-medium/90 backdrop-blur text-white text-[10px] sm:text-xs font-black uppercase tracking-wider px-3 py-1 rounded-full shadow-sm flex items-center gap-1.5">
+        {/* superior badge and settings gear */}
+        <div className="absolute top-4 inset-x-4 z-20 flex justify-between items-center pointer-events-none">
+          <span className="bg-brand-medium/90 backdrop-blur text-white text-[10px] sm:text-xs font-black uppercase tracking-wider px-3 py-1 rounded-full shadow-sm flex items-center gap-1.5 select-none">
             <Tv className="w-3.5 h-3.5" /> VÍDEO EXPOSITIVO
           </span>
+          <div className="flex gap-1.5 pointer-events-auto">
+            <button
+              onClick={toggleMute}
+              className="bg-slate-950/80 hover:bg-slate-900 text-white p-2 rounded-full shadow-md border border-white/10 transition-all hover:scale-105"
+              title={isMuted ? "Ligar Som" : "Mudo"}
+            >
+              {isMuted ? (
+                <VolumeX className="w-3.5 h-3.5 animate-pulse text-rose-400" />
+              ) : (
+                <Volume2 className="w-3.5 h-3.5 text-emerald-400" />
+              )}
+            </button>
+            <button
+              onClick={() => {
+                setTempUrl(videoUrl);
+                setShowConfig(true);
+              }}
+              className="bg-slate-950/80 hover:bg-slate-900 text-white p-2 rounded-full shadow-md border border-white/10 transition-all hover:scale-105"
+              title="Configurar Vídeo"
+            >
+              <Settings className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
 
-        {/* config button */}
-        <button
-          onClick={() => setShowConfig(!showConfig)}
-          className="absolute top-4 right-4 z-30 bg-slate-900/85 hover:bg-slate-900 text-white text-[10px] sm:text-xs font-bold py-1.5 px-3 rounded-full flex items-center gap-1.5 backdrop-blur transition-all border border-white/10"
-          title="Configurar Link do Vídeo"
-        >
-          <Settings className="w-3.5 h-3.5" />
-          {videoUrl ? 'Alterar Link' : 'Configurar Vídeo'}
-        </button>
-
         {/* Video Frame */}
-        <div className="aspect-video w-full relative rounded-2xl overflow-hidden bg-slate-900">
+        <div className="aspect-[9/16] w-full relative rounded-2xl overflow-hidden bg-slate-900" style={{ aspectRatio: '9/16' }}>
           {!isPlaying ? (
             <div 
               className="absolute inset-0 w-full h-full flex flex-col items-center justify-center cursor-pointer overflow-hidden"
-              onClick={() => setIsPlaying(true)}
+              onClick={() => {
+                setIsPlaying(true);
+                setIsMuted(false);
+                setLoading(true);
+              }}
             >
               <div className="absolute inset-0 bg-slate-950/60 z-10 transition-colors hover:bg-slate-950/50" />
               <img 
@@ -259,39 +577,148 @@ const HeroVideoPlayer = () => {
                     Descubra Como Funciona o Kit Por Dentro
                   </h3>
                   <p className="text-white/80 text-[10px] sm:text-xs">
-                    Clique para assistir à demonstração em vídeo
+                    Clique para assistir à apresentação em vídeo
                   </p>
                 </div>
               </div>
             </div>
           ) : (
             <>
-              {currentVideo.type === 'youtube' || currentVideo.type === 'vimeo' ? (
-                <iframe
-                  src={currentVideo.embedUrl}
-                  title={defaults.previewTitle}
-                  className="w-full h-full border-0 absolute inset-0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                ></iframe>
+              {currentVideo.type === 'youtube' || currentVideo.type === 'vimeo' || currentVideo.type === 'drive' ? (
+                <div className="w-full h-full relative overflow-hidden bg-slate-900 object-cover" style={{ objectFit: 'cover' }}>
+                  <iframe
+                    key={reloadKey}
+                    src={currentVideo.embedUrl}
+                    title={defaults.previewTitle}
+                    className="w-full h-full border-0 absolute inset-0 pointer-events-auto object-cover"
+                    style={{ objectFit: 'cover' }}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    onLoad={() => {
+                      setLoading(false);
+                      if (!isMuted) {
+                        setTimeout(() => {
+                          const iframe = document.querySelector('iframe');
+                          if (iframe && iframe.contentWindow) {
+                            try {
+                              iframe.contentWindow.postMessage(JSON.stringify({
+                                event: 'command',
+                                func: 'unMute'
+                              }), '*');
+                              iframe.contentWindow.postMessage(JSON.stringify({
+                                event: 'command',
+                                func: 'setVolume',
+                                value: 100
+                              }), '*');
+                              iframe.contentWindow.postMessage(JSON.stringify({
+                                method: 'setMuted',
+                                value: false
+                              }), '*');
+                              iframe.contentWindow.postMessage(JSON.stringify({
+                                method: 'setVolume',
+                                value: 1
+                              }), '*');
+                            } catch (e) {
+                              console.error(e);
+                            }
+                          }
+                        }, 500);
+                      }
+                    }}
+                  ></iframe>
+                  {/* Subtle visual overlay that is completely non-blocking to pointers and page scrolling */}
+                  <div className="absolute inset-0 z-30 bg-gradient-to-b from-black/20 via-transparent to-black/20 pointer-events-none select-none" />
+                  
+                  {/* Centered Loading Overlay */}
+                  {loading && (
+                    <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-xs select-none pointer-events-auto">
+                      <div className="flex flex-col items-center gap-3">
+                        <Loader2 className="w-10 h-10 text-brand-medium animate-spin" />
+                        <span className="text-white/90 text-xs font-bold tracking-wider uppercase">Carregando apresentação...</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
               ) : currentVideo.type === 'direct' ? (
-                <video
-                  src={currentVideo.embedUrl}
-                  controls
-                  autoPlay
-                  className="w-full h-full object-contain absolute inset-0"
-                ></video>
+                <div className="w-full h-full relative overflow-hidden bg-slate-900 object-cover" style={{ objectFit: 'cover' }}>
+                  <video
+                    key={reloadKey}
+                    ref={videoRef}
+                    src={currentVideo.embedUrl}
+                    autoPlay
+                    loop={false}
+                    muted={isMuted}
+                    controls
+                    playsInline
+                    className="w-full h-full object-cover absolute inset-0 pointer-events-auto"
+                    style={{ objectFit: 'cover' }}
+                    onLoadStart={() => setLoading(true)}
+                    onWaiting={() => setLoading(true)}
+                    onCanPlay={() => setLoading(false)}
+                    onPlaying={() => setLoading(false)}
+                    onEnded={() => setIsEnded(true)}
+                  ></video>
+                  {/* Subtle visual overlay that is completely non-blocking to pointers and page scrolling */}
+                  <div className="absolute inset-0 z-30 bg-gradient-to-b from-black/20 via-transparent to-black/20 pointer-events-none select-none" />
+                  
+                  {/* Centered Loading Overlay */}
+                  {loading && (
+                    <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-xs select-none pointer-events-auto">
+                      <div className="flex flex-col items-center gap-3">
+                        <Loader2 className="w-10 h-10 text-brand-medium animate-spin" />
+                        <span className="text-white/90 text-xs font-bold tracking-wider uppercase">Carregando apresentação...</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-slate-950 p-6 text-center text-white">
                   <div>
                     <Video className="w-12 h-12 mx-auto text-brand-medium mb-3" />
                     <p className="font-bold text-sm">Nenhum vídeo configurado</p>
                     <p className="text-xs text-gray-400 mt-1 max-w-sm">
-                      Clique no botão "Configurar Vídeo" no canto superior direito para colar seu link.
+                      Clique no botão de configurações no canto superior direito para colar seu link.
                     </p>
                   </div>
                 </div>
               )}
+
+              {/* Floating "Ligar Som" overlay button when muted */}
+              {isMuted && !loading && !isEnded && (
+                <button
+                  onClick={(e) => handleUnmute(e)}
+                  className="absolute bottom-8 left-1/2 -translate-x-1/2 z-40 bg-brand-medium hover:bg-brand-dark hover:scale-105 active:scale-95 text-white font-black text-xs sm:text-sm px-5 py-3 rounded-full shadow-2xl flex items-center gap-2 border-2 border-white pointer-events-auto transition-all animate-bounce"
+                >
+                  <Volume2 className="w-4.5 h-4.5 animate-pulse text-white" />
+                  <span>🔊 LIGAR O SOM</span>
+                </button>
+              )}
+
+              {/* Floating "Assistir de novo" overlay button when video has ended */}
+              {isEnded && !loading && (
+                <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-slate-950/85 backdrop-blur-xs transition-all pointer-events-auto">
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex flex-col items-center gap-4 text-center px-6"
+                  >
+                    <button 
+                      onClick={handleWatchAgain}
+                      className="w-16 h-16 bg-brand-medium hover:bg-brand-dark text-white rounded-full flex items-center justify-center shadow-2xl transition-all border-4 border-white cursor-pointer hover:scale-110 active:scale-95"
+                    >
+                      <RotateCcw className="w-7 h-7 text-white" />
+                    </button>
+                    <span className="text-white text-sm sm:text-base font-black tracking-wide uppercase drop-shadow">Fim da apresentação</span>
+                    <button
+                      onClick={handleWatchAgain}
+                      className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm px-6 py-2.5 rounded-full border border-white/20 transition-all active:scale-95 cursor-pointer uppercase"
+                    >
+                      Assistir de novo
+                    </button>
+                  </motion.div>
+                </div>
+              )}
+
             </>
           )}
 
@@ -310,7 +737,7 @@ const HeroVideoPlayer = () => {
                       <Settings className="w-5 h-5 animate-spin-slow text-brand-medium" /> Como Adicionar Vídeos
                     </h4>
                     <p className="text-[11px] sm:text-xs text-gray-300 mt-2 leading-relaxed">
-                      Cole abaixo o link do seu vídeo do <strong>YouTube</strong>, <strong>Vimeo</strong> ou um arquivo direto <strong>.mp4</strong>. Nós tratamos e formatamos o link automaticamente!
+                      Cole abaixo o link do seu vídeo do <strong>YouTube</strong>, <strong>Vimeo</strong>, <strong>Google Drive</strong> ou um arquivo direto <strong>.mp4</strong>. Nós tratamos e formatamos o link automaticamente!
                     </p>
                   </div>
 
