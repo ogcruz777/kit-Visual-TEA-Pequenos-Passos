@@ -1612,10 +1612,10 @@ export default function App() {
             PARA FAMÍLIAS E PROFESSORES DE CRIANÇAS COM AUTISMO
           </span>
           <h1 className="text-4xl sm:text-6xl font-black text-gray-900 leading-tight mb-6">
-            <span className="text-brand-dark">+50 Rotinas Visuais</span> para Crianças com TEA
+            <span className="text-brand-dark">+200 materiais visuais</span> para criar rotinas ilimitadas para sua criança com TEA
           </h1>
           <p className="text-lg sm:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Reduza crises, aumente a independência e torne o dia a dia mais previsível — sem precisar criar do zero.
+            Mais de 200 cartões prontos para imprimir — reduza crises e crie rotinas ilimitadas para seu filho com TEA.
           </p>
 
           {/* Hero Video Player (VSL) Section */}
