@@ -1614,9 +1614,17 @@ export default function App() {
           <h1 className="text-4xl sm:text-6xl font-black text-gray-900 leading-tight mb-6">
             <span className="text-brand-dark">+200 materiais visuais</span> para criar rotinas ilimitadas para sua criança com TEA
           </h1>
-          <p className="text-lg sm:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg sm:text-xl text-gray-600 mb-6 max-w-2xl mx-auto leading-relaxed">
             Mais de 200 cartões prontos para imprimir — reduza crises e crie rotinas ilimitadas para seu filho com TEA.
           </p>
+
+          <div className="flex flex-col items-center justify-center gap-1 mb-8">
+            <span className="text-xs sm:text-sm font-bold text-brand-medium uppercase tracking-widest flex items-center gap-1.5 bg-brand-light/40 px-3.5 py-1.5 rounded-full border border-brand-medium/10 animate-pulse">
+              <Play className="w-3 h-3 fill-brand-medium" />
+              Assista ao vídeo explicativo
+            </span>
+            <ChevronDown className="w-4 h-4 text-brand-medium/70 animate-bounce mt-1" />
+          </div>
 
           {/* Hero Video Player (VSL) Section */}
           <HeroVideoPlayer />
@@ -1990,7 +1998,7 @@ export default function App() {
                         <span className="w-2.5 h-2.5 rounded-full bg-green-400"></span>
                       </div>
                       <div className="bg-gray-100/80 text-gray-500 text-[9px] font-mono px-3 py-0.5 rounded-md max-w-[170px] truncate select-none">
-                        inbox/depoimento_{idx + 1}@kitvisual.com.br
+                        inbox/depoimento_{idx + 1}@teapequenospassos.com
                       </div>
                       <div className="w-10"></div>
                     </div>
@@ -2017,7 +2025,7 @@ export default function App() {
                         </div>
                         <div>
                           <span className="text-gray-400 font-medium">Para: </span>
-                          <span className="text-gray-700 font-medium">suporte@kitvisual.com.br</span>
+                          <span className="text-gray-700 font-medium">teapequenospassos@gmail.com</span>
                         </div>
                       </div>
                     </div>
@@ -2050,7 +2058,7 @@ export default function App() {
                       {dep.reply && (
                         <div className="bg-[#f2faf7] border-l-4 border-[#00a884]/60 p-3 rounded-r-xl text-xs">
                           <div className="flex justify-between items-center mb-1">
-                            <span className="font-bold text-[#006e56] uppercase tracking-wide text-[10px]">Suporte • Ana do Kit Visual</span>
+                            <span className="font-bold text-[#006e56] uppercase tracking-wide text-[10px]">Suporte • Ana do TEA Pequenos Passos</span>
                             <span className="text-[9px] text-gray-400">Resposta Automática</span>
                           </div>
                           <p className="text-gray-700 leading-relaxed mt-1 font-normal italic">"{dep.reply}"</p>
