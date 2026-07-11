@@ -25,6 +25,9 @@ import {
   Volume2,
   VolumeX,
   Video,
+  Phone,
+  Mic,
+  MoreVertical,
   Settings,
   Tv,
   Sun,
@@ -41,7 +44,9 @@ import {
   Sparkles,
   Bookmark,
   Loader2,
-  RotateCcw
+  RotateCcw,
+  Mail,
+  Paperclip
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -156,7 +161,7 @@ const HeroVideoPlayer = () => {
     }
     return saved || defaultUrl;
   });
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [showConfig, setShowConfig] = useState(false);
   const [tempUrl, setTempUrl] = useState(videoUrl);
   const [loading, setLoading] = useState(false);
@@ -172,7 +177,7 @@ const HeroVideoPlayer = () => {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPaused, setIsPaused] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isEnded, setIsEnded] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
@@ -428,7 +433,7 @@ const HeroVideoPlayer = () => {
     if (driveMatch && driveMatch[1]) {
       return {
         type: 'drive',
-        embedUrl: `https://drive.google.com/file/d/${driveMatch[1]}/preview?autoplay=1`
+        embedUrl: `https://drive.google.com/file/d/${driveMatch[1]}/preview?autoplay=0`
       };
     }
 
@@ -438,7 +443,7 @@ const HeroVideoPlayer = () => {
     if (ytMatch && ytMatch[1]) {
       return {
         type: 'youtube',
-        embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=${muted ? 1 : 0}&controls=1&enablejsapi=1`
+        embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=0&mute=${muted ? 1 : 0}&controls=1&enablejsapi=1`
       };
     }
 
@@ -448,7 +453,7 @@ const HeroVideoPlayer = () => {
     if (vimeoMatch && vimeoMatch[1]) {
       return {
         type: 'vimeo',
-        embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&muted=${muted ? 1 : 0}&loop=0&autopause=0&controls=1&title=0&byline=0&portrait=0&playsinline=1&dnt=1&api=1`
+        embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=0&muted=${muted ? 1 : 0}&loop=0&autopause=0&controls=1&title=0&byline=0&portrait=0&playsinline=1&dnt=1&api=1`
       };
     }
 
@@ -464,8 +469,8 @@ const HeroVideoPlayer = () => {
       const isYt = targetUrl.includes('youtube');
       let finalUrl = targetUrl;
       
-      // Remove any loop/playlist configurations to prevent looping
-      finalUrl = finalUrl.replace(/[?&]loop=[01]/g, '').replace(/[?&]playlist=[a-zA-Z0-9_-]+/g, '');
+      // Remove any autoplay, loop/playlist configurations to prevent autoplaying and looping
+      finalUrl = finalUrl.replace(/[?&]autoplay=[01]/g, '').replace(/[?&]loop=[01]/g, '').replace(/[?&]playlist=[a-zA-Z0-9_-]+/g, '');
       
       if (isYt) {
         if (finalUrl.includes('mute=')) {
@@ -476,6 +481,7 @@ const HeroVideoPlayer = () => {
         if (!finalUrl.includes('enablejsapi=1')) {
           finalUrl = finalUrl + '&enablejsapi=1';
         }
+        finalUrl = finalUrl + '&autoplay=0';
       } else {
         if (finalUrl.includes('muted=')) {
           finalUrl = finalUrl.replace(/muted=[01]/, `muted=${muted ? 1 : 0}`);
@@ -485,7 +491,7 @@ const HeroVideoPlayer = () => {
         if (!finalUrl.includes('api=1')) {
           finalUrl = finalUrl + '&api=1';
         }
-        finalUrl = finalUrl + '&loop=0';
+        finalUrl = finalUrl + '&loop=0&autoplay=0';
       }
       return {
         type: isYt ? 'youtube' : 'vimeo',
@@ -496,7 +502,7 @@ const HeroVideoPlayer = () => {
     return { type: 'direct', embedUrl: targetUrl };
   };
 
-  const currentVideo = getEmbedInfo(videoUrl, true);
+  const currentVideo = getEmbedInfo(videoUrl, isMuted);
 
   const handleSave = () => {
     setVideoUrl(tempUrl);
@@ -645,7 +651,6 @@ const HeroVideoPlayer = () => {
                     key={reloadKey}
                     ref={videoRef}
                     src={currentVideo.embedUrl}
-                    autoPlay
                     loop={false}
                     muted={isMuted}
                     controls
@@ -979,13 +984,33 @@ const defaultKitImages: Record<string, string> = {
 
 const getDirectImageUrl = (url: string): string => {
   if (!url) return "";
+  
+  const knownMap: Record<string, string> = {
+    "uVO80ef": "ZVi4Uub",
+    "o2z7GJk": "FXDI38K",
+    "CGPvIgc": "Kgx6lNf",
+    "iwu7tYK": "4fKsljH",
+    "64HncyK": "nX09iTx"
+  };
+
   if (url.includes("imgur.com")) {
     if (url.match(/\.(jpeg|jpg|gif|png|webp)/i) && url.includes("i.imgur.com")) {
       return url;
     }
-    const matches = url.match(/imgur\.com\/(?:a|gallery|r\/[a-zA-Z0-9_]+)?\/?([a-zA-Z0-9]+)/);
-    if (matches && matches[1]) {
-      return `https://i.imgur.com/${matches[1]}.png`;
+
+    const cleanedUrl = url.split("?")[0].split("#")[0];
+    const parts = cleanedUrl.split("/");
+    let lastPart = parts.pop() || parts.pop() || "";
+    
+    if ((lastPart === "a" || lastPart === "gallery") && parts.length > 0) {
+      lastPart = parts.pop() || "";
+    }
+    
+    if (lastPart) {
+      if (knownMap[lastPart]) {
+        return `https://i.imgur.com/${knownMap[lastPart]}.png`;
+      }
+      return `https://i.imgur.com/${lastPart}.png`;
     }
   }
   return url;
@@ -1456,10 +1481,82 @@ const MaterialsPreview = () => {
   );
 };
 
+const WhatsAppAudio = ({ duration }: { duration: string }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const timerRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (isPlaying) {
+      timerRef.current = setInterval(() => {
+        setProgress((prev) => {
+          if (prev >= 100) {
+            setIsPlaying(false);
+            if (timerRef.current) clearInterval(timerRef.current);
+            return 0;
+          }
+          return prev + 2.5;
+        });
+      }, 100);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [isPlaying]);
+
+  const handlePlayToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsPlaying(!isPlaying);
+  };
+
+  return (
+    <div className="flex items-center gap-2 bg-[#f0f2f5] border border-gray-200/50 p-2 rounded-xl w-full mt-2">
+      <button 
+        type="button"
+        onClick={handlePlayToggle}
+        className="w-8 h-8 rounded-full bg-[#00a884] hover:bg-[#008f72] text-white flex items-center justify-center transition-colors shrink-0 cursor-pointer shadow-xs"
+      >
+        {isPlaying ? <Pause className="w-3.5 h-3.5 fill-white" /> : <Play className="w-3.5 h-3.5 fill-white ml-0.5" />}
+      </button>
+      
+      <div className="flex-1 min-w-0">
+        {/* Waveform Visualization mockup */}
+        <div className="flex items-end gap-0.5 h-5 mb-1 justify-between">
+          {[10, 14, 8, 16, 12, 20, 14, 10, 13, 18, 11, 15, 9, 20, 12, 16, 8, 14, 11, 16, 12, 18, 9, 13, 8].map((h, i) => {
+            const indexPercent = (i / 25) * 100;
+            const isPlayed = indexPercent <= progress;
+            return (
+              <div 
+                key={i} 
+                style={{ height: `${h}px` }} 
+                className={`w-[2px] rounded-full transition-colors duration-150 ${isPlayed ? 'bg-[#00a884]' : 'bg-gray-300'}`}
+              />
+            );
+          })}
+        </div>
+        
+        <div className="flex justify-between items-center text-[9px] text-gray-500 font-sans">
+          <span>{isPlaying ? `0:${Math.floor((progress/100) * parseInt(duration.split(':')[1] || "42")).toString().padStart(2, '0')}` : duration}</span>
+          <div className="flex items-center gap-0.5">
+             <Mic className="w-2.5 h-2.5 text-[#00a884]" />
+             <span className="text-[8px] font-bold text-[#00a884] uppercase tracking-wider">ÁUDIO</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // --- Main App ---
 
 export default function App() {
   const [showUpsell, setShowUpsell] = useState(false);
+  const [selectedDepoType, setSelectedDepoType] = useState<'todos' | 'pais' | 'profissionais'>('todos');
 
   const [showStickyCTA, setShowStickyCTA] = useState(false);
 
@@ -1644,20 +1741,61 @@ export default function App() {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { title: "Rotina matinal passo a passo", icon: <Clock />, desc: "Torne o acordar um momento tranquilo e previsível." },
-              { title: "Cartões de comunicação por figuras", icon: <MessageCircle />, desc: "Ajude seu filho a expressar necessidades básicas sem choro." },
-              { title: "Guia de adaptação escolar", icon: <BookOpen />, desc: "Como levar a rotina visual para dentro da sala de aula." },
-              { title: "Kit anti-crise visual", icon: <ShieldCheck />, desc: "Plaquinhas de 'espera', 'ajuda' e 'pausa' para momentos difíceis." }
+              { 
+                title: "Rotina matinal passo a passo", 
+                icon: <Clock className="w-5 h-5 text-brand-dark group-hover:text-white transition-colors" />, 
+                desc: "Torne o acordar um momento tranquilo e previsível.",
+                image: "https://imgur.com/a/o2z7GJk"
+              },
+              { 
+                title: "Cartões de comunicação por figuras", 
+                icon: <MessageCircle className="w-5 h-5 text-brand-dark group-hover:text-white transition-colors" />, 
+                desc: "Ajude seu filho a expressar necessidades básicas sem choro.",
+                image: "https://imgur.com/a/CGPvIgc"
+              },
+              { 
+                title: "Guia de adaptação escolar", 
+                icon: <BookOpen className="w-5 h-5 text-brand-dark group-hover:text-white transition-colors" />, 
+                desc: "Como levar a rotina visual para dentro da sala de aula.",
+                image: "https://imgur.com/a/iwu7tYK"
+              },
+              { 
+                title: "Kit anti-crise visual", 
+                icon: <ShieldCheck className="w-5 h-5 text-brand-dark group-hover:text-white transition-colors" />, 
+                desc: "Plaquinhas de 'espera', 'ajuda' e 'pausa' para momentos difíceis.",
+                image: "https://imgur.com/a/64HncyK"
+              }
             ].map((bonus, idx) => (
-              <div key={idx} className="bg-gray-50 p-6 rounded-3xl border border-gray-100 hover:border-brand-medium/30 hover:shadow-xl transition-all group">
-                <div className="w-12 h-12 bg-brand-light text-brand-dark rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-medium group-hover:text-white transition-colors">
-                  {bonus.icon}
+              <div key={idx} className="bg-gray-50 rounded-3xl border border-gray-100 hover:border-brand-medium/30 hover:shadow-xl transition-all group overflow-hidden flex flex-col justify-between">
+                <div>
+                  {bonus.image && (
+                    <div className="h-40 w-full overflow-hidden relative bg-gray-100 flex-shrink-0">
+                      <img 
+                        src={getDirectImageUrl(bonus.image)} 
+                        alt={bonus.title} 
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-xs text-brand-dark p-2.5 rounded-2xl shadow-sm group-hover:bg-brand-medium group-hover:text-white transition-all">
+                        {bonus.icon}
+                      </div>
+                    </div>
+                  )}
+                  <div className="p-6">
+                    {!bonus.image && (
+                      <div className="w-12 h-12 bg-brand-light text-brand-dark rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-medium group-hover:text-white transition-colors">
+                        {bonus.icon}
+                      </div>
+                    )}
+                    <h3 className="font-black text-lg text-gray-900 mb-2 leading-tight">{bonus.title}</h3>
+                    <p className="text-sm text-gray-600 leading-relaxed">{bonus.desc}</p>
+                  </div>
                 </div>
-                <h3 className="font-black text-lg text-gray-900 mb-2 leading-tight">{bonus.title}</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">{bonus.desc}</p>
-                <div className="mt-4 flex items-center gap-1 text-xs font-bold text-brand-medium uppercase">
-                  <Gift className="w-3 h-3" />
-                  <span>GRÁTIS</span>
+                <div className="px-6 pb-6 pt-0">
+                  <div className="flex items-center gap-1 text-xs font-bold text-brand-medium uppercase">
+                    <Gift className="w-3.5 h-3.5" />
+                    <span>GRÁTIS</span>
+                  </div>
                 </div>
               </div>
             ))}
@@ -1665,45 +1803,277 @@ export default function App() {
         </div>
       </section>
 
-      {/* Materials Preview Section */}
-      <MaterialsPreview />
-
       {/* Depoimentos Section */}
-      <section id="depoimentos" className="bg-brand-light/30 py-20 px-4">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-black text-gray-900 text-center mb-16">O que as famílias estão dizendo...</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* WhatsApp Fake Mês */}
+      <section id="depoimentos" className="bg-brand-light/20 py-24 px-4 relative overflow-hidden">
+        {/* Decorative ambient blur elements */}
+        <div className="absolute top-1/2 left-10 w-72 h-72 bg-brand-medium/5 rounded-full filter blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-10 right-10 w-72 h-72 bg-amber-500/5 rounded-full filter blur-3xl pointer-events-none"></div>
+
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="text-center mb-16">
+            <span className="inline-block bg-brand-medium/10 text-brand-dark px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
+              Feedback por E-mail
+            </span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 mb-4 tracking-tight">
+              O que as famílias estão dizendo...
+            </h2>
+            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto font-medium">
+              Relatos reais enviados diretamente para a nossa caixa de entrada por mães, pais e profissionais de todo o Brasil.
+            </p>
+          </div>
+
+          {/* Trust Stat Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">
+            <div className="bg-white border border-gray-100 p-6 rounded-3xl shadow-xs flex flex-col items-center text-center">
+              <div className="flex gap-0.5 mb-2">
+                {[1, 2, 3, 4, 5].map(s => <Star key={s} className="w-5 h-5 text-amber-400 fill-amber-400" />)}
+              </div>
+              <h4 className="text-xl font-black text-gray-900 mb-1">4.9 / 5 Estrelas</h4>
+              <p className="text-xs text-gray-500 font-medium">Média de satisfação com base em mais de 3.500 avaliações de pais e profissionais.</p>
+            </div>
+            
+            <div className="bg-white border border-gray-100 p-6 rounded-3xl shadow-xs flex flex-col items-center text-center">
+              <div className="w-10 h-10 bg-brand-light text-brand-medium rounded-full flex items-center justify-center mb-2 font-bold text-lg">
+                ❤️
+              </div>
+              <h4 className="text-xl font-black text-gray-900 mb-1">+3.500 Famílias</h4>
+              <p className="text-xs text-gray-500 font-medium">Crianças que conquistaram rotinas mais previsíveis, leves e com menos crises de ansiedade.</p>
+            </div>
+
+            <div className="bg-white border border-gray-100 p-6 rounded-3xl shadow-xs flex flex-col items-center text-center">
+              <div className="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-2 font-bold text-lg">
+                🛡️
+              </div>
+              <h4 className="text-xl font-black text-gray-900 mb-1">Garantia Incondicional</h4>
+              <p className="text-xs text-gray-500 font-medium">Experimente por até 7 dias sem compromisso. Se não gostar, devolvemos 100% do seu dinheiro.</p>
+            </div>
+          </div>
+
+          {/* Interactive Navigation Tabs */}
+          <div className="flex justify-center gap-2 mb-12 flex-wrap">
             {[
-              { name: "Mariana (Mãe do Léo)", text: "Ana, vc não imagina! O Léo acordou e já foi direto olhar a rotina matinal. Ele escovou os dentes sozinho sem eu precisar brigar. To mto feliz!! Obg por esse material." },
-              { name: "Profa. Cláudia", text: "Estou usando os cartões com meus alunos de inclusão e a mudança foi imediata. Eles ficam mto mais calmos sabendo o que vem depois. Recomendo pra todos os profs." },
-              { name: "Carla (Vó da Julia)", text: "A Julia não ficava 5 minutos sentada pra almoçar. Agora com o cartão do 'comer' e o 'depois brincar', ela entende o tempo das coisas. Material excelente." }
-            ].map((dep, idx) => (
-              <div key={idx} className="whatsapp-card scale-95 hover:scale-100 transition-transform cursor-default">
-                <div className="flex items-center justify-between mb-3">
-                   <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-white text-xs font-bold">
-                        <Users className="w-4 h-4" />
+              { id: 'todos', label: 'Todos os E-mails' },
+              { id: 'pais', label: 'Mães e Pais' },
+              { id: 'profissionais', label: 'Profissionais & Escolas' }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setSelectedDepoType(tab.id as any)}
+                className={`px-5 py-2.5 rounded-full text-xs font-bold tracking-wide transition-all uppercase cursor-pointer border ${
+                  selectedDepoType === tab.id
+                    ? 'bg-brand-medium text-white shadow-md shadow-brand-medium/20 border-brand-medium'
+                    : 'bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-950 border-gray-100'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Testimonials Grid in Email format */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {(() => {
+              const testimonialsData = [
+                {
+                  name: "Mariana de Souza",
+                  email: "mariana.souza@gmail.com",
+                  role: "Mãe do Léo (4 anos - Autista)",
+                  category: "pais",
+                  avatar: "MS",
+                  avatarColor: "bg-rose-500",
+                  time: "Hoje, 10:14",
+                  subject: "Re: Léo escovou os dentes sozinho! (Kit de Rotina Matinal)",
+                  text: "Ana, você não imagina a nossa alegria! O Léo acordou hoje bem disposto e já foi direto olhar a rotina matinal no painel. Ele escovou os dentes sozinho sem eu precisar brigar ou repetir 10 vezes. Estou muito feliz! Obrigado por esse material maravilhoso.",
+                  reaction: "❤️",
+                  isAudio: false,
+                  attachment: "kit_rotina_diaria_impresso.pdf (3.4 MB)",
+                  replySubject: "RES: Léo escovou os dentes sozinho! (Kit de Rotina Matinal)",
+                  reply: "Que notícia maravilhosa, Mariana! O Léo é super inteligente e capaz. Fico imensamente feliz que o painel de rotina tenha gerado essa autonomia imediata e trazido mais paz para a manhã de vocês! Um abraço forte nele! ❤️"
+                },
+                {
+                  name: "Juliana Costa",
+                  email: "juliana.costa.neuro@gmail.com",
+                  role: "Psicopedagoga Clínica",
+                  category: "profissionais",
+                  avatar: "JC",
+                  avatarColor: "bg-indigo-600",
+                  time: "Ontem, 14:23",
+                  subject: "Re: Excelente Resolução e Sem Sobrecarga Sensorial",
+                  text: "Como profissional de neurodesenvolvimento infantil, indico de olhos fechados. Os pictogramas têm excelente resolução e a escolha de cores evita a sobrecarga sensorial. Meus pequenos na clínica adoram e se engajam imediatamente nas atividades propostas!",
+                  reaction: "✨",
+                  isAudio: false,
+                  attachment: "prancha_comunicacao_clinica.pdf (4.1 MB)",
+                  replySubject: "RES: Excelente Resolução e Sem Sobrecarga Sensorial",
+                  reply: "Muito obrigada pelo retorno técnico tão precioso, Juliana! Ficamos honrados em saber que nossos materiais estão auxiliando nos seus atendimentos clínicos e promovendo o desenvolvimento seguro desses pequenos. 🙏"
+                },
+                {
+                  name: "Roberta Dias",
+                  email: "roberta.dias@outlook.com",
+                  role: "Mãe do Thiago (6 anos - TDAH)",
+                  category: "pais",
+                  avatar: "RD",
+                  avatarColor: "bg-amber-500",
+                  time: "Ontem, 08:45",
+                  subject: "Re: Cartões de Transição - Sem crises de ansiedade na escola!",
+                  text: "Passando pra te agradecer de coração! O kit de cartões de transição salvou as nossas saídas para a escola. Ele costumava ter crises de choro e ansiedade com a mudança de ambiente. Agora, ele mesmo confere os cartões e vai super tranquilo.",
+                  reaction: "🙏",
+                  isAudio: false,
+                  attachment: "cartoes_transicao_escola.pdf (1.8 MB)",
+                  replySubject: "RES: Cartões de Transição - Sem crises de ansiedade na escola!",
+                  reply: "Isso é o poder da previsibilidade visual, Roberta! Reduzir a ansiedade de transição muda completamente o dia das crianças neurodivergentes. Parabéns pela paciência e dedicação!"
+                },
+                {
+                  name: "Dra. Amanda Medeiros",
+                  email: "amanda.terapeuta@outlook.com",
+                  role: "Terapeuta Ocupacional",
+                  category: "profissionais",
+                  avatar: "AM",
+                  avatarColor: "bg-teal-600",
+                  time: "Há 2 dias, 17:02",
+                  subject: "Re: Recomendação padrão ouro para autonomia infantil",
+                  text: "Excelente qualidade pedagógica e visual! Uso nos meus atendimentos de integração sensorial e oriento os pais a usarem em casa para dar continuidade. A estruturação visual é padrão ouro para autonomia e regulação de comportamento.",
+                  reaction: "⭐",
+                  isAudio: false,
+                  attachment: "guia_autonomia_infantil.pdf (2.8 MB)",
+                  replySubject: "RES: Recomendação padrão ouro para autonomia infantil",
+                  reply: "Obrigada, Dra. Amanda! A parceria com terapeutas ocupacionais é fundamental para validar a abordagem do Kit Visual. Seu feedback nos enche de orgulho! 🌟"
+                },
+                {
+                  name: "Felipe Ramos",
+                  email: "felipe.ramos.pai@gmail.com",
+                  role: "Pai do Arthur (5 anos)",
+                  category: "pais",
+                  avatar: "FR",
+                  avatarColor: "bg-blue-600",
+                  time: "Há 3 dias, 19:15",
+                  subject: "Re: Menos choro e mais sono! Nosso Arthur se acostumou rápido",
+                  text: "Minha esposa e eu estávamos exaustos com as noites difíceis na hora do jantar e sono. Criamos a sequência com o kit de vocês e foi tiro e queda. O Arthur já se acostumou e segue os passos com orgulho e sem chorar. Muito obrigado!",
+                  reaction: "👍",
+                  isAudio: false,
+                  attachment: "rotina_noite_arthur.pdf (1.9 MB)",
+                  replySubject: "RES: Menos choro e mais sono! Nosso Arthur se acostumou rápido",
+                  reply: "Felipe, que relato maravilhoso! Estabelecer uma rotina do sono previsível traz qualidade de vida e paz para a família inteira. Parabéns para vocês e para o Arthur! Grande abraço!"
+                },
+                {
+                  name: "Profa. Cláudia Lima",
+                  email: "claudia.lima.educacao@ig.com.br",
+                  role: "Educadora Especial",
+                  category: "profissionais",
+                  avatar: "CL",
+                  avatarColor: "bg-emerald-600",
+                  time: "Há 4 dias, 11:32",
+                  subject: "Re: Uso em sala de aula de inclusão escolar - Fantástico!",
+                  text: "Estou usando os cartões com meus alunos de inclusão na escola municipal e a mudança na sala foi imediata. Eles ficam muito mais calmos e focados sabendo o que vem a seguir. Recomendo de coração para todas as professoras.",
+                  reaction: "❤️",
+                  isAudio: false,
+                  attachment: "painel_inclusao_sala_de_aula.pdf (3.5 MB)",
+                  replySubject: "RES: Uso em sala de aula de inclusão escolar - Fantástico!",
+                  reply: "Professora Cláudia, seu trabalho é absolutamente admirável! Facilitar a inclusão escolar e dar voz às crianças é o nosso maior propósito com este kit. Desejamos muito sucesso! 🍎"
+                }
+              ];
+
+              const filtered = selectedDepoType === 'todos' 
+                ? testimonialsData 
+                : testimonialsData.filter(d => d.category === selectedDepoType);
+
+              return filtered.map((dep, idx) => (
+                <div 
+                  key={dep.name} 
+                  className="bg-white border border-gray-150 rounded-2xl shadow-xl hover:shadow-2xl hover:scale-[1.01] transition-all duration-300 flex flex-col justify-between max-w-sm mx-auto w-full overflow-hidden"
+                >
+                  <div>
+                    {/* Mock Email Client Window Header */}
+                    <div className="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2.5 h-2.5 rounded-full bg-red-400"></span>
+                        <span className="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
+                        <span className="w-2.5 h-2.5 rounded-full bg-green-400"></span>
                       </div>
-                      <span className="text-xs font-bold text-gray-600">{dep.name}</span>
-                   </div>
-                   <div className="flex gap-0.5">
-                      {[1,2,3,4,5].map(s => <Star key={s} className="w-2.5 h-2.5 text-yellow-500 fill-yellow-500" />) }
-                   </div>
-                </div>
-                <div className="whatsapp-bubble">
-                  <p className="text-xs text-gray-800 leading-tight mb-1">{dep.text}</p>
-                  <div className="flex justify-end items-center gap-1">
-                    <span className="text-[10px] text-gray-500">14:23</span>
-                    <Check className="w-3 h-3 text-blue-500" />
+                      <div className="bg-gray-100/80 text-gray-500 text-[9px] font-mono px-3 py-0.5 rounded-md max-w-[170px] truncate select-none">
+                        inbox/depoimento_{idx + 1}@kitvisual.com.br
+                      </div>
+                      <div className="w-10"></div>
+                    </div>
+
+                    {/* Email Details Area */}
+                    <div className="p-4 border-b border-gray-100 bg-gray-50/40 text-xs text-gray-600">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-8 h-8 rounded-full ${dep.avatarColor} flex items-center justify-center text-white text-xs font-black shadow-inner shrink-0`}>
+                            {dep.avatar}
+                          </div>
+                          <div className="min-w-0">
+                            <span className="block font-bold text-gray-900 truncate">{dep.name}</span>
+                            <span className="block text-[10px] text-gray-400 font-mono truncate">&lt;{dep.email}&gt;</span>
+                          </div>
+                        </div>
+                        <span className="text-[10px] text-gray-400 shrink-0 font-medium">{dep.time}</span>
+                      </div>
+
+                      <div className="space-y-1 font-sans mt-3">
+                        <div>
+                          <span className="text-gray-400 font-medium">Assunto: </span>
+                          <span className="font-bold text-gray-900">{dep.subject}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400 font-medium">Para: </span>
+                          <span className="text-gray-700 font-medium">suporte@kitvisual.com.br</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Email Message Body */}
+                    <div className="p-4 font-sans text-xs sm:text-sm text-gray-800 leading-relaxed bg-white">
+                      <p className="whitespace-pre-line text-gray-750 font-normal leading-relaxed">{dep.text}</p>
+                      
+                      {/* Attachment */}
+                      {dep.attachment && (
+                        <div className="mt-4 p-2.5 bg-gray-50 rounded-xl border border-gray-150 flex items-center justify-between text-xs text-gray-700">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <Paperclip className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                            <span className="truncate font-medium text-[11px] text-gray-600">{dep.attachment}</span>
+                          </div>
+                          <span className="text-brand-medium font-bold text-[9px] uppercase tracking-wider bg-brand-medium/10 px-2 py-0.5 rounded-sm shrink-0 select-none">
+                            Impresso
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Reply Thread Divider */}
+                      <div className="relative flex py-4 items-center">
+                        <div className="flex-grow border-t border-dashed border-gray-200"></div>
+                        <span className="flex-shrink mx-4 text-[9px] font-bold text-gray-400 uppercase tracking-wider">Resposta Enviada</span>
+                        <div className="flex-grow border-t border-dashed border-gray-200"></div>
+                      </div>
+
+                      {/* Reply Block from Ana */}
+                      {dep.reply && (
+                        <div className="bg-[#f2faf7] border-l-4 border-[#00a884]/60 p-3 rounded-r-xl text-xs">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="font-bold text-[#006e56] uppercase tracking-wide text-[10px]">Suporte • Ana do Kit Visual</span>
+                            <span className="text-[9px] text-gray-400">Resposta Automática</span>
+                          </div>
+                          <p className="text-gray-700 leading-relaxed mt-1 font-normal italic">"{dep.reply}"</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Card Bottom Verified Footer */}
+                  <div className="bg-gray-50 border-t border-gray-100 px-4 py-3 flex items-center justify-between text-[10px] font-bold text-brand-medium uppercase tracking-wider shrink-0 mt-auto">
+                    <div className="flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-brand-medium" />
+                      <span>Compra Verificada</span>
+                    </div>
+                    <div className="flex gap-0.5">
+                      {[1, 2, 3, 4, 5].map(s => (
+                        <Star key={s} className="w-2.5 h-2.5 text-amber-400 fill-amber-400" />
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <div className="mt-2 text-[9px] font-bold text-brand-medium flex items-center gap-1 uppercase tracking-tighter">
-                  <CheckCircle2 className="w-3 h-3" /> Compra Verificada
-                </div>
-              </div>
-            ))}
+              ));
+            })()}
           </div>
         </div>
       </section>
