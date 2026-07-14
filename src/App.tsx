@@ -1618,16 +1618,17 @@ export default function App() {
             Reduza crises, aumente a independência e torne o dia a dia mais previsível — sem precisar criar nada do zero.
           </p>
 
-          <div className="flex flex-col items-center justify-center gap-1 mb-8">
-            <span className="text-xs sm:text-sm font-bold text-brand-medium uppercase tracking-widest flex items-center gap-1.5 bg-brand-light/40 px-3.5 py-1.5 rounded-full border border-brand-medium/10 animate-pulse">
-              <Play className="w-3 h-3 fill-brand-medium" />
-              Assista ao vídeo explicativo
-            </span>
-            <ChevronDown className="w-4 h-4 text-brand-medium/70 animate-bounce mt-1" />
+          {/* Hero Image below Subheadline */}
+          <div className="my-8 max-w-3xl mx-auto rounded-2xl overflow-hidden shadow-xl border-4 border-white bg-white">
+            <img 
+              src="https://i.imgur.com/WZBX1Bm.jpeg" 
+              alt="Kit Visual TEA - Pequenos Passos" 
+              className="w-full h-auto object-cover"
+              referrerPolicy="no-referrer"
+            />
           </div>
 
-          {/* Hero Video Player (VSL) Section */}
-          <HeroVideoPlayer />
+          <div className="mt-4"></div>
 
           <button 
             id="cta-hero"
