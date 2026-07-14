@@ -1621,7 +1621,7 @@ export default function App() {
           {/* Hero Image below Subheadline */}
           <div className="my-8 max-w-3xl mx-auto rounded-2xl overflow-hidden shadow-xl border-4 border-white bg-white">
             <img 
-              src="https://i.imgur.com/WZBX1Bm.jpeg" 
+              src="https://i.imgur.com/nCpW8NS.png" 
               alt="Kit Visual TEA - Pequenos Passos" 
               className="w-full h-auto object-cover"
               referrerPolicy="no-referrer"
