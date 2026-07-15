@@ -1659,61 +1659,51 @@ export default function App() {
     <div className="min-h-screen pt-16 sm:pt-20">
       <UrgencyBar />
       <SalesNotification />
-      {/* Floating Bouncing CTA (Fica Pulando na Tela) */}
+      {/* Floating Bouncing CTA (Fica Pulando na Tela e Acompanha o Scroll) */}
       <AnimatePresence>
         {showStickyCTA && (
           <>
             {/* Mobile Floating Bouncing CTA */}
-            <motion.div
-              initial={{ y: 100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 100, opacity: 0 }}
-              className="fixed bottom-6 left-4 right-4 z-40 sm:hidden"
-            >
+            <div className="fixed bottom-6 left-4 right-4 z-[99999] sm:hidden">
               <motion.button 
                 onClick={scrollToPricing}
                 animate={{ 
-                  y: [0, -8, 0],
+                  y: [0, -10, 0],
                 }}
                 transition={{
                   duration: 1.5,
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="w-full bg-[#2ecc71] hover:bg-[#27ae60] text-white font-black py-4 rounded-2xl shadow-[0_12px_40px_rgba(46,204,113,0.45)] flex items-center justify-center gap-3 uppercase tracking-wider text-sm cursor-pointer border border-white/15"
+                className="w-full bg-[#2ecc71] hover:bg-[#27ae60] text-white font-black py-4 rounded-2xl shadow-[0_12px_45px_rgba(46,204,113,0.6)] flex items-center justify-center gap-3 uppercase tracking-wider text-sm cursor-pointer border border-white/25"
               >
-                <ShoppingBag className="w-5 h-5" />
+                <ShoppingBag className="w-5 h-5 shrink-0" />
                 Quero o Kit com Desconto
               </motion.button>
-            </motion.div>
+            </div>
 
             {/* Desktop Floating Bouncing CTA */}
-            <motion.div
-              initial={{ x: 150, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 150, opacity: 0 }}
-              className="fixed bottom-8 right-8 z-40 hidden sm:block"
-            >
+            <div className="fixed bottom-8 right-8 z-[99999] hidden sm:block">
               <motion.button 
                 onClick={scrollToPricing}
                 animate={{ 
-                  y: [0, -12, 0],
+                  y: [0, -14, 0],
                 }}
                 transition={{
                   duration: 1.6,
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="bg-[#2ecc71] hover:bg-[#27ae60] text-white font-black px-8 py-4.5 rounded-full shadow-[0_15px_40px_rgba(46,204,113,0.45)] flex items-center justify-center gap-3 uppercase tracking-wider text-sm cursor-pointer border border-white/20 transition-transform duration-300 hover:scale-105 active:scale-95"
+                className="bg-[#2ecc71] hover:bg-[#27ae60] text-white font-black px-8 py-4.5 rounded-full shadow-[0_15px_45px_rgba(46,204,113,0.6)] flex items-center justify-center gap-3 uppercase tracking-wider text-sm cursor-pointer border border-white/25 transition-all duration-300 hover:scale-105 active:scale-95"
               >
-                <ShoppingBag className="w-5 h-5 text-white animate-pulse" />
+                <ShoppingBag className="w-5 h-5 text-white animate-pulse shrink-0" />
                 <span>Quero o Kit com Desconto</span>
-                <span className="flex h-2.5 w-2.5 relative">
+                <span className="flex h-2.5 w-2.5 relative shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
                 </span>
               </motion.button>
-            </motion.div>
+            </div>
           </>
         )}
       </AnimatePresence>
