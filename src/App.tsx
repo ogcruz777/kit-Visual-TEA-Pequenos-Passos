@@ -12,6 +12,8 @@ import {
   Check, 
   ChevronDown, 
   ChevronUp, 
+  ChevronLeft,
+  ChevronRight,
   ShieldCheck, 
   Gift, 
   BookOpen, 
@@ -106,7 +108,8 @@ const UrgencyBar = () => {
       <div className="flex items-center gap-2">
         <Clock className="w-4 h-4 text-white animate-pulse shrink-0" />
         <span className="text-[10px] sm:text-xs font-bold text-white">
-          O preço promocional expira em:
+          <span className="sm:hidden">Expira em:</span>
+          <span className="hidden sm:inline">O preço promocional expira em:</span>
         </span>
         <span className="bg-white/20 text-white font-mono text-xs sm:text-sm font-black px-2 py-0.5 rounded-md border border-white/30 tabular-nums">
           {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
@@ -212,13 +215,13 @@ const SalesNotification = () => {
 const FAQItem = ({ question, answer }: { question: string; answer: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <div className={`mb-4 rounded-2xl border transition-all duration-300 ${isOpen ? 'border-[#2ecc71]/30 bg-[#f3fdf6]/40 shadow-xs' : 'border-gray-150 bg-white hover:border-gray-300'}`}>
+    <div className={`mb-3 rounded-xl border transition-all duration-300 ${isOpen ? 'border-[#2ecc71]/30 bg-[#f3fdf6]/40 shadow-xs' : 'border-gray-150 bg-white hover:border-gray-300'}`}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex justify-between items-center text-left font-black text-gray-900 px-6 py-5 cursor-pointer transition-colors"
+        className="w-full flex justify-between items-center text-left font-black text-gray-900 px-4 py-3.5 sm:px-6 sm:py-5 cursor-pointer transition-colors"
       >
-        <span className="pr-4 text-sm sm:text-base">{question}</span>
-        {isOpen ? <ChevronUp className="w-5 h-5 text-[#2ecc71] shrink-0" /> : <ChevronDown className="w-5 h-5 text-gray-400 shrink-0" />}
+        <span className="pr-4 text-xs sm:text-base">{question}</span>
+        {isOpen ? <ChevronUp className="w-4 h-4 sm:w-5 h-5 text-[#2ecc71] shrink-0" /> : <ChevronDown className="w-4 h-4 sm:w-5 h-5 text-gray-400 shrink-0" />}
       </button>
       <AnimatePresence>
         {isOpen && (
@@ -229,7 +232,7 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <p className="px-6 pb-5 text-gray-600 text-xs sm:text-sm leading-relaxed font-medium">{answer}</p>
+            <p className="px-4 pb-4 sm:px-6 sm:pb-5 text-gray-650 text-xs sm:text-sm leading-relaxed font-medium">{answer}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -1356,35 +1359,35 @@ const MaterialsPreview = () => {
   const activeCards = currentTabObj.cards;
 
   return (
-    <section id="materiais-por-dentro" className="py-20 px-4 bg-slate-50 border-y border-slate-100 overflow-hidden">
+    <section id="materiais-por-dentro" className="py-12 px-4 bg-slate-50 border-y border-slate-100 overflow-hidden">
       <div className="max-w-5xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-10">
-          <h2 className="text-3xl sm:text-4xl font-black text-[#1a7a4a] mb-4 tracking-tight">
+        <div className="text-center mb-6">
+          <h2 className="text-3xl sm:text-4xl font-black text-[#1a7a4a] mb-2 tracking-tight">
             Explore o Kit por Dentro
           </h2>
-          <p className="text-sm sm:text-base text-gray-500 max-w-2xl mx-auto font-bold leading-relaxed px-4">
+          <p className="text-xs sm:text-sm text-gray-500 max-w-2xl mx-auto font-bold leading-relaxed px-4">
             Desenvolvemos cada material pensando no bem estar da sua criança. Escolha uma aba para visualizar:
           </p>
-          <div className="w-20 h-1 bg-[#1a7a4a] mx-auto mt-6 rounded-full"></div>
+          <div className="w-20 h-1 bg-[#1a7a4a] mx-auto mt-3 rounded-full"></div>
         </div>
 
         {/* Tab Buttons Row inside light green rounded container */}
-        <div className="bg-[#e8fbf0] p-2.5 rounded-[24px] max-w-3xl mx-auto border border-green-150/60 shadow-sm mb-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-2.5">
+        <div className="bg-[#e8fbf0] p-1.5 sm:p-2.5 rounded-[20px] sm:rounded-[24px] max-w-3xl mx-auto border border-green-150/60 shadow-sm mb-4 sm:mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 sm:gap-2.5">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center justify-center gap-2 py-3 px-3 rounded-full text-xs sm:text-sm font-black tracking-wide transition-all duration-300 transform active:scale-95 cursor-pointer ${
+                  className={`flex items-center justify-center gap-1.5 py-2 sm:py-3 px-1.5 sm:px-3 rounded-full text-[10px] sm:text-xs md:text-sm font-black tracking-wide transition-all duration-300 transform active:scale-95 cursor-pointer ${
                     isActive
                       ? "bg-[#1a7a4a] text-white shadow-md shadow-[#1a7a4a]/10"
                       : "bg-[#d4f5e3] text-[#1a7a4a] hover:bg-[#c3edd4]"
                   }`}
                 >
-                  <span className="text-base select-none leading-none">{tab.icon}</span>
+                  <span className="text-sm sm:text-base select-none leading-none">{tab.icon}</span>
                   <span className="truncate">{tab.title}</span>
                 </button>
               );
@@ -1647,6 +1650,24 @@ export default function App() {
 
   const [showStickyCTA] = useState(true);
 
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const [visibleCards, setVisibleCards] = useState(3);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setVisibleCards(1);
+      } else if (window.innerWidth < 1024) {
+        setVisibleCards(2);
+      } else {
+        setVisibleCards(3);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const scrollToPricing = () => {
     document.getElementById('planos')?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -1654,6 +1675,159 @@ export default function App() {
   const handleBasicClick = () => {
     setShowUpsell(true);
   };
+
+  const kitMaterials = [
+    {
+      id: "rotina-manha",
+      title: "1. Rotina da Manhã",
+      desc: "Cartões passo a passo para acordar bem, arrumar a mochila, vestir a farda e iniciar o dia de forma pacífica.",
+      items: ["Acordar tranquilo", "Fazer a cama", "Vestir a roupa", "Tomar café da manhã"],
+      badge: "Essencial",
+      color: "bg-amber-500",
+      emoji: "🌅",
+      image: "https://i.imgur.com/FUU0W6l.png"
+    },
+    {
+      id: "higiene",
+      title: "2. Higiene Completa",
+      desc: "Passo a passo visual detalhado para escovar os dentes, tomar banho, usar o banheiro e lavar as mãos de forma independente.",
+      items: ["Escovação perfeita", "Passo a passo do banho", "Uso do vaso sanitário", "Lavar as mãos"],
+      badge: "Autonomia",
+      color: "bg-blue-500",
+      emoji: "🚿",
+      image: "https://i.imgur.com/IMJgT7r.png"
+    },
+    {
+      id: "alimentacao",
+      title: "3. Alimentação Saudável",
+      desc: "Suporte para diminuir a seletividade alimentar, regras de comportamento à mesa e pedidos visuais de alimentos.",
+      items: ["Sentar para comer", "Provar novos alimentos", "Usar os talheres", "Pedir água/comida"],
+      badge: "Comportamento",
+      color: "bg-emerald-500",
+      emoji: "🍽️",
+      image: "https://i.imgur.com/LbAWuW2.png"
+    },
+    {
+      id: "escola",
+      title: "4. Rotina Escolar",
+      desc: "Pictogramas criados para organizar o material, prestar atenção na professora, fazer as tarefas e interagir com colegas.",
+      items: ["Organizar mochila", "Prestar atenção", "Hora do recreio", "Fazer dever de casa"],
+      badge: "Inclusão",
+      color: "bg-indigo-500",
+      emoji: "🎒",
+      image: "https://i.imgur.com/9tpq1fN.png"
+    },
+    {
+      id: "comunicacao",
+      title: "5. Comunicação Alternativa",
+      desc: "Pranchas de comunicação rápida para crianças não verbais ou em fase de aquisição de fala expressarem desejos e dores.",
+      items: ["Pranchas rápidas", "Expressar dor", "Pedir ajuda", "Dizer Sim/Não"],
+      badge: "Padrão Ouro",
+      color: "bg-rose-500",
+      emoji: "💬",
+      image: "https://i.imgur.com/GOctx7p.png"
+    },
+    {
+      id: "emocoes",
+      title: "6. Expressão das Emoções",
+      desc: "Identificação e validação de sentimentos como raiva, medo, alegria, cansaço ou sobrecarga sensorial para evitar desregulações.",
+      items: ["Quadro de sentimentos", "Termômetro da raiva", "Apoio para frustração", "Expressar cansaço"],
+      badge: "Regulação",
+      color: "bg-purple-500",
+      emoji: "🧠",
+      image: "https://i.imgur.com/8FTej6x.png"
+    },
+    {
+      id: "combinados",
+      title: "7. Combinados e Regras",
+      desc: "Suporte visual para estabelecer combinados claros e limites firmes de forma leve, lúdica e extremely didática.",
+      items: ["Guardar brinquedos", "Falar em tom adequado", "Esperar a minha vez", "Respeitar limites"],
+      badge: "Convivência",
+      color: "bg-yellow-500",
+      emoji: "🤝",
+      image: "https://i.imgur.com/4BszRqb.png"
+    },
+    {
+      id: "recompensas",
+      title: "8. Quadro de Recompensas",
+      desc: "Quadro de incentivos e tokens para gamificar pequenas tarefas diárias e celebrar cada pequena vitória conquistada.",
+      items: ["Quadro de estrelas", "Meta semanal", "Comemoração lúdica", "Foco no progresso"],
+      badge: "Motivação",
+      color: "bg-[#2ecc71]",
+      emoji: "🏆",
+      image: "https://i.imgur.com/RJPHWbo.png"
+    },
+    {
+      id: "sono",
+      title: "9. Higiene do Sono",
+      desc: "Rituais visuais noturnos para acalmar a mente, se preparar para deitar e dormir no horário correto sem choro.",
+      items: ["Desconectar telas", "Colocar o pijama", "Ler história curta", "Dormir sozinho"],
+      badge: "Bem Estar",
+      color: "bg-slate-700",
+      emoji: "🌙",
+      image: "https://i.imgur.com/lkaUlVI.png"
+    },
+    {
+      id: "calendario",
+      title: "10. Calendário Interativo",
+      desc: "Painel completo para trabalhar a noção de tempo, clima, dias da semana, meses, datas festivas e aniversários.",
+      items: ["Dias da semana", "Tempo e clima", "Meses do ano", "Marcação de eventos"],
+      badge: "Cognitivo",
+      color: "bg-cyan-500",
+      emoji: "📅",
+      image: "https://i.imgur.com/jfCQtdx.png"
+    },
+    {
+      id: "quadros-rotina",
+      title: "11. Quadros de Rotina Prontos",
+      desc: "Modelos prontos de painéis horizontais e verticais: 'Primeiro/Depois', 'Manhã/Tarde/Noite' em formato profissional.",
+      items: ["Quadro Primeiro/Depois", "Rotina de 3 turnos", "Painel semanal", "Apoio de bolso"],
+      badge: "Prático",
+      color: "bg-lime-600",
+      emoji: "📋",
+      image: "https://i.imgur.com/CR6PENG.png"
+    },
+    {
+      id: "cartoes",
+      title: "12. Cartões de Transição",
+      desc: "Evite crises avisando visualmente a criança antes de mudar de ambiente (ir embora do parque, sair da terapia, etc).",
+      items: ["Aviso de 5 minutos", "Sair de casa", "Mudar de atividade", "Esperar no carro"],
+      badge: "Anti-crise",
+      color: "bg-pink-500",
+      emoji: "🔄",
+      image: "https://i.imgur.com/jQI7lUS.png"
+    },
+    {
+      id: "materiais-extras",
+      title: "13. Materiais Extras e Atividades",
+      desc: "Atividades lúdicas complementares de recortar, colar, ligar pontos e colorir para focar em coordenação motora fina.",
+      items: ["Coordenação fina", "Desenho guiado", "Ligar pontos", "Recortar e colar"],
+      badge: "Lúdico",
+      color: "bg-violet-600",
+      emoji: "🎨",
+      image: "https://i.imgur.com/VqDFZjk.png"
+    }
+  ];
+
+  // Controle de auto-rotação do carrossel
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [userInteracted, setUserInteracted] = useState(false);
+
+  useEffect(() => {
+    if (!isAutoPlaying || userInteracted) return;
+
+    const interval = setInterval(() => {
+      setCarouselIndex((prev) => {
+        const maxIndex = kitMaterials.length - visibleCards;
+        if (prev >= maxIndex) {
+          return 0; // Volta para o primeiro se chegar ao fim
+        }
+        return prev + 1;
+      });
+    }, 4000); // Gira a cada 4 segundos
+
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, userInteracted, visibleCards, kitMaterials.length]);
 
   return (
     <div className="min-h-screen pt-16 sm:pt-20">
@@ -1709,17 +1883,17 @@ export default function App() {
       </AnimatePresence>
 
       {/* Hero Section */}
-      <section id="hero" className="bg-white px-4 pt-10 pb-16 sm:pt-14 sm:pb-22 overflow-hidden relative border-b border-gray-100">
+      <section id="hero" className="bg-white px-4 pt-6 pb-10 sm:pt-10 sm:pb-14 overflow-hidden relative border-b border-gray-100">
         <div className="max-w-5xl mx-auto text-center relative z-10">
           
           {/* Top category pill */}
-          <span className="inline-flex items-center gap-2 bg-[#f3fdf6] text-[#1a5c3a] px-4 py-1.5 rounded-full text-xs font-extrabold tracking-wider mb-5 border border-[#2ecc71]/20 shadow-xs uppercase">
+          <span className="inline-flex items-center gap-2 bg-[#f3fdf6] text-[#1a5c3a] px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-extrabold tracking-wider mb-2.5 sm:mb-3.5 border border-[#2ecc71]/20 shadow-xs uppercase">
             <Sparkles className="w-3.5 h-3.5 text-[#2ecc71]" />
             Para Famílias, Professores e Clínicas
           </span>
 
           {/* Headline - extremely strong */}
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-gray-900 leading-tight mb-5 tracking-tight max-w-4xl mx-auto">
+          <h1 className="text-2xl sm:text-5xl md:text-6xl font-black text-gray-900 leading-tight mb-2.5 sm:mb-3.5 tracking-tight max-w-4xl mx-auto">
             Tudo o que você precisa para <br />
             <span className="bg-gradient-to-r from-[#1a5c3a] via-[#2ecc71] to-[#1a5c3a] bg-clip-text text-transparent">
               organizar a rotina de crianças com TEA
@@ -1727,27 +1901,27 @@ export default function App() {
           </h1>
 
           {/* Subheadline - explaining exactly who and what */}
-          <p className="text-base sm:text-lg text-gray-650 mb-6 max-w-3xl mx-auto leading-relaxed font-medium">
+          <p className="text-xs sm:text-base text-gray-650 mb-3 sm:mb-4 max-w-2xl mx-auto leading-relaxed font-medium">
             Mais de 200 cartões visuais prontos para imprimir, organizados por categorias e desenvolvidos para apoiar famílias, professores e profissionais no dia a dia.
           </p>
 
           {/* Benefits in bullet points (Hero section bullets for fast scanning) */}
-          <div className="max-w-2xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 text-left">
+          <div className="max-w-2xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-4 text-left">
             {[
               "Materiais 100% prontos para imprimir",
               "Redução imediata da ansiedade e crises",
               "Mais independência na rotina diária",
               "Acesso vitalício no seu e-mail"
             ].map((benefit, i) => (
-              <div key={i} className="flex items-center gap-3 bg-[#f3fdf6]/50 border border-[#2ecc71]/10 p-2.5 sm:p-3 rounded-2xl">
-                <CheckCircle2 className="w-5 h-5 text-[#2ecc71] shrink-0" />
-                <span className="text-sm font-bold text-gray-800">{benefit}</span>
+              <div key={i} className="flex items-center gap-2 sm:gap-3 bg-[#f3fdf6]/50 border border-[#2ecc71]/10 p-2 sm:p-3 rounded-xl sm:rounded-2xl">
+                <CheckCircle2 className="w-4 h-4 sm:w-5 h-5 text-[#2ecc71] shrink-0" />
+                <span className="text-xs sm:text-sm font-bold text-gray-800">{benefit}</span>
               </div>
             ))}
           </div>
 
-          {/* Mockup premium occupying a lot of space */}
-          <div className="relative my-6 max-w-2xl mx-auto rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(26,92,58,0.15)] border-4 border-white bg-white group hover:scale-[1.01] transition-all duration-500">
+          {/* Mockup premium occupying a lot of space, made larger (max-w-3xl) and closer (my-4) */}
+          <div className="relative my-2 sm:my-4 max-w-3xl mx-auto rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_15px_35px_rgba(26,92,58,0.1)] border-2 sm:border-4 border-white bg-white group hover:scale-[1.01] transition-all duration-500">
             <img 
               src="https://i.imgur.com/nCpW8NS.png" 
               alt="Kit Visual TEA - Pequenos Passos Mockup Completo" 
@@ -1758,40 +1932,40 @@ export default function App() {
           </div>
 
           {/* CTA Button bien destacado */}
-          <div className="flex flex-col items-center justify-center gap-3 mt-6">
+          <div className="flex flex-col items-center justify-center gap-2 sm:gap-3 mt-3 sm:mt-4">
             <button 
               id="cta-hero"
               onClick={scrollToPricing}
-              className="w-full sm:w-auto bg-[#1db863] hover:bg-[#1a7a4a] text-white text-lg sm:text-xl font-black px-12 py-4 sm:py-5 rounded-2xl shadow-[0_15px_40px_rgba(46,204,113,0.35)] hover:shadow-[0_20px_50px_rgba(46,204,113,0.5)] transition-all transform hover:scale-[1.03] active:scale-[0.98] cursor-pointer uppercase tracking-wider"
+              className="w-full sm:w-auto bg-[#1db863] hover:bg-[#1a7a4a] text-white text-base sm:text-xl font-black px-6 py-3.5 sm:px-12 sm:py-5 rounded-xl sm:rounded-2xl shadow-[0_12px_30px_rgba(46,204,113,0.3)] hover:shadow-[0_20px_50px_rgba(46,204,113,0.5)] transition-all transform hover:scale-[1.03] active:scale-[0.98] cursor-pointer uppercase tracking-wider"
             >
               Quero Meu Acesso Imediato
             </button>
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5 mt-1">
+            <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5 mt-0.5 sm:mt-1">
               <Lock className="w-3.5 h-3.5 text-[#1db863]" />
               Pagamento 100% Seguro • Liberação Imediata
             </span>
           </div>
 
           {/* Selos em Destaque */}
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto border-t border-gray-100 pt-12">
+          <div className="mt-6 sm:mt-10 grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 max-w-4xl mx-auto border-t border-gray-100 pt-5 sm:pt-8">
             {[
-              { icon: <Clock className="w-6 h-6 text-[#2ecc71]" />, title: "Acesso Imediato", desc: "No seu e-mail após a compra" },
-              { icon: <FileText className="w-6 h-6 text-[#2ecc71]" />, title: "Arquivo Digital (PDF)", desc: "Baixe e salve para sempre" },
-              { icon: <Printer className="w-6 h-6 text-[#2ecc71]" />, title: "Pronto para Imprimir", desc: "Em casa ou na gráfica" },
-              { icon: <Award className="w-6 h-6 text-[#2ecc71]" />, title: "Casa, Escola e Clínica", desc: "Para todas as ocasiões" }
+              { icon: <Clock className="w-4 h-4 sm:w-6 h-6 text-[#2ecc71]" />, title: "Acesso Imediato", desc: "No seu e-mail após a compra" },
+              { icon: <FileText className="w-4 h-4 sm:w-6 h-6 text-[#2ecc71]" />, title: "Arquivo Digital (PDF)", desc: "Baixe e salve para sempre" },
+              { icon: <Printer className="w-4 h-4 sm:w-6 h-6 text-[#2ecc71]" />, title: "Pronto para Imprimir", desc: "Em casa ou na gráfica" },
+              { icon: <Award className="w-4 h-4 sm:w-6 h-6 text-[#2ecc71]" />, title: "Casa, Escola e Clínica", desc: "Para todas as ocasiões" }
             ].map((selo, i) => (
-              <div key={i} className="flex flex-col items-center text-center p-4 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
-                <div className="w-12 h-12 rounded-full bg-[#f3fdf6] flex items-center justify-center mb-3">
+              <div key={i} className="flex flex-col items-center text-center p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-[#f3fdf6] flex items-center justify-center mb-1.5 sm:mb-3">
                   {selo.icon}
                 </div>
-                <h4 className="text-sm font-black text-gray-900 mb-1">{selo.title}</h4>
-                <p className="text-[11px] text-gray-500 font-medium leading-tight">{selo.desc}</p>
+                <h4 className="text-xs sm:text-sm font-black text-gray-900 mb-0.5 sm:mb-1">{selo.title}</h4>
+                <p className="text-[10px] sm:text-[11px] text-gray-500 font-medium leading-tight">{selo.desc}</p>
               </div>
             ))}
           </div>
 
           {/* Social Proof Stats Quick Block */}
-          <div className="mt-16 flex flex-col items-center justify-center gap-2">
+          <div className="mt-10 flex flex-col items-center justify-center gap-2">
             <div className="flex items-center gap-4 bg-[#f8fdfa] px-6 py-4 rounded-2xl border border-[#2ecc71]/20 shadow-xs">
               <div className="flex -space-x-3">
                 {[
@@ -1825,19 +1999,19 @@ export default function App() {
       </section>
 
       {/* Dores (Problem) Section - PAS Copywriting Model */}
-      <section id="problema" className="bg-gray-50 py-20 px-4 border-b border-gray-100">
+      <section id="problema" className="bg-gray-50 py-12 px-4 border-b border-gray-100">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="inline-block bg-red-50 text-red-600 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-4 border border-red-100">
+          <div className="text-center mb-6 sm:mb-10">
+            <span className="inline-block bg-red-50 text-red-600 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-2.5 sm:mb-3 border border-red-100">
               O Desafio Diário
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-4 tracking-tight">O Dia a Dia com TEA Não Precisa Ser Exaustivo</h2>
-            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
-              Se você enfrenta dificuldades para realizar tarefas simples com sua criança, entenda que a culpa não é sua. Sem o suporte adequado, a sobrecarga de informações gera insegurança e crises.
+            <h2 className="text-2xl sm:text-5xl font-black text-gray-900 mb-2 tracking-tight">O Dia a Dia com TEA Não Precisa Ser Exaustivo</h2>
+            <p className="text-xs sm:text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Se você enfrenta dificuldades para realizar tarefas simples com sua criança, entenda que a culpa não é sua. Sem o suporte adequado, a sobrecarga de informações gera insecurity e crises.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-6">
             {[
               {
                 title: "Crises Diárias por Imprevisibilidade",
@@ -1856,11 +2030,11 @@ export default function App() {
                 desc: "A falta de alinhamento visual entre o que é feito em casa e o que é feito na escola atrasa o desenvolvimento de autonomia da criança."
               }
             ].map((item, idx) => (
-              <div key={idx} className="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 flex items-start gap-4 transition-transform hover:scale-[1.01]">
-                <XCircle className="w-6 h-6 text-red-500 shrink-0 mt-1" />
+              <div key={idx} className="bg-white p-4 sm:p-8 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 flex items-start gap-3 sm:gap-4 transition-transform hover:scale-[1.01]">
+                <XCircle className="w-5 h-5 sm:w-6 h-6 text-red-500 shrink-0 mt-0.5 sm:mt-1" />
                 <div>
-                  <h3 className="font-black text-lg text-gray-900 mb-2">{item.title}</h3>
-                  <p className="text-sm text-gray-600 leading-relaxed font-medium">{item.desc}</p>
+                  <h3 className="font-black text-base sm:text-lg text-gray-900 mb-1 sm:mb-2">{item.title}</h3>
+                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-medium">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -1869,22 +2043,22 @@ export default function App() {
       </section>
 
       {/* Solution (Respira) Section */}
-      <section id="solucao" className="bg-[#1a5c3a] py-24 px-4 text-white relative overflow-hidden">
+      <section id="solucao" className="bg-[#1a5c3a] py-10 sm:py-14 px-4 text-white relative overflow-hidden">
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h2 className="text-4xl sm:text-6xl font-black mb-8 italic tracking-tight text-[#2ecc71]">Imagine um Dia a Dia Mais Leve...</h2>
-          <p className="text-xl sm:text-2xl font-light leading-relaxed mb-12 max-w-3xl mx-auto">
+          <h2 className="text-2xl sm:text-5xl md:text-6xl font-black mb-3 sm:mb-4 italic tracking-tight text-[#2ecc71]">Imagine um Dia a Dia Mais Leve...</h2>
+          <p className="text-xs sm:text-lg font-light leading-relaxed mb-6 sm:mb-8 max-w-2xl mx-auto">
             “Com o <span className="font-bold text-[#2ecc71] underline underline-offset-4">Kit Visual TEA — Pequenos Passos</span>, você entrega previsibilidade, segurança emocional e clareza para seu filho. Ele passa a compreender o mundo ao seu redor através de imagens, reduzindo crises e conquistando autonomia real.”
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 max-w-3xl mx-auto">
             {[
               "100% Digital em PDF",
               "Acesso Vitalício",
               "Impressão Ilimitada",
               "Uso Imediato"
             ].map((item, i) => (
-              <div key={i} className="flex flex-col items-center gap-2 bg-white/5 border border-white/10 px-4 py-4 rounded-2xl backdrop-blur-md">
-                <CheckCircle2 className="w-5 h-5 text-[#2ecc71]" />
-                <span className="text-xs sm:text-sm font-extrabold tracking-wide uppercase">{item}</span>
+              <div key={i} className="flex flex-col items-center gap-1.5 sm:gap-2 bg-white/5 border border-white/10 px-2 py-3 sm:px-4 sm:py-4 rounded-xl sm:rounded-2xl backdrop-blur-md">
+                <CheckCircle2 className="w-4 h-4 sm:w-5 h-5 text-[#2ecc71]" />
+                <span className="text-[10px] sm:text-sm font-extrabold tracking-wide uppercase">{item}</span>
               </div>
             ))}
           </div>
@@ -1899,189 +2073,145 @@ export default function App() {
       </section>
 
       {/* TUDO O QUE VOCÊ RECEBE - Seção de Abundância Extrema */}
-      <section id="tudo-o-que-recebe" className="py-24 px-4 bg-white border-b border-gray-100">
+      <section id="tudo-o-que-recebe" className="py-14 px-4 bg-white border-b border-gray-100">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-[#2ecc71]/20 shadow-2xs">
+          <div className="text-center mb-10">
+            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-3 border border-[#2ecc71]/20 shadow-2xs">
               A Maior Biblioteca de Apoio Visual do Brasil
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-4 tracking-tight">
+            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-2 tracking-tight">
               Tudo o que Você Recebe no Seu Kit
             </h2>
-            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto font-medium">
+            <p className="text-sm sm:text-base text-gray-650 max-w-2xl mx-auto font-medium">
               Uma biblioteca gigantesca de materiais desenvolvidos por especialistas para cobrir cada detalhe do desenvolvimento e comportamento da sua criança.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                id: "rotina-manha",
-                title: "1. Rotina da Manhã",
-                desc: "Cartões passo a passo para acordar bem, arrumar a mochila, vestir a farda e iniciar o dia de forma pacífica.",
-                items: ["Acordar tranquilo", "Fazer a cama", "Vestir a roupa", "Tomar café da manhã"],
-                badge: "Essencial",
-                color: "bg-amber-500",
-                emoji: "🌅"
-              },
-              {
-                id: "higiene",
-                title: "2. Higiene Completa",
-                desc: "Passo a passo visual detalhado para escovar os dentes, tomar banho, usar o banheiro e lavar as mãos de forma independente.",
-                items: ["Escovação perfeita", "Passo a passo do banho", "Uso do vaso sanitário", "Lavar as mãos"],
-                badge: "Autonomia",
-                color: "bg-blue-500",
-                emoji: "🚿"
-              },
-              {
-                id: "alimentacao",
-                title: "3. Alimentação Saudável",
-                desc: "Suporte para diminuir a seletividade alimentar, regras de comportamento à mesa e pedidos visuais de alimentos.",
-                items: ["Sentar para comer", "Provar novos alimentos", "Usar os talheres", "Pedir água/comida"],
-                badge: "Comportamento",
-                color: "bg-emerald-500",
-                emoji: "🍽️"
-              },
-              {
-                id: "escola",
-                title: "4. Rotina Escolar",
-                desc: "Pictogramas criados para organizar o material, prestar atenção na professora, fazer as tarefas e interagir com colegas.",
-                items: ["Organizar mochila", "Prestar atenção", "Hora do recreio", "Fazer dever de casa"],
-                badge: "Inclusão",
-                color: "bg-indigo-500",
-                emoji: "🎒"
-              },
-              {
-                id: "comunicacao",
-                title: "5. Comunicação Alternativa",
-                desc: "Pranchas de comunicação rápida para crianças não verbais ou em fase de aquisição de fala expressarem desejos e dores.",
-                items: ["Pranchas rápidas", "Expressar dor", "Pedir ajuda", "Dizer Sim/Não"],
-                badge: "Padrão Ouro",
-                color: "bg-rose-500",
-                emoji: "💬"
-              },
-              {
-                id: "emocoes",
-                title: "6. Expressão das Emoções",
-                desc: "Identificação e validação de sentimentos como raiva, medo, alegria, cansaço ou sobrecarga sensorial para evitar desregulações.",
-                items: ["Quadro de sentimentos", "Termômetro da raiva", "Apoio para frustração", "Expressar cansaço"],
-                badge: "Regulação",
-                color: "bg-purple-500",
-                emoji: "🧠"
-              },
-              {
-                id: "combinados",
-                title: "7. Combinados e Regras",
-                desc: "Suporte visual para estabelecer combinados claros e limites firmes de forma leve, lúdica e extremamente didática.",
-                items: ["Guardar brinquedos", "Falar em tom adequado", "Esperar a minha vez", "Respeitar limites"],
-                badge: "Convivência",
-                color: "bg-yellow-500",
-                emoji: "🤝"
-              },
-              {
-                id: "recompensas",
-                title: "8. Quadro de Recompensas",
-                desc: "Quadro de incentivos e tokens para gamificar pequenas tarefas diárias e celebrar cada pequena vitória conquistada.",
-                items: ["Quadro de estrelas", "Meta semanal", "Comemoração lúdica", "Foco no progresso"],
-                badge: "Motivação",
-                color: "bg-teal-500",
-                emoji: "🏆"
-              },
-              {
-                id: "sono",
-                title: "9. Higiene do Sono",
-                desc: "Rituais visuais noturnos para acalmar a mente, se preparar para deitar e dormir no horário correto sem choro.",
-                items: ["Desconectar telas", "Colocar o pijama", "Ler história curta", "Dormir sozinho"],
-                badge: "Bem Estar",
-                color: "bg-slate-700",
-                emoji: "🌙"
-              },
-              {
-                id: "calendario",
-                title: "10. Calendário Interativo",
-                desc: "Painel completo para trabalhar a noção de tempo, clima, dias da semana, meses, datas festivas e aniversários.",
-                items: ["Dias da semana", "Tempo e clima", "Meses do ano", "Marcação de eventos"],
-                badge: "Cognitivo",
-                color: "bg-cyan-500",
-                emoji: "📅"
-              },
-              {
-                id: "quadros-rotina",
-                title: "11. Quadros de Rotina Prontos",
-                desc: "Modelos prontos de painéis horizontais e verticais: 'Primeiro/Depois', 'Manhã/Tarde/Noite' em formato profissional.",
-                items: ["Quadro Primeiro/Depois", "Rotina de 3 turnos", "Painel semanal", "Apoio de bolso"],
-                badge: "Prático",
-                color: "bg-lime-600",
-                emoji: "📋"
-              },
-              {
-                id: "cartoes",
-                title: "12. Cartões de Transição",
-                desc: "Evite crises avisando visualmente a criança antes de mudar de ambiente (ir embora do parque, sair da terapia, etc).",
-                items: ["Aviso de 5 minutos", "Sair de casa", "Mudar de atividade", "Esperar no carro"],
-                badge: "Anti-crise",
-                color: "bg-pink-500",
-                emoji: "🔄"
-              },
-              {
-                id: "materiais-extras",
-                title: "13. Materiais Extras e Atividades",
-                desc: "Atividades lúdicas complementares de recortar, colar, ligar pontos e colorir para focar em coordenação motora fina.",
-                items: ["Coordenação fina", "Desenho guiado", "Ligar pontos", "Recortar e colar"],
-                badge: "Lúdico",
-                color: "bg-violet-600",
-                emoji: "🎨"
-              },
-              {
-                id: "bonus-extra",
-                title: "14. Bônus Exclusivos de Suporte",
-                desc: "Guias pedagógicos escritos pela Dra. Ana, além de suporte direto via WhatsApp para tirar dúvidas de aplicação.",
-                items: ["Ebook Guia Prático", "Lista de materiais sugeridos", "Suporte VIP", "Atualizações Vitalícias"],
-                badge: "Exclusivo",
-                color: "bg-red-500",
-                emoji: "🎁"
-              }
-            ].map((cat, i) => (
+          {/* Carousel Section Container */}
+          <div 
+            className="relative group/carousel px-4"
+            onMouseEnter={() => setIsAutoPlaying(false)}
+            onMouseLeave={() => setIsAutoPlaying(true)}
+          >
+            {/* Carousel track container with overflow hidden */}
+            <div className="overflow-hidden mx-auto max-w-6xl py-4">
               <div 
-                key={i} 
-                className="bg-gray-50/50 hover:bg-gray-50 border border-gray-100 rounded-3xl p-6 transition-all duration-300 hover:shadow-lg flex flex-col justify-between group"
+                className="flex transition-transform duration-500 ease-out"
+                style={{ 
+                  transform: `translateX(-${carouselIndex * (100 / visibleCards)}%)`,
+                }}
               >
-                <div>
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-sm border border-gray-100 select-none group-hover:scale-110 transition-transform">
-                      {cat.emoji}
+                {kitMaterials.map((cat, i) => (
+                  <div 
+                    key={i} 
+                    className="w-full md:w-1/2 lg:w-1/3 shrink-0 px-2 sm:px-3 flex"
+                  >
+                    <div className="bg-gray-50/50 hover:bg-gray-50 border border-gray-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 transition-all duration-300 hover:shadow-lg flex flex-col justify-between group w-full">
+                      <div>
+                        <div className="flex justify-between items-start mb-3 sm:mb-4">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white flex items-center justify-center text-xl sm:text-2xl shadow-sm border border-gray-100 select-none group-hover:scale-110 transition-transform">
+                            {cat.emoji}
+                          </div>
+                          <span className="text-[10px] font-black uppercase tracking-wider bg-white px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-gray-100 text-gray-500">
+                            {cat.badge}
+                          </span>
+                        </div>
+                        <h3 className="text-base sm:text-lg font-black text-gray-900 mb-1.5 sm:mb-2">{cat.title}</h3>
+                        <p className="text-xs text-gray-505 font-medium leading-relaxed mb-3 sm:mb-4">{cat.desc}</p>
+                        
+                        {/* Imagem Real do Material */}
+                        {cat.image && (
+                          <div className="w-full aspect-[4/3] rounded-xl overflow-hidden border border-gray-100 bg-white mb-4 shadow-2xs relative flex items-center justify-center group-hover:border-gray-200 transition-all duration-300">
+                            <img 
+                              src={cat.image} 
+                              alt={cat.title} 
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                              referrerPolicy="no-referrer"
+                              loading="lazy"
+                            />
+                          </div>
+                        )}
+                      </div>
+                      <div className="border-t border-gray-100/80 pt-3 sm:pt-4 mt-1.5 sm:mt-2">
+                        <span className="text-[9px] sm:text-[10px] font-extrabold uppercase text-[#1a5c3a] tracking-widest block mb-1.5 sm:mb-2">Materiais Inclusos:</span>
+                        <div className="flex flex-wrap gap-1 sm:gap-1.5">
+                          {cat.items.map((item, idx) => (
+                            <span key={idx} className="bg-[#f3fdf6] text-[#1a5c3a] border border-[#2ecc71]/10 text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md">
+                              ✓ {item}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-wider bg-white px-3 py-1 rounded-full border border-gray-100 text-gray-500">
-                      {cat.badge}
-                    </span>
                   </div>
-                  <h3 className="text-lg font-black text-gray-900 mb-2">{cat.title}</h3>
-                  <p className="text-xs text-gray-500 font-medium leading-relaxed mb-4">{cat.desc}</p>
-                </div>
-                <div className="border-t border-gray-100/80 pt-4 mt-2">
-                  <span className="text-[10px] font-extrabold uppercase text-[#1a5c3a] tracking-widest block mb-2">Materiais Inclusos:</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {cat.items.map((item, idx) => (
-                      <span key={idx} className="bg-[#f3fdf6] text-[#1a5c3a] border border-[#2ecc71]/10 text-[9px] font-bold px-2 py-1 rounded-md">
-                        ✓ {item}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {/* Navigation buttons */}
+            <button 
+              onClick={() => {
+                setCarouselIndex((prev) => Math.max(0, prev - 1));
+                setUserInteracted(true);
+              }}
+              disabled={carouselIndex === 0}
+              className={`absolute -left-1 sm:left-2 top-1/2 -translate-y-1/2 bg-white text-gray-800 p-2 sm:p-3 rounded-full shadow-lg border border-gray-100 transition-all z-10 hover:scale-105 active:scale-95 cursor-pointer ${
+                carouselIndex === 0 ? 'opacity-30 cursor-not-allowed' : 'opacity-100'
+              }`}
+              aria-label="Anterior"
+            >
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
+            <button 
+              onClick={() => {
+                setCarouselIndex((prev) => Math.min(kitMaterials.length - visibleCards, prev + 1));
+                setUserInteracted(true);
+              }}
+              disabled={carouselIndex >= kitMaterials.length - visibleCards}
+              className={`absolute -right-1 sm:right-2 top-1/2 -translate-y-1/2 bg-white text-gray-800 p-2 sm:p-3 rounded-full shadow-lg border border-gray-100 transition-all z-10 hover:scale-105 active:scale-95 cursor-pointer ${
+                carouselIndex >= kitMaterials.length - visibleCards ? 'opacity-30 cursor-not-allowed' : 'opacity-100'
+              }`}
+              aria-label="Próximo"
+            >
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
+          </div>
+
+          {/* Carousel Pagination dots & status */}
+          <div className="flex flex-col items-center justify-center gap-3 mt-6">
+            <span className="text-[10px] sm:text-xs font-black text-gray-500 bg-gray-100 px-3 py-1 rounded-full uppercase tracking-wider">
+              Material {carouselIndex + 1} a {Math.min(kitMaterials.length, carouselIndex + visibleCards)} de {kitMaterials.length}
+            </span>
+            
+            <div className="flex justify-center gap-1.5 flex-wrap max-w-xs sm:max-w-md">
+              {Array.from({ length: kitMaterials.length - visibleCards + 1 }).map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setCarouselIndex(idx);
+                    setUserInteracted(true);
+                  }}
+                  className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                    carouselIndex === idx 
+                      ? 'w-6 sm:w-8 bg-[#2ecc71]' 
+                      : 'w-2 bg-gray-200 hover:bg-gray-300'
+                  }`}
+                  aria-label={`Ir para slide ${idx + 1}`}
+                />
+              ))}
+            </div>
           </div>
 
           {/* Interactive Explore Tool Banner inside Abundance Section */}
-          <div className="mt-20 bg-[#f3fdf6] border-2 border-[#2ecc71]/20 rounded-3xl p-8 text-center max-w-4xl mx-auto animate-pulse">
-            <span className="inline-block bg-[#2ecc71] text-white text-[10px] font-black px-4 py-1 rounded-full uppercase tracking-widest mb-3">
+          <div className="mt-10 sm:mt-20 bg-[#f3fdf6] border-2 border-[#2ecc71]/20 rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-center max-w-4xl mx-auto animate-pulse">
+            <span className="inline-block bg-[#2ecc71] text-white text-[9px] sm:text-[10px] font-black px-3 py-0.5 sm:px-4 sm:py-1 rounded-full uppercase tracking-widest mb-2.5 sm:mb-3">
               Experimente Grátis
             </span>
-            <h3 className="text-2xl font-black text-[#1a5c3a] mb-2">Quer Interagir com o Kit Agora Mesmo?</h3>
-            <p className="text-sm text-gray-650 max-w-2xl mx-auto font-medium mb-6">
+            <h3 className="text-lg sm:text-2xl font-black text-[#1a5c3a] mb-1.5 sm:mb-2">Quer Interagir com o Kit Agora Mesmo?</h3>
+            <p className="text-xs sm:text-sm text-gray-650 max-w-2xl mx-auto font-medium mb-4 sm:mb-6">
               Abaixo criamos uma ferramenta interativa exclusiva. Você pode testar como os cartões funcionam e até mesmo anexar imagens reais da sua criança para personalizar a rotina!
             </p>
-            <ChevronDown className="w-6 h-6 text-[#2ecc71] mx-auto animate-bounce" />
+            <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-[#2ecc71] mx-auto animate-bounce" />
           </div>
         </div>
       </section>
@@ -2090,37 +2220,37 @@ export default function App() {
       <MaterialsPreview />
 
       {/* Demonstração - Modern Passo a Passo */}
-      <section id="demonstracao" className="py-24 px-4 bg-gray-50 border-b border-gray-100">
+      <section id="demonstracao" className="py-10 sm:py-14 px-4 bg-gray-50 border-b border-gray-100">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-[#2ecc71]/20">
+          <div className="text-center mb-6 sm:mb-10">
+            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2.5 sm:mb-3 border border-[#2ecc71]/20">
               Passo a Passo
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-4 tracking-tight">
+            <h2 className="text-2xl sm:text-5xl font-black text-gray-900 mb-2 tracking-tight">
               Como Funciona na Prática?
             </h2>
-            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto font-medium">
+            <p className="text-xs sm:text-base text-gray-600 max-w-2xl mx-auto font-medium">
               Apenas 6 passos simples separam você de uma rotina muito mais tranquila e organizada para seu filho.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
             {[
-              { step: "1", title: "Comprar com Segurança", desc: "Clique nos botões e faça o pagamento 100% seguro por PIX ou Cartão de Crédito.", icon: <ShoppingBag className="w-6 h-6" /> },
-              { step: "2", title: "Receber o Acesso", desc: "No mesmo minuto, enviamos em seu e-mail o link para a plataforma exclusiva de download.", icon: <Mail className="w-6 h-6" /> },
-              { step: "3", title: "Baixar os Arquivos", desc: "Baixe a biblioteca completa em formato PDF de alta resolução no seu celular ou PC.", icon: <Download className="w-6 h-6" /> },
-              { step: "4", title: "Imprimir Conforme Necessidade", desc: "Imprima em casa ou em qualquer gráfica do seu bairro as páginas que vai usar primeiro.", icon: <Printer className="w-6 h-6" /> },
-              { step: "5", title: "Plastificar (Opcional)", desc: "Se preferir maior durabilidade para o uso com velcro ou giz, recomendamos plastificar.", icon: <ShieldCheck className="w-6 h-6" /> },
-              { step: "6", title: "Organizar e Utilizar", desc: "Fixe os painéis na altura da criança e comece a viver dias mais previsíveis e sem crises!", icon: <Smile className="w-6 h-6" /> }
+              { step: "1", title: "Comprar com Segurança", desc: "Clique nos botões e faça o pagamento 100% seguro por PIX ou Cartão de Crédito.", icon: <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" /> },
+              { step: "2", title: "Receber o Acesso", desc: "No mesmo minuto, enviamos em seu e-mail o link para a plataforma exclusiva de download.", icon: <Mail className="w-5 h-5 sm:w-6 sm:h-6" /> },
+              { step: "3", title: "Baixar os Arquivos", desc: "Baixe a biblioteca completa em formato PDF de alta resolução no seu celular ou PC.", icon: <Download className="w-5 h-5 sm:w-6 sm:h-6" /> },
+              { step: "4", title: "Imprimir Conforme Necessidade", desc: "Imprima em casa ou em qualquer gráfica do seu bairro as páginas que vai usar primeiro.", icon: <Printer className="w-5 h-5 sm:w-6 sm:h-6" /> },
+              { step: "5", title: "Plastificar (Opcional)", desc: "Se preferir maior durabilidade para o uso com velcro ou giz, recomendamos plastificar.", icon: <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6" /> },
+              { step: "6", title: "Organizar e Utilizar", desc: "Fixe os painéis na altura da criança e comece a viver dias mais previsíveis e sem crises!", icon: <Smile className="w-5 h-5 sm:w-6 sm:h-6" /> }
             ].map((item, i) => (
-              <div key={i} className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 relative transition-transform hover:translate-y-[-4px]">
-                <div className="absolute top-6 right-6 text-gray-100 font-black text-5xl leading-none select-none">
+              <div key={i} className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100 relative transition-transform hover:translate-y-[-4px]">
+                <div className="absolute top-4 right-4 sm:top-6 sm:right-6 text-gray-100 font-black text-4xl sm:text-5xl leading-none select-none">
                   0{item.step}
                 </div>
-                <div className="w-12 h-12 rounded-2xl bg-[#f3fdf6] text-[#1a5c3a] flex items-center justify-center mb-6 border border-[#2ecc71]/10">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#f3fdf6] text-[#1a5c3a] flex items-center justify-center mb-4 sm:mb-6 border border-[#2ecc71]/10">
                   {item.icon}
                 </div>
-                <h3 className="text-lg font-black text-gray-900 mb-2">{item.title}</h3>
+                <h3 className="text-base sm:text-lg font-black text-gray-900 mb-1.5 sm:mb-2">{item.title}</h3>
                 <p className="text-xs text-gray-500 font-medium leading-relaxed">{item.desc}</p>
               </div>
             ))}
@@ -2129,34 +2259,34 @@ export default function App() {
       </section>
 
       {/* Benefícios Reais (Focado em Dores e Soluções) */}
-      <section id="beneficios" className="py-24 px-4 bg-white border-b border-gray-100">
+      <section id="beneficios" className="py-10 sm:py-14 px-4 bg-white border-b border-gray-100">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-[#2ecc71]/20">
+          <div className="text-center mb-6 sm:mb-10">
+            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2.5 sm:mb-3 border border-[#2ecc71]/20">
               Vantagens Exclusivas
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-4 tracking-tight">
+            <h2 className="text-2xl sm:text-5xl font-black text-gray-900 mb-2 tracking-tight">
               Por que escolher o nosso Kit?
             </h2>
-            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto font-medium">
+            <p className="text-xs sm:text-base text-gray-600 max-w-2xl mx-auto font-medium">
               Entregamos exatamente o que você precisa para obter resultados rápidos e duradouros na rotina atípica.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-8">
             {[
-              { title: "Material Pronto", desc: "Chega de passar madrugadas em claro pesquisando figuras confusas e tentando organizar tudo. Nosso material está diagramado por pedagogos e pronto para imprimir.", icon: <CheckCircle2 className="w-6 h-6 text-[#2ecc71]" /> },
-              { title: "Economia de Tempo", desc: "Organize rotinas completas para sua criança em menos de 10 minutos. O kit possui sumários claros para você encontrar as atividades em segundos.", icon: <CheckCircle2 className="w-6 h-6 text-[#2ecc71]" /> },
-              { title: "Fácil Organização", desc: "Dividido por áreas de desenvolvimento bem demarcadas para que você saiba exatamente o que usar para cada dificuldade comportamental.", icon: <CheckCircle2 className="w-6 h-6 text-[#2ecc71]" /> },
-              { title: "Uso em Diferentes Ambientes", desc: "Mesmo padrão visual para ser utilizado em casa, levado na bolsa para as terapias clínicas ou compartilhado com educadores na escola.", icon: <CheckCircle2 className="w-6 h-6 text-[#2ecc71]" /> },
-              { title: "Arquivos Digitais PDF", desc: "Os arquivos não estragam ou perdem a qualidade. Guarde no seu e-mail, celular ou nuvem para acessar quando e onde precisar.", icon: <CheckCircle2 className="w-6 h-6 text-[#2ecc71]" /> },
-              { title: "Impressão Ilimitada", desc: "Sua criança rasgou ou rabiscou o cartão? Sem problemas! Basta abrir o arquivo e imprimir novamente quantas vezes for necessário, sem nenhum custo extra.", icon: <CheckCircle2 className="w-6 h-6 text-[#2ecc71]" /> }
+              { title: "Material Pronto", desc: "Chega de passar madrugadas em claro pesquisando figuras confusas e tentando organizar tudo. Nosso material está diagramado por pedagogos e pronto para imprimir.", icon: <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#2ecc71]" /> },
+              { title: "Economia de Tempo", desc: "Organize rotinas completas para sua criança em menos de 10 minutos. O kit possui sumários claros para você encontrar as atividades em segundos.", icon: <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#2ecc71]" /> },
+              { title: "Fácil Organização", desc: "Dividido por áreas de desenvolvimento bem demarcadas para que você saiba exatamente o que usar para cada dificuldade comportamental.", icon: <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#2ecc71]" /> },
+              { title: "Uso em Diferentes Ambientes", desc: "Mesmo padrão visual para ser utilizado em casa, levado na bolsa para as terapias clínicas ou compartilhado com educadores na escola.", icon: <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#2ecc71]" /> },
+              { title: "Arquivos Digitais PDF", desc: "Os arquivos não estragam ou perdem a qualidade. Guarde no seu e-mail, celular ou nuvem para acessar quando e onde precisar.", icon: <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#2ecc71]" /> },
+              { title: "Impressão Ilimitada", desc: "Sua criança rasgou ou rabiscou o cartão? Sem problemas! Basta abrir o arquivo e imprimir novamente quantas vezes for necessário, sem nenhum custo extra.", icon: <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#2ecc71]" /> }
             ].map((item, i) => (
-              <div key={i} className="flex gap-4 p-4 rounded-2xl hover:bg-gray-50 transition-colors">
-                <div className="shrink-0 mt-1">{item.icon}</div>
+              <div key={i} className="flex gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl hover:bg-gray-50 transition-colors">
+                <div className="shrink-0 mt-0.5 sm:mt-1">{item.icon}</div>
                 <div>
-                  <h3 className="font-black text-lg text-gray-900 mb-1">{item.title}</h3>
-                  <p className="text-sm text-gray-650 leading-relaxed font-medium">{item.desc}</p>
+                  <h3 className="font-black text-base sm:text-lg text-gray-900 mb-0.5 sm:mb-1">{item.title}</h3>
+                  <p className="text-xs sm:text-sm text-gray-655 leading-relaxed font-medium">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -2165,80 +2295,80 @@ export default function App() {
       </section>
 
       {/* Bônus Section */}
-      <section id="bonus" className="py-24 px-4 bg-white border-b border-gray-100">
+      <section id="bonus" className="py-10 sm:py-14 px-4 bg-white border-b border-gray-100">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-[#2ecc71]/20">
+          <div className="text-center mb-6 sm:mb-10">
+            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2.5 sm:mb-3 border border-[#2ecc71]/20">
               Presentes Exclusivos
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-4 tracking-tight">
+            <h2 className="text-2xl sm:text-5xl font-black text-gray-900 mb-2 tracking-tight">
               Bônus Especiais Inclusos
             </h2>
-            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto font-medium">
+            <p className="text-xs sm:text-base text-gray-600 max-w-2xl mx-auto font-medium">
               Fazendo sua inscrição hoje, você leva gratuitamente estes materiais complementares de alto valor pedagógico.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
               { 
                 title: "Guia da Rotina Matinal Perfeita", 
-                icon: <Clock className="w-5 h-5 text-[#1a5c3a] group-hover:text-white transition-colors" />, 
+                icon: <Clock className="w-4 h-4 sm:w-5 h-5 text-[#1a5c3a] group-hover:text-white transition-colors" />, 
                 desc: "Torne o acordar da sua criança um momento tranquilo, previsível e sem estresse.",
                 image: "https://imgur.com/a/o2z7GJk",
                 value: "R$ 37,00"
               },
               { 
                 title: "Cartões de Comunicação por Sinais", 
-                icon: <MessageCircle className="w-5 h-5 text-[#1a5c3a] group-hover:text-white transition-colors" />, 
+                icon: <MessageCircle className="w-4 h-4 sm:w-5 h-5 text-[#1a5c3a] group-hover:text-white transition-colors" />, 
                 desc: "Ajude seu filho a expressar necessidades básicas e dores físicas sem chorar.",
                 image: "https://imgur.com/a/CGPvIgc",
                 value: "R$ 47,00"
               },
               { 
                 title: "Guia Completo de Inclusão Escolar", 
-                icon: <BookOpen className="w-5 h-5 text-[#1a5c3a] group-hover:text-white transition-colors" />, 
+                icon: <BookOpen className="w-4 h-4 sm:w-5 h-5 text-[#1a5c3a] group-hover:text-white transition-colors" />, 
                 desc: "Saiba exatamente como levar as rotinas e pictogramas para dentro da sala de aula.",
                 image: "https://imgur.com/a/iwu7tYK",
                 value: "R$ 39,00"
               },
               { 
                 title: "Painel Anti-Crise de Resposta Rápida", 
-                icon: <ShieldCheck className="w-5 h-5 text-[#1a5c3a] group-hover:text-white transition-colors" />, 
+                icon: <ShieldCheck className="w-4 h-4 sm:w-5 h-5 text-[#1a5c3a] group-hover:text-white transition-colors" />, 
                 desc: "Plaquinhas de 'Espera', 'Pausa' e 'Minha vez' para regulação em momentos difíceis.",
                 image: "https://imgur.com/a/64HncyK",
                 value: "R$ 29,00"
               }
             ].map((bonus, idx) => (
-              <div key={idx} className="bg-gray-50 rounded-3xl border border-gray-100 hover:border-[#2ecc71]/30 hover:shadow-xl transition-all group overflow-hidden flex flex-col justify-between">
+              <div key={idx} className="bg-gray-50 rounded-2xl sm:rounded-3xl border border-gray-100 hover:border-[#2ecc71]/30 hover:shadow-xl transition-all group overflow-hidden flex flex-col justify-between">
                 <div>
                   {bonus.image && (
-                    <div className="h-44 w-full overflow-hidden relative bg-gray-150 flex-shrink-0">
+                    <div className="h-36 sm:h-44 w-full overflow-hidden relative bg-gray-150 flex-shrink-0">
                       <img 
                         src={getDirectImageUrl(bonus.image)} 
                         alt={bonus.title} 
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                         referrerPolicy="no-referrer"
                       />
-                      <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-xs text-[#1a5c3a] p-2.5 rounded-2xl shadow-sm group-hover:bg-[#2ecc71] group-hover:text-white transition-all">
+                      <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 bg-white/95 backdrop-blur-xs text-[#1a5c3a] p-2 sm:p-2.5 rounded-xl sm:rounded-2xl shadow-sm group-hover:bg-[#2ecc71] group-hover:text-white transition-all">
                         {bonus.icon}
                       </div>
-                      <span className="absolute top-3 right-3 bg-[#e03030] text-white text-[9px] font-black uppercase px-3 py-1.5 rounded-full shadow-sm">
+                      <span className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 bg-[#e03030] text-white text-[8px] sm:text-[9px] font-black uppercase px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full shadow-sm">
                         GRÁTIS HOJE
                       </span>
                     </div>
                   )}
-                  <div className="p-6">
-                    <h3 className="font-black text-lg text-gray-900 mb-2 leading-tight">{bonus.title}</h3>
-                    <p className="text-xs text-gray-505 leading-relaxed font-medium mb-4">{bonus.desc}</p>
+                  <div className="p-4 sm:p-6">
+                    <h3 className="font-black text-base sm:text-lg text-gray-900 mb-1.5 sm:mb-2 leading-tight">{bonus.title}</h3>
+                    <p className="text-xs text-gray-555 leading-relaxed font-medium mb-3 sm:mb-4">{bonus.desc}</p>
                   </div>
                 </div>
-                <div className="px-6 pb-6 pt-2 border-t border-gray-100/60 flex justify-between items-center bg-gray-100/30">
+                <div className="px-4 pb-4 pt-1.5 sm:px-6 sm:pb-6 sm:pt-2 border-t border-gray-100/60 flex justify-between items-center bg-gray-100/30">
                   <div className="flex flex-col">
-                    <span className="text-[10px] text-gray-450 font-bold uppercase line-through">{bonus.value}</span>
+                    <span className="text-[9px] sm:text-[10px] text-gray-450 font-bold uppercase line-through">{bonus.value}</span>
                     <span className="text-xs font-black text-[#2ecc71] uppercase">R$ 0,00</span>
                   </div>
-                  <span className="text-[10px] font-black text-[#1a5c3a] bg-[#f3fdf6] px-2.5 py-1 rounded-md border border-[#2ecc71]/10">
+                  <span className="text-[9px] sm:text-[10px] font-black text-[#1a5c3a] bg-[#f3fdf6] px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md border border-[#2ecc71]/10">
                     ADICIONADO
                   </span>
                 </div>
@@ -2249,52 +2379,52 @@ export default function App() {
       </section>
 
       {/* Prova Social Section */}
-      <section id="depoimentos" className="bg-[#f3fdf6]/30 py-24 px-4 relative overflow-hidden border-b border-gray-100">
+      <section id="depoimentos" className="bg-[#f3fdf6]/30 py-10 sm:py-14 px-4 relative overflow-hidden border-b border-gray-100">
         <div className="absolute top-1/2 left-10 w-72 h-72 bg-[#2ecc71]/5 rounded-full filter blur-3xl pointer-events-none"></div>
         <div className="absolute bottom-10 right-10 w-72 h-72 bg-amber-500/5 rounded-full filter blur-3xl pointer-events-none"></div>
 
         <div className="max-w-6xl mx-auto relative z-10">
-          <div className="text-center mb-16">
-            <span className="inline-block bg-[#2ecc71]/10 text-[#1a5c3a] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-[#2ecc71]/20">
+          <div className="text-center mb-6 sm:mb-10">
+            <span className="inline-block bg-[#2ecc71]/10 text-[#1a5c3a] px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2.5 sm:mb-3 border border-[#2ecc71]/20">
               Relatos de Quem Usa
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-4 tracking-tight">
+            <h2 className="text-2xl sm:text-5xl font-black text-gray-900 mb-1.5 sm:mb-2 tracking-tight">
               O que dizem as famílias e profissionais...
             </h2>
-            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto font-medium">
+            <p className="text-xs sm:text-base text-gray-600 max-w-2xl mx-auto font-medium">
               E-mails reais enviados diretamente para nossa caixa de entrada por mães, pais e terapeutas de todo o Brasil.
             </p>
           </div>
 
           {/* Trust Stat Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16 max-w-4xl mx-auto">
-            <div className="bg-white border border-gray-100 p-6 rounded-3xl shadow-xs flex flex-col items-center text-center">
-              <div className="flex gap-0.5 mb-2">
-                {[1, 2, 3, 4, 5].map(s => <Star key={s} className="w-5 h-5 text-amber-400 fill-amber-400" />)}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-6 mb-6 sm:mb-10 max-w-4xl mx-auto">
+            <div className="bg-white border border-gray-100 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-xs flex flex-col items-center text-center">
+              <div className="flex gap-0.5 mb-1.5 sm:mb-2">
+                {[1, 2, 3, 4, 5].map(s => <Star key={s} className="w-4 h-4 sm:w-5 h-5 text-amber-400 fill-amber-400" />)}
               </div>
-              <h4 className="text-xl font-black text-gray-900 mb-1">4.9 / 5 Estrelas</h4>
-              <p className="text-[11px] text-gray-500 font-medium leading-relaxed">Média de aprovação técnica e pedagógica com base em mais de 3.500 avaliações de usuários.</p>
+              <h4 className="text-lg sm:text-xl font-black text-gray-900 mb-1">4.9 / 5 Estrelas</h4>
+              <p className="text-[10px] sm:text-[11px] text-gray-500 font-medium leading-relaxed">Média de aprovação técnica e pedagógica com base em mais de 3.500 avaliações de usuários.</p>
             </div>
             
-            <div className="bg-white border border-gray-100 p-6 rounded-3xl shadow-xs flex flex-col items-center text-center">
-              <div className="w-10 h-10 bg-[#f3fdf6] text-[#2ecc71] rounded-full flex items-center justify-center mb-2 font-bold text-lg">
+            <div className="bg-white border border-gray-100 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-xs flex flex-col items-center text-center">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#f3fdf6] text-[#2ecc71] rounded-full flex items-center justify-center mb-1.5 sm:mb-2 font-bold text-base sm:text-lg">
                 ❤️
               </div>
-              <h4 className="text-xl font-black text-gray-900 mb-1">+3.500 Famílias</h4>
-              <p className="text-[11px] text-gray-500 font-medium leading-relaxed">Crianças com TEA e TDAH que conquistaram rotinas mais leves, seguras e felizes.</p>
+              <h4 className="text-lg sm:text-xl font-black text-gray-900 mb-1">+3.500 Famílias</h4>
+              <p className="text-[10px] sm:text-[11px] text-gray-500 font-medium leading-relaxed">Crianças com TEA e TDAH que conquistaram rotinas mais leves, seguras e felizes.</p>
             </div>
 
-            <div className="bg-white border border-gray-100 p-6 rounded-3xl shadow-xs flex flex-col items-center text-center">
-              <div className="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-2 font-bold text-lg">
+            <div className="bg-white border border-gray-100 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-xs flex flex-col items-center text-center">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-1.5 sm:mb-2 font-bold text-base sm:text-lg">
                 🛡️
               </div>
-              <h4 className="text-xl font-black text-gray-900 mb-1">Satisfação Total</h4>
-              <p className="text-[11px] text-gray-500 font-medium leading-relaxed">Garantia total de 14 dias para você testar sem qualquer compromisso.</p>
+              <h4 className="text-lg sm:text-xl font-black text-gray-900 mb-1">Satisfação Total</h4>
+              <p className="text-[10px] sm:text-[11px] text-gray-500 font-medium leading-relaxed">Garantia total de 14 dias para você testar sem qualquer compromisso.</p>
             </div>
           </div>
 
           {/* Interactive Navigation Tabs */}
-          <div className="flex justify-center gap-2 mb-12 flex-wrap">
+          <div className="flex justify-center gap-1.5 sm:gap-2 mb-6 sm:mb-8 flex-wrap">
             {[
               { id: 'todos', label: 'Todos os E-mails' },
               { id: 'pais', label: 'Mães e Pais' },
@@ -2303,7 +2433,7 @@ export default function App() {
               <button
                 key={tab.id}
                 onClick={() => setSelectedDepoType(tab.id as any)}
-                className={`px-5 py-2.5 rounded-full text-xs font-bold tracking-wide transition-all uppercase cursor-pointer border ${
+                className={`px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-full text-[10px] sm:text-xs font-bold tracking-wide transition-all uppercase cursor-pointer border ${
                   selectedDepoType === tab.id
                     ? 'bg-[#2ecc71] text-white shadow-md shadow-[#2ecc71]/20 border-[#2ecc71]'
                     : 'bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-950 border-gray-100'
@@ -2315,7 +2445,7 @@ export default function App() {
           </div>
 
           {/* Testimonials Grid in Email format */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
             {(() => {
               const testimonialsData = [
                 {
@@ -2523,40 +2653,40 @@ export default function App() {
       </section>
 
       {/* Planos (Pricing) Section */}
-      <section id="planos" className="py-24 px-4 bg-gray-50 border-b border-gray-100">
+      <section id="planos" className="py-10 sm:py-14 px-4 bg-gray-50 border-b border-gray-100">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16 px-4">
-            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-[#2ecc71]/20">
+          <div className="text-center mb-6 sm:mb-10 px-4">
+            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2.5 sm:mb-3 border border-[#2ecc71]/20">
               Acesso Imediato
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-4 tracking-tight">Escolha seu Acesso ao Kit</h2>
-            <p className="text-base sm:text-lg text-gray-650 max-w-xl mx-auto font-medium mb-6">Invista no desenvolvimento, organização e tranquilidade da sua criança.</p>
-            <div className="inline-flex items-center gap-2 bg-red-50 text-red-600 px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-red-150 shadow-2xs">
-              <Clock className="w-3.5 h-3.5 animate-pulse" />
+            <h2 className="text-2xl sm:text-5xl font-black text-gray-900 mb-1.5 sm:mb-2 tracking-tight">Escolha seu Acesso ao Kit</h2>
+            <p className="text-xs sm:text-base text-gray-650 max-w-xl mx-auto font-medium mb-3 sm:mb-4">Invista no desenvolvimento, organização e tranquilidade da sua criança.</p>
+            <div className="inline-flex items-center gap-1.5 bg-red-50 text-red-600 px-4 py-1.5 sm:px-5 sm:py-2 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-widest border border-red-150 shadow-2xs">
+              <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 animate-pulse" />
               <span>Oferta especial válida apenas para hoje</span>
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 max-w-4xl mx-auto items-stretch">
              {/* Plano Básico */}
-             <div className="bg-white border-2 border-gray-200 rounded-[32px] p-8 sm:p-10 flex flex-col justify-between items-center text-center relative hover:border-gray-300 transition-all duration-300 hover:shadow-lg">
+             <div className="bg-white border-2 border-gray-200 rounded-[24px] sm:rounded-[32px] p-5 sm:p-10 flex flex-col justify-between items-center text-center relative hover:border-gray-300 transition-all duration-300 hover:shadow-lg">
                <div className="w-full">
-                 <span className="text-[10px] font-black bg-gray-100 text-gray-500 px-4 py-1 rounded-full uppercase tracking-wider mb-3 inline-block">
+                 <span className="text-[9px] sm:text-[10px] font-black bg-gray-100 text-gray-500 px-3 py-0.5 sm:px-4 sm:py-1 rounded-full uppercase tracking-wider mb-2.5 sm:mb-3 inline-block">
                    O Essencial
                  </span>
-                 <h3 className="text-2xl font-black text-gray-900 mb-1 uppercase tracking-wide">Plano Básico</h3>
-                 <p className="text-xs text-gray-500 mb-6 font-medium">Ideais iniciais de organização de rotina</p>
+                 <h3 className="text-xl sm:text-2xl font-black text-gray-900 mb-0.5 sm:mb-1 uppercase tracking-wide">Plano Básico</h3>
+                 <p className="text-xs text-gray-500 mb-4 sm:mb-6 font-medium">Ideais iniciais de organização de rotina</p>
                  
-                 <div className="bg-gray-50/80 rounded-2xl p-5 mb-8 border border-gray-100">
-                   <span className="text-gray-400 line-through text-xs font-bold block mb-1">De R$ 47,00 por apenas</span>
+                 <div className="bg-gray-50/80 rounded-2xl p-4 sm:p-5 mb-5 sm:mb-8 border border-gray-100">
+                   <span className="text-gray-400 line-through text-[10px] sm:text-xs font-bold block mb-0.5 sm:mb-1">De R$ 47,00 por apenas</span>
                    <div className="flex items-center justify-center gap-1">
-                     <span className="text-gray-950 font-extrabold text-2xl">R$</span>
-                     <span className="text-gray-950 font-black text-5xl sm:text-6xl tracking-tight">10,00</span>
+                     <span className="text-gray-950 font-extrabold text-xl sm:text-2xl">R$</span>
+                     <span className="text-gray-950 font-black text-4xl sm:text-6xl tracking-tight">10,00</span>
                    </div>
-                   <span className="text-[10px] text-gray-400 font-bold block mt-1">Taxa única • Sem mensalidade</span>
+                   <span className="text-[9px] sm:text-[10px] text-gray-400 font-bold block mt-0.5 sm:mt-1">Taxa única • Sem mensalidade</span>
                  </div>
 
-                 <ul className="text-left space-y-3.5 mb-8 w-full border-t border-gray-100 pt-6">
+                 <ul className="text-left space-y-2 sm:space-y-3.5 mb-5 sm:mb-8 w-full border-t border-gray-100 pt-4 sm:pt-6">
                    {[
                      "Rotina Diária e Semanal",
                      "Pictogramas Escolares Básicos",
@@ -2566,8 +2696,8 @@ export default function App() {
                      "Alfabetização Inicial",
                      "Uso Imediato em PDF"
                    ].map((item, idx) => (
-                     <li key={idx} className="flex items-start gap-3 text-xs sm:text-sm text-gray-650 font-medium">
-                       <Check className="w-4 h-4 text-[#2ecc71] shrink-0 mt-0.5" />
+                     <li key={idx} className="flex items-start gap-2 sm:gap-3 text-xs sm:text-sm text-gray-655 font-medium">
+                       <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#2ecc71] shrink-0 mt-0.5" />
                        <span>{item}</span>
                      </li>
                    ))}
@@ -2577,8 +2707,8 @@ export default function App() {
                      "Materiais para Adolescentes",
                      "Atualizações Vitalícias"
                    ].map((item, idx) => (
-                     <li key={idx} className="flex items-start gap-3 text-xs sm:text-sm text-gray-400 font-medium line-through decoration-gray-300">
-                       <XCircle className="w-4 h-4 text-gray-300 shrink-0 mt-0.5" />
+                     <li key={idx} className="flex items-start gap-2 sm:gap-3 text-xs sm:text-sm text-gray-400 font-medium line-through decoration-gray-300">
+                       <XCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-300 shrink-0 mt-0.5" />
                        <span>{item}</span>
                      </li>
                    ))}
@@ -2587,12 +2717,12 @@ export default function App() {
 
                <button 
                  onClick={handleBasicClick}
-                 className="w-full bg-gray-900 text-white font-black py-4.5 rounded-2xl hover:bg-black hover:scale-[1.01] transition-all duration-300 cursor-pointer shadow-sm text-sm uppercase tracking-wider"
+                 className="w-full bg-gray-900 text-white font-black py-3 sm:py-4 rounded-xl sm:rounded-2xl hover:bg-black hover:scale-[1.01] transition-all duration-300 cursor-pointer shadow-sm text-xs sm:text-sm uppercase tracking-wider"
                >
                  Adquirir Plano Básico
-               </button>
+                </button>
              </div>
-
+             
              {/* Plano Premium */}
              <div className="bg-[#f3fdf6] border-4 border-[#2ecc71] rounded-[32px] p-8 sm:p-10 flex flex-col justify-between items-center text-center relative shadow-xl shadow-emerald-950/5 scale-100 md:scale-[1.03] transition-all duration-300 hover:shadow-2xl">
                <div className="absolute -top-5 bg-[#2ecc71] text-white px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest shadow-md">
@@ -2603,7 +2733,7 @@ export default function App() {
                    Melhor Custo-Benefício
                  </span>
                  <h3 className="text-2xl font-black text-[#1a5c3a] mb-1 uppercase tracking-wide">Plano Premium</h3>
-                 <p className="text-xs text-[#1a5c3a]/70 mb-6 font-bold">Acesso vitalício a todas as 14+ categorias de materiais</p>
+                 <p className="text-xs text-[#1a5c3a]/70 mb-6 font-bold">Acesso vitalício a todas as 13 categorias de materiais</p>
                  
                  <div className="bg-[#1a5c3a] rounded-2xl p-5 mb-8 border border-[#2ecc71]/20 shadow-inner">
                    <span className="text-white/60 line-through text-xs font-bold block mb-1">De R$ 97,00 por apenas</span>
@@ -2647,19 +2777,19 @@ export default function App() {
       </section>
 
       {/* Sobre a Criadora Section */}
-      <section id="sobre" className="py-24 px-4 bg-white border-b border-gray-100">
+      <section id="sobre" className="py-14 px-4 bg-white border-b border-gray-100">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-gray-50 rounded-[36px] p-8 sm:p-12 border border-gray-100 flex flex-col md:flex-row gap-12 items-center">
+          <div className="bg-gray-50 rounded-[36px] p-6 sm:p-10 border border-gray-100 flex flex-col md:flex-row gap-8 items-center">
             <div className="w-48 h-48 sm:w-64 sm:h-64 rounded-3xl overflow-hidden shadow-2xl flex-shrink-0 rotate-2 border-4 border-white">
               <img src="https://i.imgur.com/G4DaqP5.png" alt="Ana Paula Souza" className="w-full h-full object-cover object-[center_20%]" referrerPolicy="no-referrer" />
             </div>
             <div>
-              <span className="text-[#2ecc71] font-black text-xs uppercase tracking-widest mb-2 block">Idealizadora do Projeto</span>
-              <h2 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">Dra. Ana Paula Souza</h2>
-              <p className="text-sm sm:text-base text-gray-650 leading-relaxed font-medium mb-6">
+              <span className="text-[#2ecc71] font-black text-xs uppercase tracking-widest mb-1.5 block">Idealizadora do Projeto</span>
+              <h2 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">Dra. Ana Paula Souza</h2>
+              <p className="text-sm sm:text-base text-gray-650 leading-relaxed font-medium mb-4">
                 Psicopedagoga, especialista em Neurodesenvolvimento e TEA, com mais de 10 anos de prática clínica e escolar auxiliando famílias atípicas.
               </p>
-              <p className="text-xs sm:text-sm text-gray-500 leading-relaxed font-medium mb-6">
+              <p className="text-xs sm:text-sm text-gray-500 leading-relaxed font-medium mb-4">
                 “Minha missão é trazer leveza para o lar de famílias que convivem com o autismo. Criei estes materiais visuais para dar independência às crianças e segurança emocional aos pais.”
               </p>
               <div className="flex gap-6 border-t border-gray-250/40 pt-6">
@@ -2679,10 +2809,10 @@ export default function App() {
       </section>
 
       {/* Garantia Section */}
-      <section id="garantia" className="py-24 px-4 bg-white border-b border-gray-100 text-center">
-        <div className="max-w-3xl mx-auto bg-[#f3fdf6] p-8 sm:p-12 rounded-[40px] border-2 border-dashed border-[#2ecc71]/40 shadow-xs">
-          <ShieldCheck className="w-20 h-20 text-[#2ecc71] mx-auto mb-6" />
-          <h2 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">Garantia Blindada de Satisfação</h2>
+      <section id="garantia" className="py-14 px-4 bg-white border-b border-gray-100 text-center">
+        <div className="max-w-3xl mx-auto bg-[#f3fdf6] p-6 sm:p-10 rounded-[32px] border-2 border-dashed border-[#2ecc71]/40 shadow-xs">
+          <ShieldCheck className="w-16 h-16 text-[#2ecc71] mx-auto mb-4" />
+          <h2 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">Garantia Blindada de Satisfação</h2>
           <p className="text-sm sm:text-base text-gray-650 leading-relaxed max-w-2xl mx-auto font-medium">
             Seu risco é zero. Use todo o material com a sua criança por até 14 dias inteiros. Se você sentir que os cartões e quadros não ajudaram a dar mais previsibilidade e diminuir as crises no dia a dia, basta enviar um único e-mail e devolvemos 100% do seu dinheiro, sem perguntas e sem complicação.
           </p>
@@ -2690,14 +2820,14 @@ export default function App() {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="bg-gray-50 py-24 px-4">
+      <section id="faq" className="bg-gray-50 py-14 px-4">
         <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-[#2ecc71]/20">
+          <div className="text-center mb-10">
+            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-3 border border-[#2ecc71]/20">
               Dúvidas Respondidas
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-4 tracking-tight">Perguntas Frequentes</h2>
-            <p className="text-base text-gray-600 font-medium">Ficou com alguma dúvida? Encontre a resposta rápida para as suas principais perguntas abaixo.</p>
+            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-2 tracking-tight">Perguntas Frequentes</h2>
+            <p className="text-sm sm:text-base text-gray-600 font-medium">Ficou com alguma dúvida? Encontre a resposta rápida para as suas principais perguntas abaixo.</p>
           </div>
 
           <div className="space-y-4">
@@ -2730,7 +2860,7 @@ export default function App() {
       </section>
 
       {/* Disclaimer Section */}
-      <section id="aviso-legal" className="bg-gray-50 pb-12 px-4">
+      <section id="aviso-legal" className="bg-gray-50 pb-8 px-4">
         <div className="max-w-3xl mx-auto">
           <div className="bg-amber-50/50 border border-amber-200/50 rounded-2xl p-5 sm:p-6 flex gap-4 items-start shadow-sm">
             <div className="bg-amber-100 flex-shrink-0 p-2 rounded-lg text-amber-800">
