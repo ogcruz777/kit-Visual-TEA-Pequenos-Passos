@@ -46,58 +46,120 @@ import {
   Loader2,
   RotateCcw,
   Mail,
-  Paperclip
+  Paperclip,
+  Download,
+  Printer,
+  Lock,
+  ArrowRight,
+  FileText,
+  Award
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 // --- Subcomponents ---
 
 const UrgencyBar = () => {
-  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('urgency_timer');
+        if (saved) {
+          const num = parseInt(saved, 10);
+          if (num > 0 && num <= 900) return num;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return 900; // 15 minutes default
+  });
 
   useEffect(() => {
-    if (timeLeft <= 0) return;
     const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
+      setTimeLeft((prev) => {
+        const next = prev <= 1 ? 900 : prev - 1;
+        try {
+          localStorage.setItem('urgency_timer', String(next));
+        } catch (e) {
+          console.error(e);
+        }
+        return next;
+      });
     }, 1000);
     return () => clearInterval(timer);
-  }, [timeLeft]);
+  }, []);
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
 
   return (
-    <div id="urgency-bar" className="fixed top-0 left-0 w-full bg-red-600 text-white py-2 px-4 z-50 flex justify-center items-center gap-2 font-bold text-xs sm:text-sm">
-      <Clock className="w-4 h-4 animate-pulse" />
-      <span>A OFERTA ESPECIAL EXPIRA EM:</span>
-      <span className="font-mono text-lg ml-1">
-        {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
-      </span>
+    <div id="urgency-bar" className="fixed top-0 left-0 w-full bg-[#e74c3c] text-white py-2.5 px-4 z-50 shadow-md border-b border-[#c0392b] flex justify-center items-center gap-2.5 sm:gap-3 font-sans select-none">
+      <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs tracking-wider uppercase font-extrabold text-white">
+        <span className="inline-flex h-2 w-2 rounded-full bg-white animate-ping" />
+        <span className="text-white">Oferta Especial</span>
+        <span className="text-white/65 hidden sm:inline">•</span>
+        <span className="hidden sm:inline text-white/90">Desconto Exclusivo Ativo</span>
+      </div>
+      
+      <div className="h-4 w-px bg-white/20 hidden sm:block" />
+
+      <div className="flex items-center gap-2">
+        <Clock className="w-4 h-4 text-white animate-pulse shrink-0" />
+        <span className="text-[10px] sm:text-xs font-bold text-white">
+          O preço promocional expira em:
+        </span>
+        <span className="bg-white/20 text-white font-mono text-xs sm:text-sm font-black px-2 py-0.5 rounded-md border border-white/30 tabular-nums">
+          {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+        </span>
+      </div>
     </div>
   );
 };
 
 const SalesNotification = () => {
   const [visible, setVisible] = useState(false);
-  const [name, setName] = useState('');
+  const [purchase, setPurchase] = useState({ name: '', location: '', item: '', time: '' });
   
-  const names = ['Maria S.', 'Ana Paula', 'Roberta G.', 'Juliana F.', 'Carla M.', 'Luciana P.', 'Renata B.', 'Patrícia O.'];
+  const purchases = [
+    { name: "Ana Júlia S.", location: "Campinas - SP", item: "Kit Completo Premium" },
+    { name: "Carlos Henrique F.", location: "Belo Horizonte - MG", item: "Kit Completo Premium" },
+    { name: "Patrícia Souza M.", location: "Rio de Janeiro - RJ", item: "Kit Visual TEA" },
+    { name: "Roberta Lima B.", location: "São Paulo - SP", item: "Kit Completo Premium" },
+    { name: "Juliana Fernandes D.", location: "Curitiba - PR", item: "Acesso Vitalício + Bônus" },
+    { name: "Mariana Costa V.", location: "Porto Alegre - RS", item: "Kit Visual TEA" },
+    { name: "Luciana Ramos P.", location: "Salvador - BA", item: "Kit Completo Premium" },
+    { name: "Renata Alves G.", location: "Fortaleza - CE", item: "Kit Completo Premium" },
+    { name: "Amanda Melo K.", location: "Goiânia - GO", item: "Kit Visual TEA" },
+    { name: "Marcos Paulo R.", location: "Brasília - DF", item: "Kit Completo Premium" },
+    { name: "Fernanda Gomes T.", location: "Florianópolis - SC", item: "Acesso Vitalício + Bônus" },
+    { name: "Camila Barbosa L.", location: "Recife - PE", item: "Kit Completo Premium" },
+    { name: "Beatriz Santos F.", location: "Vitória - ES", item: "Kit Completo Premium" },
+    { name: "Dr. Roberto M. (Clínica)", location: "Ribeirão Preto - SP", item: "Kit Completo Premium" },
+    { name: "Profª Sandra R.", location: "Niterói - RJ", item: "Kit Completo Premium" }
+  ];
+
+  const times = ["há 2 segundos", "há 5 segundos", "há 12 segundos", "há 22 segundos", "agora mesmo"];
 
   useEffect(() => {
     const showNotification = () => {
-      const randomName = names[Math.floor(Math.random() * names.length)];
-      setName(randomName);
+      const randPurchase = purchases[Math.floor(Math.random() * purchases.length)];
+      const randTime = times[Math.floor(Math.random() * times.length)];
+      setPurchase({ ...randPurchase, time: randTime });
       setVisible(true);
-      setTimeout(() => setVisible(false), 5000);
+      
+      // Hide after 6 seconds
+      setTimeout(() => setVisible(false), 6000);
     };
 
-    const interval = setInterval(showNotification, 30000); // Every 30s
-    // Initial delay
-    const timeout = setTimeout(showNotification, 5000);
+    // Show first popup after 3 seconds
+    const initialTimeout = setTimeout(showNotification, 3000);
+
+    // Repeated interval (every 16 seconds)
+    const interval = setInterval(showNotification, 16000);
 
     return () => {
+      clearTimeout(initialTimeout);
       clearInterval(interval);
-      clearTimeout(timeout);
     };
   }, []);
 
@@ -105,18 +167,42 @@ const SalesNotification = () => {
     <AnimatePresence>
       {visible && (
         <motion.div
-          initial={{ opacity: 0, x: -50, y: -20 }}
-          animate={{ opacity: 1, x: 20, y: 15 }}
-          exit={{ opacity: 0, x: -50 }}
-          className="fixed top-10 sm:top-12 left-0 z-50 bg-white shadow-xl rounded-lg p-3 border-l-4 border-brand-medium flex items-center gap-3 w-64"
+          initial={{ opacity: 0, x: 120, y: 0, scale: 0.9 }}
+          animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+          exit={{ opacity: 0, x: 120, scale: 0.9 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          className="fixed top-[70px] sm:top-[85px] right-4 z-[99] bg-white/95 backdrop-blur-md shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl p-4 border border-gray-150 flex items-center gap-3.5 w-[310px] sm:w-[340px] select-none"
         >
-          <div className="bg-brand-light p-2 rounded-full">
-            <ShoppingBag className="w-5 h-5 text-brand-medium" />
+          {/* Green Purchase Pulse Icon */}
+          <div className="relative shrink-0 flex items-center justify-center w-11 h-11 rounded-full bg-[#f3fdf6] border border-[#2ecc71]/20">
+            <ShoppingBag className="w-5 h-5 text-[#2ecc71]" />
+            <span className="absolute top-0 right-0 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2ecc71] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-[#2ecc71]"></span>
+            </span>
           </div>
-          <div>
-            <p className="text-xs font-bold text-gray-800">{name} acabou de comprar!</p>
-            <p className="text-[10px] text-gray-500">há poucos segundos</p>
+
+          {/* Details */}
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-black text-gray-900 leading-snug truncate">
+              {purchase.name} <span className="text-gray-400 font-normal text-[10px]">({purchase.location})</span>
+            </p>
+            <p className="text-[11px] text-gray-600 font-bold mt-0.5 truncate">
+              Adquiriu: <span className="text-[#1db863]">{purchase.item}</span>
+            </p>
+            <p className="text-[9px] text-gray-400 font-medium mt-1 uppercase tracking-wider flex items-center gap-1">
+              <span className="w-1.5 h-1.5 bg-[#2ecc71] rounded-full animate-pulse" />
+              {purchase.time} • Compra Aprovada
+            </p>
           </div>
+
+          {/* Close button */}
+          <button 
+            onClick={() => setVisible(false)} 
+            className="text-gray-300 hover:text-gray-500 p-1 transition-colors cursor-pointer"
+          >
+            <span className="text-xs font-extrabold font-sans">×</span>
+          </button>
         </motion.div>
       )}
     </AnimatePresence>
@@ -126,13 +212,13 @@ const SalesNotification = () => {
 const FAQItem = ({ question, answer }: { question: string; answer: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <div className="border-b border-gray-200 py-4">
+    <div className={`mb-4 rounded-2xl border transition-all duration-300 ${isOpen ? 'border-[#2ecc71]/30 bg-[#f3fdf6]/40 shadow-xs' : 'border-gray-150 bg-white hover:border-gray-300'}`}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex justify-between items-center text-left font-bold text-gray-800 hover:text-brand-dark transition-colors"
+        className="w-full flex justify-between items-center text-left font-black text-gray-900 px-6 py-5 cursor-pointer transition-colors"
       >
-        <span className="pr-4">{question}</span>
-        {isOpen ? <ChevronUp className="w-5 h-5 text-brand-medium" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+        <span className="pr-4 text-sm sm:text-base">{question}</span>
+        {isOpen ? <ChevronUp className="w-5 h-5 text-[#2ecc71] shrink-0" /> : <ChevronDown className="w-5 h-5 text-gray-400 shrink-0" />}
       </button>
       <AnimatePresence>
         {isOpen && (
@@ -140,9 +226,10 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <p className="py-3 text-gray-600 text-sm leading-relaxed">{answer}</p>
+            <p className="px-6 pb-5 text-gray-600 text-xs sm:text-sm leading-relaxed font-medium">{answer}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -1558,19 +1645,7 @@ export default function App() {
   const [showUpsell, setShowUpsell] = useState(false);
   const [selectedDepoType, setSelectedDepoType] = useState<'todos' | 'pais' | 'profissionais'>('todos');
 
-  const [showStickyCTA, setShowStickyCTA] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 600) {
-        setShowStickyCTA(true);
-      } else {
-        setShowStickyCTA(false);
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const [showStickyCTA] = useState(true);
 
   const scrollToPricing = () => {
     document.getElementById('planos')?.scrollIntoView({ behavior: 'smooth' });
@@ -1581,81 +1656,153 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen pt-10 sm:pt-12">
-      {/* Floating Mobile CTA */}
+    <div className="min-h-screen pt-16 sm:pt-20">
+      <UrgencyBar />
+      <SalesNotification />
+      {/* Floating Bouncing CTA (Fica Pulando na Tela) */}
       <AnimatePresence>
         {showStickyCTA && (
-          <motion.div
-            initial={{ y: 100 }}
-            animate={{ y: 0 }}
-            exit={{ y: 100 }}
-            className="fixed bottom-6 left-4 right-4 z-40 sm:hidden"
-          >
-            <button 
-              onClick={scrollToPricing}
-              className="w-full bg-brand-medium text-white font-black py-4 rounded-2xl shadow-2xl flex items-center justify-center gap-3 animate-pulse"
+          <>
+            {/* Mobile Floating Bouncing CTA */}
+            <motion.div
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 100, opacity: 0 }}
+              className="fixed bottom-6 left-4 right-4 z-40 sm:hidden"
             >
-              <ShoppingBag className="w-5 h-5" />
-              QUERO MEU ACESSO AGORA
-            </button>
-          </motion.div>
+              <motion.button 
+                onClick={scrollToPricing}
+                animate={{ 
+                  y: [0, -8, 0],
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                className="w-full bg-[#2ecc71] hover:bg-[#27ae60] text-white font-black py-4 rounded-2xl shadow-[0_12px_40px_rgba(46,204,113,0.45)] flex items-center justify-center gap-3 uppercase tracking-wider text-sm cursor-pointer border border-white/15"
+              >
+                <ShoppingBag className="w-5 h-5" />
+                Quero o Kit com Desconto
+              </motion.button>
+            </motion.div>
+
+            {/* Desktop Floating Bouncing CTA */}
+            <motion.div
+              initial={{ x: 150, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: 150, opacity: 0 }}
+              className="fixed bottom-8 right-8 z-40 hidden sm:block"
+            >
+              <motion.button 
+                onClick={scrollToPricing}
+                animate={{ 
+                  y: [0, -12, 0],
+                }}
+                transition={{
+                  duration: 1.6,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                className="bg-[#2ecc71] hover:bg-[#27ae60] text-white font-black px-8 py-4.5 rounded-full shadow-[0_15px_40px_rgba(46,204,113,0.45)] flex items-center justify-center gap-3 uppercase tracking-wider text-sm cursor-pointer border border-white/20 transition-transform duration-300 hover:scale-105 active:scale-95"
+              >
+                <ShoppingBag className="w-5 h-5 text-white animate-pulse" />
+                <span>Quero o Kit com Desconto</span>
+                <span className="flex h-2.5 w-2.5 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
+                </span>
+              </motion.button>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
 
-      <UrgencyBar />
-      <SalesNotification />
-
       {/* Hero Section */}
-      <section id="hero" className="bg-white px-4 py-16 sm:py-24 overflow-hidden relative">
-        <div className="max-w-4xl mx-auto text-center">
-          <span className="inline-block bg-brand-light text-brand-dark px-4 py-1 rounded-full text-xs font-bold tracking-wider mb-6 border border-brand-medium/20">
-            PARA FAMÍLIAS E PROFESSORES DE CRIANÇAS COM AUTISMO
+      <section id="hero" className="bg-white px-4 pt-10 pb-16 sm:pt-14 sm:pb-22 overflow-hidden relative border-b border-gray-100">
+        <div className="max-w-5xl mx-auto text-center relative z-10">
+          
+          {/* Top category pill */}
+          <span className="inline-flex items-center gap-2 bg-[#f3fdf6] text-[#1a5c3a] px-4 py-1.5 rounded-full text-xs font-extrabold tracking-wider mb-5 border border-[#2ecc71]/20 shadow-xs uppercase">
+            <Sparkles className="w-3.5 h-3.5 text-[#2ecc71]" />
+            Para Famílias, Professores e Clínicas
           </span>
-          <h1 className="text-4xl sm:text-6xl font-black text-gray-900 leading-tight mb-6">
-            <span className="text-brand-dark">+200 Rotinas Visuais</span> para Crianças com TEA
+
+          {/* Headline - extremely strong */}
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-gray-900 leading-tight mb-5 tracking-tight max-w-4xl mx-auto">
+            Tudo o que você precisa para <br />
+            <span className="bg-gradient-to-r from-[#1a5c3a] via-[#2ecc71] to-[#1a5c3a] bg-clip-text text-transparent">
+              organizar a rotina de crianças com TEA
+            </span> <br className="hidden md:inline" /> em um único kit.
           </h1>
-          <p className="text-lg sm:text-xl text-gray-600 mb-6 max-w-2xl mx-auto leading-relaxed">
-            Reduza crises, aumente a independência e torne o dia a dia mais previsível — sem precisar criar nada do zero.
+
+          {/* Subheadline - explaining exactly who and what */}
+          <p className="text-base sm:text-lg text-gray-650 mb-6 max-w-3xl mx-auto leading-relaxed font-medium">
+            Mais de 200 cartões visuais prontos para imprimir, organizados por categorias e desenvolvidos para apoiar famílias, professores e profissionais no dia a dia.
           </p>
 
-          {/* Hero Image below Subheadline */}
-          <div className="my-8 max-w-3xl mx-auto rounded-2xl overflow-hidden shadow-xl border-4 border-white bg-white">
+          {/* Benefits in bullet points (Hero section bullets for fast scanning) */}
+          <div className="max-w-2xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 text-left">
+            {[
+              "Materiais 100% prontos para imprimir",
+              "Redução imediata da ansiedade e crises",
+              "Mais independência na rotina diária",
+              "Acesso vitalício no seu e-mail"
+            ].map((benefit, i) => (
+              <div key={i} className="flex items-center gap-3 bg-[#f3fdf6]/50 border border-[#2ecc71]/10 p-2.5 sm:p-3 rounded-2xl">
+                <CheckCircle2 className="w-5 h-5 text-[#2ecc71] shrink-0" />
+                <span className="text-sm font-bold text-gray-800">{benefit}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Mockup premium occupying a lot of space */}
+          <div className="relative my-6 max-w-2xl mx-auto rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(26,92,58,0.15)] border-4 border-white bg-white group hover:scale-[1.01] transition-all duration-500">
             <img 
               src="https://i.imgur.com/nCpW8NS.png" 
-              alt="Kit Visual TEA - Pequenos Passos" 
+              alt="Kit Visual TEA - Pequenos Passos Mockup Completo" 
               className="w-full h-auto object-cover"
               referrerPolicy="no-referrer"
             />
+
           </div>
 
-          <div className="mt-4"></div>
-
-          <button 
-            id="cta-hero"
-            onClick={scrollToPricing}
-            className="bg-brand-medium hover:bg-brand-medium/90 text-white text-lg sm:text-xl font-black px-8 py-4 rounded-full shadow-lg shadow-brand-medium/30 transition-all transform hover:scale-105 active:scale-95 cursor-pointer uppercase tracking-wide mt-2"
-          >
-            Quero Meu Acesso Imediato
-          </button>
-
-          {/* New Trust Badges */}
-          <div className="mt-8 flex flex-wrap justify-center gap-6 text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-brand-medium" />
-              <span>Compra 100% Segura</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-brand-medium" />
-              <span>Acesso Imediato</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Star className="w-4 h-4 text-brand-medium fill-brand-medium" />
-              <span>Satisfação Garantida</span>
-            </div>
+          {/* CTA Button bien destacado */}
+          <div className="flex flex-col items-center justify-center gap-3 mt-6">
+            <button 
+              id="cta-hero"
+              onClick={scrollToPricing}
+              className="w-full sm:w-auto bg-[#1db863] hover:bg-[#1a7a4a] text-white text-lg sm:text-xl font-black px-12 py-4 sm:py-5 rounded-2xl shadow-[0_15px_40px_rgba(46,204,113,0.35)] hover:shadow-[0_20px_50px_rgba(46,204,113,0.5)] transition-all transform hover:scale-[1.03] active:scale-[0.98] cursor-pointer uppercase tracking-wider"
+            >
+              Quero Meu Acesso Imediato
+            </button>
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5 mt-1">
+              <Lock className="w-3.5 h-3.5 text-[#1db863]" />
+              Pagamento 100% Seguro • Liberação Imediata
+            </span>
           </div>
-          
-          <div className="mt-12 flex flex-col items-center justify-center gap-2">
-            <div className="flex items-center gap-4 bg-white/80 backdrop-blur-md px-6 py-3 rounded-2xl shadow-xl shadow-brand-dark/5 border border-brand-light">
+
+          {/* Selos em Destaque */}
+          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto border-t border-gray-100 pt-12">
+            {[
+              { icon: <Clock className="w-6 h-6 text-[#2ecc71]" />, title: "Acesso Imediato", desc: "No seu e-mail após a compra" },
+              { icon: <FileText className="w-6 h-6 text-[#2ecc71]" />, title: "Arquivo Digital (PDF)", desc: "Baixe e salve para sempre" },
+              { icon: <Printer className="w-6 h-6 text-[#2ecc71]" />, title: "Pronto para Imprimir", desc: "Em casa ou na gráfica" },
+              { icon: <Award className="w-6 h-6 text-[#2ecc71]" />, title: "Casa, Escola e Clínica", desc: "Para todas as ocasiões" }
+            ].map((selo, i) => (
+              <div key={i} className="flex flex-col items-center text-center p-4 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                <div className="w-12 h-12 rounded-full bg-[#f3fdf6] flex items-center justify-center mb-3">
+                  {selo.icon}
+                </div>
+                <h4 className="text-sm font-black text-gray-900 mb-1">{selo.title}</h4>
+                <p className="text-[11px] text-gray-500 font-medium leading-tight">{selo.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Social Proof Stats Quick Block */}
+          <div className="mt-16 flex flex-col items-center justify-center gap-2">
+            <div className="flex items-center gap-4 bg-[#f8fdfa] px-6 py-4 rounded-2xl border border-[#2ecc71]/20 shadow-xs">
               <div className="flex -space-x-3">
                 {[
                   "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
@@ -1664,45 +1811,67 @@ export default function App() {
                   "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop",
                   "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop"
                 ].map((url, i) => (
-                  <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center overflow-hidden shadow-sm">
-                    <img src={url} alt="User Feedback" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                  <div key={i} className="w-9 h-9 rounded-full border-2 border-white bg-gray-150 overflow-hidden shadow-xs shrink-0">
+                    <img src={url} alt="User feedback face" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   </div>
                 ))}
               </div>
               <div className="flex flex-col items-start">
-                <div className="flex gap-0.5 mb-0.5">
+                <div className="flex gap-0.5 mb-1">
                   {[1, 2, 3, 4, 5].map(s => <Star key={s} className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />)}
                 </div>
-                <span className="text-[11px] font-black text-gray-800 uppercase tracking-tight">+3.000 famílias impactadas</span>
+                <span className="text-[11px] font-extrabold text-[#1a5c3a] uppercase tracking-wide">
+                  +3.000 Famílias e Profissionais Transformados
+                </span>
               </div>
             </div>
           </div>
+
         </div>
-        
-        {/* Background Decorative Elements */}
-        <div className="absolute top-1/4 -left-20 w-64 h-64 bg-brand-light rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
-        <div className="absolute top-1/3 -right-20 w-64 h-64 bg-green-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+
+        {/* Ambient shapes */}
+        <div className="absolute top-1/4 -left-32 w-80 h-80 bg-[#f3fdf6]/80 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob"></div>
+        <div className="absolute bottom-1/4 -right-32 w-80 h-80 bg-green-50 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob animation-delay-2000"></div>
       </section>
 
-      {/* Dores (Problem) Section */}
-      <section id="problema" className="bg-gray-50 py-16 px-4">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-4">O Problema NÃO é Você</h2>
-            <div className="w-20 h-1 bg-brand-medium mx-auto rounded-full"></div>
+      {/* Dores (Problem) Section - PAS Copywriting Model */}
+      <section id="problema" className="bg-gray-50 py-20 px-4 border-b border-gray-100">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-16">
+            <span className="inline-block bg-red-50 text-red-600 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-4 border border-red-100">
+              O Desafio Diário
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-4 tracking-tight">O Dia a Dia com TEA Não Precisa Ser Exaustivo</h2>
+            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+              Se você enfrenta dificuldades para realizar tarefas simples com sua criança, entenda que a culpa não é sua. Sem o suporte adequado, a sobrecarga de informações gera insegurança e crises.
+            </p>
           </div>
           
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
-              "Seu filho tem uma crise toda vez que a rotina muda inesperadamente",
-              "Você já tentou explicar com palavras e percebe que simplesmente não funciona",
-              "Não tem tempo de pesquisar e criar materiais visuais personalizados",
-              "A escola pede apoio mas não oferece os recursos visuais necessários",
-              "Termina o dia esgotada sem saber o que pode melhorar no dia seguinte"
+              {
+                title: "Crises Diárias por Imprevisibilidade",
+                desc: "A criança atípica precisa saber o que vai acontecer. Mudanças bruscas de rotina sem aviso visual geram crises de ansiedade severas."
+              },
+              {
+                title: "Exaustão Física e Mental",
+                desc: "Repetir os mesmos comandos dezenas de vezes (como escovar os dentes ou comer) desgasta a relação familiar e gera frustração."
+              },
+              {
+                title: "Falta de Tempo para Criar Materiais",
+                desc: "Procurar figuras na internet, redimensionar, formatar e criar quadros do zero exige horas de trabalho que você simplesmente não tem."
+              },
+              {
+                title: "Dificuldade de Comunicação Escolar",
+                desc: "A falta de alinhamento visual entre o que é feito em casa e o que é feito na escola atrasa o desenvolvimento de autonomia da criança."
+              }
             ].map((item, idx) => (
-              <div key={idx} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-start gap-4 transition-transform hover:translate-x-2">
-                <XCircle className="w-6 h-6 text-red-500 flex-shrink-0 mt-0.5" />
-                <p className="text-gray-700 font-medium leading-relaxed">{item}</p>
+              <div key={idx} className="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 flex items-start gap-4 transition-transform hover:scale-[1.01]">
+                <XCircle className="w-6 h-6 text-red-500 shrink-0 mt-1" />
+                <div>
+                  <h3 className="font-black text-lg text-gray-900 mb-2">{item.title}</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed font-medium">{item.desc}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -1710,101 +1879,294 @@ export default function App() {
       </section>
 
       {/* Solution (Respira) Section */}
-      <section id="solucao" className="bg-brand-dark py-20 px-4 text-white relative overflow-hidden">
+      <section id="solucao" className="bg-[#1a5c3a] py-24 px-4 text-white relative overflow-hidden">
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h2 className="text-4xl sm:text-5xl font-black mb-8 italic">Respira...</h2>
-          <p className="text-xl sm:text-2xl font-light leading-relaxed mb-10 max-w-3xl mx-auto">
-            “Com as <span className="font-bold text-brand-medium underline underline-offset-4">Rotinas Prontas</span> você vai dar previsibilidade e segurança para sua criança, reduzir crises e ganhar autonomia no dia a dia — <span className="italic">sem gastar horas criando do zero.”</span>
+          <h2 className="text-4xl sm:text-6xl font-black mb-8 italic tracking-tight text-[#2ecc71]">Imagine um Dia a Dia Mais Leve...</h2>
+          <p className="text-xl sm:text-2xl font-light leading-relaxed mb-12 max-w-3xl mx-auto">
+            “Com o <span className="font-bold text-[#2ecc71] underline underline-offset-4">Kit Visual TEA — Pequenos Passos</span>, você entrega previsibilidade, segurança emocional e clareza para seu filho. Ele passa a compreender o mundo ao seu redor através de imagens, reduzindo crises e conquistando autonomia real.”
           </p>
-          <div className="flex flex-wrap justify-center gap-6">
-            <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm">
-              <CheckCircle2 className="w-5 h-5 text-brand-medium" />
-              <span className="text-sm font-bold">100% Digital (PDF)</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm">
-              <CheckCircle2 className="w-5 h-5 text-brand-medium" />
-              <span className="text-sm font-bold">Acesso Vitalício</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm">
-              <CheckCircle2 className="w-5 h-5 text-brand-medium" />
-              <span className="text-sm font-bold">Imprima em Casa</span>
-            </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto">
+            {[
+              "100% Digital em PDF",
+              "Acesso Vitalício",
+              "Impressão Ilimitada",
+              "Uso Imediato"
+            ].map((item, i) => (
+              <div key={i} className="flex flex-col items-center gap-2 bg-white/5 border border-white/10 px-4 py-4 rounded-2xl backdrop-blur-md">
+                <CheckCircle2 className="w-5 h-5 text-[#2ecc71]" />
+                <span className="text-xs sm:text-sm font-extrabold tracking-wide uppercase">{item}</span>
+              </div>
+            ))}
           </div>
         </div>
         
-        {/* Abstract background graphics */}
-        <div className="absolute top-0 right-0 opacity-10">
+        {/* Background graphics */}
+        <div className="absolute top-0 right-0 opacity-5">
            <svg width="400" height="400" viewBox="0 0 400 400" fill="none">
              <circle cx="200" cy="200" r="180" stroke="currentColor" strokeWidth="20" strokeDasharray="40 20" />
            </svg>
         </div>
       </section>
 
-      {/* Bônus Section */}
-      <section id="bonus" className="py-20 px-4 bg-white">
+      {/* TUDO O QUE VOCÊ RECEBE - Seção de Abundância Extrema */}
+      <section id="tudo-o-que-recebe" className="py-24 px-4 bg-white border-b border-gray-100">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-4">Bônus Exclusivos</h2>
-            <p className="text-brand-medium font-bold uppercase tracking-widest text-sm">Somente para compras realizadas hoje</p>
+            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-[#2ecc71]/20 shadow-2xs">
+              A Maior Biblioteca de Apoio Visual do Brasil
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-4 tracking-tight">
+              Tudo o que Você Recebe no Seu Kit
+            </h2>
+            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto font-medium">
+              Uma biblioteca gigantesca de materiais desenvolvidos por especialistas para cobrir cada detalhe do desenvolvimento e comportamento da sua criança.
+            </p>
           </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { 
-                title: "Rotina matinal passo a passo", 
-                icon: <Clock className="w-5 h-5 text-brand-dark group-hover:text-white transition-colors" />, 
-                desc: "Torne o acordar um momento tranquilo e previsível.",
-                image: "https://imgur.com/a/o2z7GJk"
+              {
+                id: "rotina-manha",
+                title: "1. Rotina da Manhã",
+                desc: "Cartões passo a passo para acordar bem, arrumar a mochila, vestir a farda e iniciar o dia de forma pacífica.",
+                items: ["Acordar tranquilo", "Fazer a cama", "Vestir a roupa", "Tomar café da manhã"],
+                badge: "Essencial",
+                color: "bg-amber-500",
+                emoji: "🌅"
               },
-              { 
-                title: "Cartões de comunicação por figuras", 
-                icon: <MessageCircle className="w-5 h-5 text-brand-dark group-hover:text-white transition-colors" />, 
-                desc: "Ajude seu filho a expressar necessidades básicas sem choro.",
-                image: "https://imgur.com/a/CGPvIgc"
+              {
+                id: "higiene",
+                title: "2. Higiene Completa",
+                desc: "Passo a passo visual detalhado para escovar os dentes, tomar banho, usar o banheiro e lavar as mãos de forma independente.",
+                items: ["Escovação perfeita", "Passo a passo do banho", "Uso do vaso sanitário", "Lavar as mãos"],
+                badge: "Autonomia",
+                color: "bg-blue-500",
+                emoji: "🚿"
               },
-              { 
-                title: "Guia de adaptação escolar", 
-                icon: <BookOpen className="w-5 h-5 text-brand-dark group-hover:text-white transition-colors" />, 
-                desc: "Como levar a rotina visual para dentro da sala de aula.",
-                image: "https://imgur.com/a/iwu7tYK"
+              {
+                id: "alimentacao",
+                title: "3. Alimentação Saudável",
+                desc: "Suporte para diminuir a seletividade alimentar, regras de comportamento à mesa e pedidos visuais de alimentos.",
+                items: ["Sentar para comer", "Provar novos alimentos", "Usar os talheres", "Pedir água/comida"],
+                badge: "Comportamento",
+                color: "bg-emerald-500",
+                emoji: "🍽️"
               },
-              { 
-                title: "Kit anti-crise visual", 
-                icon: <ShieldCheck className="w-5 h-5 text-brand-dark group-hover:text-white transition-colors" />, 
-                desc: "Plaquinhas de 'espera', 'ajuda' e 'pausa' para momentos difíceis.",
-                image: "https://imgur.com/a/64HncyK"
+              {
+                id: "escola",
+                title: "4. Rotina Escolar",
+                desc: "Pictogramas criados para organizar o material, prestar atenção na professora, fazer as tarefas e interagir com colegas.",
+                items: ["Organizar mochila", "Prestar atenção", "Hora do recreio", "Fazer dever de casa"],
+                badge: "Inclusão",
+                color: "bg-indigo-500",
+                emoji: "🎒"
+              },
+              {
+                id: "comunicacao",
+                title: "5. Comunicação Alternativa",
+                desc: "Pranchas de comunicação rápida para crianças não verbais ou em fase de aquisição de fala expressarem desejos e dores.",
+                items: ["Pranchas rápidas", "Expressar dor", "Pedir ajuda", "Dizer Sim/Não"],
+                badge: "Padrão Ouro",
+                color: "bg-rose-500",
+                emoji: "💬"
+              },
+              {
+                id: "emocoes",
+                title: "6. Expressão das Emoções",
+                desc: "Identificação e validação de sentimentos como raiva, medo, alegria, cansaço ou sobrecarga sensorial para evitar desregulações.",
+                items: ["Quadro de sentimentos", "Termômetro da raiva", "Apoio para frustração", "Expressar cansaço"],
+                badge: "Regulação",
+                color: "bg-purple-500",
+                emoji: "🧠"
+              },
+              {
+                id: "combinados",
+                title: "7. Combinados e Regras",
+                desc: "Suporte visual para estabelecer combinados claros e limites firmes de forma leve, lúdica e extremamente didática.",
+                items: ["Guardar brinquedos", "Falar em tom adequado", "Esperar a minha vez", "Respeitar limites"],
+                badge: "Convivência",
+                color: "bg-yellow-500",
+                emoji: "🤝"
+              },
+              {
+                id: "recompensas",
+                title: "8. Quadro de Recompensas",
+                desc: "Quadro de incentivos e tokens para gamificar pequenas tarefas diárias e celebrar cada pequena vitória conquistada.",
+                items: ["Quadro de estrelas", "Meta semanal", "Comemoração lúdica", "Foco no progresso"],
+                badge: "Motivação",
+                color: "bg-teal-500",
+                emoji: "🏆"
+              },
+              {
+                id: "sono",
+                title: "9. Higiene do Sono",
+                desc: "Rituais visuais noturnos para acalmar a mente, se preparar para deitar e dormir no horário correto sem choro.",
+                items: ["Desconectar telas", "Colocar o pijama", "Ler história curta", "Dormir sozinho"],
+                badge: "Bem Estar",
+                color: "bg-slate-700",
+                emoji: "🌙"
+              },
+              {
+                id: "calendario",
+                title: "10. Calendário Interativo",
+                desc: "Painel completo para trabalhar a noção de tempo, clima, dias da semana, meses, datas festivas e aniversários.",
+                items: ["Dias da semana", "Tempo e clima", "Meses do ano", "Marcação de eventos"],
+                badge: "Cognitivo",
+                color: "bg-cyan-500",
+                emoji: "📅"
+              },
+              {
+                id: "quadros-rotina",
+                title: "11. Quadros de Rotina Prontos",
+                desc: "Modelos prontos de painéis horizontais e verticais: 'Primeiro/Depois', 'Manhã/Tarde/Noite' em formato profissional.",
+                items: ["Quadro Primeiro/Depois", "Rotina de 3 turnos", "Painel semanal", "Apoio de bolso"],
+                badge: "Prático",
+                color: "bg-lime-600",
+                emoji: "📋"
+              },
+              {
+                id: "cartoes",
+                title: "12. Cartões de Transição",
+                desc: "Evite crises avisando visualmente a criança antes de mudar de ambiente (ir embora do parque, sair da terapia, etc).",
+                items: ["Aviso de 5 minutos", "Sair de casa", "Mudar de atividade", "Esperar no carro"],
+                badge: "Anti-crise",
+                color: "bg-pink-500",
+                emoji: "🔄"
+              },
+              {
+                id: "materiais-extras",
+                title: "13. Materiais Extras e Atividades",
+                desc: "Atividades lúdicas complementares de recortar, colar, ligar pontos e colorir para focar em coordenação motora fina.",
+                items: ["Coordenação fina", "Desenho guiado", "Ligar pontos", "Recortar e colar"],
+                badge: "Lúdico",
+                color: "bg-violet-600",
+                emoji: "🎨"
+              },
+              {
+                id: "bonus-extra",
+                title: "14. Bônus Exclusivos de Suporte",
+                desc: "Guias pedagógicos escritos pela Dra. Ana, além de suporte direto via WhatsApp para tirar dúvidas de aplicação.",
+                items: ["Ebook Guia Prático", "Lista de materiais sugeridos", "Suporte VIP", "Atualizações Vitalícias"],
+                badge: "Exclusivo",
+                color: "bg-red-500",
+                emoji: "🎁"
               }
-            ].map((bonus, idx) => (
-              <div key={idx} className="bg-gray-50 rounded-3xl border border-gray-100 hover:border-brand-medium/30 hover:shadow-xl transition-all group overflow-hidden flex flex-col justify-between">
+            ].map((cat, i) => (
+              <div 
+                key={i} 
+                className="bg-gray-50/50 hover:bg-gray-50 border border-gray-100 rounded-3xl p-6 transition-all duration-300 hover:shadow-lg flex flex-col justify-between group"
+              >
                 <div>
-                  {bonus.image && (
-                    <div className="h-40 w-full overflow-hidden relative bg-gray-100 flex-shrink-0">
-                      <img 
-                        src={getDirectImageUrl(bonus.image)} 
-                        alt={bonus.title} 
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        referrerPolicy="no-referrer"
-                      />
-                      <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-xs text-brand-dark p-2.5 rounded-2xl shadow-sm group-hover:bg-brand-medium group-hover:text-white transition-all">
-                        {bonus.icon}
-                      </div>
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-sm border border-gray-100 select-none group-hover:scale-110 transition-transform">
+                      {cat.emoji}
                     </div>
-                  )}
-                  <div className="p-6">
-                    {!bonus.image && (
-                      <div className="w-12 h-12 bg-brand-light text-brand-dark rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-medium group-hover:text-white transition-colors">
-                        {bonus.icon}
-                      </div>
-                    )}
-                    <h3 className="font-black text-lg text-gray-900 mb-2 leading-tight">{bonus.title}</h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">{bonus.desc}</p>
+                    <span className="text-[10px] font-black uppercase tracking-wider bg-white px-3 py-1 rounded-full border border-gray-100 text-gray-500">
+                      {cat.badge}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-black text-gray-900 mb-2">{cat.title}</h3>
+                  <p className="text-xs text-gray-500 font-medium leading-relaxed mb-4">{cat.desc}</p>
+                </div>
+                <div className="border-t border-gray-100/80 pt-4 mt-2">
+                  <span className="text-[10px] font-extrabold uppercase text-[#1a5c3a] tracking-widest block mb-2">Materiais Inclusos:</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {cat.items.map((item, idx) => (
+                      <span key={idx} className="bg-[#f3fdf6] text-[#1a5c3a] border border-[#2ecc71]/10 text-[9px] font-bold px-2 py-1 rounded-md">
+                        ✓ {item}
+                      </span>
+                    ))}
                   </div>
                 </div>
-                <div className="px-6 pb-6 pt-0">
-                  <div className="flex items-center gap-1 text-xs font-bold text-brand-medium uppercase">
-                    <Gift className="w-3.5 h-3.5" />
-                    <span>GRÁTIS</span>
-                  </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Interactive Explore Tool Banner inside Abundance Section */}
+          <div className="mt-20 bg-[#f3fdf6] border-2 border-[#2ecc71]/20 rounded-3xl p-8 text-center max-w-4xl mx-auto animate-pulse">
+            <span className="inline-block bg-[#2ecc71] text-white text-[10px] font-black px-4 py-1 rounded-full uppercase tracking-widest mb-3">
+              Experimente Grátis
+            </span>
+            <h3 className="text-2xl font-black text-[#1a5c3a] mb-2">Quer Interagir com o Kit Agora Mesmo?</h3>
+            <p className="text-sm text-gray-650 max-w-2xl mx-auto font-medium mb-6">
+              Abaixo criamos uma ferramenta interativa exclusiva. Você pode testar como os cartões funcionam e até mesmo anexar imagens reais da sua criança para personalizar a rotina!
+            </p>
+            <ChevronDown className="w-6 h-6 text-[#2ecc71] mx-auto animate-bounce" />
+          </div>
+        </div>
+      </section>
+
+      {/* Render the original interactive materials preview component so users maintain interactive upload feature! */}
+      <MaterialsPreview />
+
+      {/* Demonstração - Modern Passo a Passo */}
+      <section id="demonstracao" className="py-24 px-4 bg-gray-50 border-b border-gray-100">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-[#2ecc71]/20">
+              Passo a Passo
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-4 tracking-tight">
+              Como Funciona na Prática?
+            </h2>
+            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto font-medium">
+              Apenas 6 passos simples separam você de uma rotina muito mais tranquila e organizada para seu filho.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              { step: "1", title: "Comprar com Segurança", desc: "Clique nos botões e faça o pagamento 100% seguro por PIX ou Cartão de Crédito.", icon: <ShoppingBag className="w-6 h-6" /> },
+              { step: "2", title: "Receber o Acesso", desc: "No mesmo minuto, enviamos em seu e-mail o link para a plataforma exclusiva de download.", icon: <Mail className="w-6 h-6" /> },
+              { step: "3", title: "Baixar os Arquivos", desc: "Baixe a biblioteca completa em formato PDF de alta resolução no seu celular ou PC.", icon: <Download className="w-6 h-6" /> },
+              { step: "4", title: "Imprimir Conforme Necessidade", desc: "Imprima em casa ou em qualquer gráfica do seu bairro as páginas que vai usar primeiro.", icon: <Printer className="w-6 h-6" /> },
+              { step: "5", title: "Plastificar (Opcional)", desc: "Se preferir maior durabilidade para o uso com velcro ou giz, recomendamos plastificar.", icon: <ShieldCheck className="w-6 h-6" /> },
+              { step: "6", title: "Organizar e Utilizar", desc: "Fixe os painéis na altura da criança e comece a viver dias mais previsíveis e sem crises!", icon: <Smile className="w-6 h-6" /> }
+            ].map((item, i) => (
+              <div key={i} className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 relative transition-transform hover:translate-y-[-4px]">
+                <div className="absolute top-6 right-6 text-gray-100 font-black text-5xl leading-none select-none">
+                  0{item.step}
+                </div>
+                <div className="w-12 h-12 rounded-2xl bg-[#f3fdf6] text-[#1a5c3a] flex items-center justify-center mb-6 border border-[#2ecc71]/10">
+                  {item.icon}
+                </div>
+                <h3 className="text-lg font-black text-gray-900 mb-2">{item.title}</h3>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Benefícios Reais (Focado em Dores e Soluções) */}
+      <section id="beneficios" className="py-24 px-4 bg-white border-b border-gray-100">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-16">
+            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-[#2ecc71]/20">
+              Vantagens Exclusivas
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-4 tracking-tight">
+              Por que escolher o nosso Kit?
+            </h2>
+            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto font-medium">
+              Entregamos exatamente o que você precisa para obter resultados rápidos e duradouros na rotina atípica.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {[
+              { title: "Material Pronto", desc: "Chega de passar madrugadas em claro pesquisando figuras confusas e tentando organizar tudo. Nosso material está diagramado por pedagogos e pronto para imprimir.", icon: <CheckCircle2 className="w-6 h-6 text-[#2ecc71]" /> },
+              { title: "Economia de Tempo", desc: "Organize rotinas completas para sua criança em menos de 10 minutos. O kit possui sumários claros para você encontrar as atividades em segundos.", icon: <CheckCircle2 className="w-6 h-6 text-[#2ecc71]" /> },
+              { title: "Fácil Organização", desc: "Dividido por áreas de desenvolvimento bem demarcadas para que você saiba exatamente o que usar para cada dificuldade comportamental.", icon: <CheckCircle2 className="w-6 h-6 text-[#2ecc71]" /> },
+              { title: "Uso em Diferentes Ambientes", desc: "Mesmo padrão visual para ser utilizado em casa, levado na bolsa para as terapias clínicas ou compartilhado com educadores na escola.", icon: <CheckCircle2 className="w-6 h-6 text-[#2ecc71]" /> },
+              { title: "Arquivos Digitais PDF", desc: "Os arquivos não estragam ou perdem a qualidade. Guarde no seu e-mail, celular ou nuvem para acessar quando e onde precisar.", icon: <CheckCircle2 className="w-6 h-6 text-[#2ecc71]" /> },
+              { title: "Impressão Ilimitada", desc: "Sua criança rasgou ou rabiscou o cartão? Sem problemas! Basta abrir o arquivo e imprimir novamente quantas vezes for necessário, sem nenhum custo extra.", icon: <CheckCircle2 className="w-6 h-6 text-[#2ecc71]" /> }
+            ].map((item, i) => (
+              <div key={i} className="flex gap-4 p-4 rounded-2xl hover:bg-gray-50 transition-colors">
+                <div className="shrink-0 mt-1">{item.icon}</div>
+                <div>
+                  <h3 className="font-black text-lg text-gray-900 mb-1">{item.title}</h3>
+                  <p className="text-sm text-gray-650 leading-relaxed font-medium">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -1812,49 +2174,132 @@ export default function App() {
         </div>
       </section>
 
-      {/* Depoimentos Section */}
-      <section id="depoimentos" className="bg-brand-light/20 py-24 px-4 relative overflow-hidden">
-        {/* Decorative ambient blur elements */}
-        <div className="absolute top-1/2 left-10 w-72 h-72 bg-brand-medium/5 rounded-full filter blur-3xl pointer-events-none"></div>
+      {/* Bônus Section */}
+      <section id="bonus" className="py-24 px-4 bg-white border-b border-gray-100">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-[#2ecc71]/20">
+              Presentes Exclusivos
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-4 tracking-tight">
+              Bônus Especiais Inclusos
+            </h2>
+            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto font-medium">
+              Fazendo sua inscrição hoje, você leva gratuitamente estes materiais complementares de alto valor pedagógico.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { 
+                title: "Guia da Rotina Matinal Perfeita", 
+                icon: <Clock className="w-5 h-5 text-[#1a5c3a] group-hover:text-white transition-colors" />, 
+                desc: "Torne o acordar da sua criança um momento tranquilo, previsível e sem estresse.",
+                image: "https://imgur.com/a/o2z7GJk",
+                value: "R$ 37,00"
+              },
+              { 
+                title: "Cartões de Comunicação por Sinais", 
+                icon: <MessageCircle className="w-5 h-5 text-[#1a5c3a] group-hover:text-white transition-colors" />, 
+                desc: "Ajude seu filho a expressar necessidades básicas e dores físicas sem chorar.",
+                image: "https://imgur.com/a/CGPvIgc",
+                value: "R$ 47,00"
+              },
+              { 
+                title: "Guia Completo de Inclusão Escolar", 
+                icon: <BookOpen className="w-5 h-5 text-[#1a5c3a] group-hover:text-white transition-colors" />, 
+                desc: "Saiba exatamente como levar as rotinas e pictogramas para dentro da sala de aula.",
+                image: "https://imgur.com/a/iwu7tYK",
+                value: "R$ 39,00"
+              },
+              { 
+                title: "Painel Anti-Crise de Resposta Rápida", 
+                icon: <ShieldCheck className="w-5 h-5 text-[#1a5c3a] group-hover:text-white transition-colors" />, 
+                desc: "Plaquinhas de 'Espera', 'Pausa' e 'Minha vez' para regulação em momentos difíceis.",
+                image: "https://imgur.com/a/64HncyK",
+                value: "R$ 29,00"
+              }
+            ].map((bonus, idx) => (
+              <div key={idx} className="bg-gray-50 rounded-3xl border border-gray-100 hover:border-[#2ecc71]/30 hover:shadow-xl transition-all group overflow-hidden flex flex-col justify-between">
+                <div>
+                  {bonus.image && (
+                    <div className="h-44 w-full overflow-hidden relative bg-gray-150 flex-shrink-0">
+                      <img 
+                        src={getDirectImageUrl(bonus.image)} 
+                        alt={bonus.title} 
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-xs text-[#1a5c3a] p-2.5 rounded-2xl shadow-sm group-hover:bg-[#2ecc71] group-hover:text-white transition-all">
+                        {bonus.icon}
+                      </div>
+                      <span className="absolute top-3 right-3 bg-[#e03030] text-white text-[9px] font-black uppercase px-3 py-1.5 rounded-full shadow-sm">
+                        GRÁTIS HOJE
+                      </span>
+                    </div>
+                  )}
+                  <div className="p-6">
+                    <h3 className="font-black text-lg text-gray-900 mb-2 leading-tight">{bonus.title}</h3>
+                    <p className="text-xs text-gray-505 leading-relaxed font-medium mb-4">{bonus.desc}</p>
+                  </div>
+                </div>
+                <div className="px-6 pb-6 pt-2 border-t border-gray-100/60 flex justify-between items-center bg-gray-100/30">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-gray-450 font-bold uppercase line-through">{bonus.value}</span>
+                    <span className="text-xs font-black text-[#2ecc71] uppercase">R$ 0,00</span>
+                  </div>
+                  <span className="text-[10px] font-black text-[#1a5c3a] bg-[#f3fdf6] px-2.5 py-1 rounded-md border border-[#2ecc71]/10">
+                    ADICIONADO
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Prova Social Section */}
+      <section id="depoimentos" className="bg-[#f3fdf6]/30 py-24 px-4 relative overflow-hidden border-b border-gray-100">
+        <div className="absolute top-1/2 left-10 w-72 h-72 bg-[#2ecc71]/5 rounded-full filter blur-3xl pointer-events-none"></div>
         <div className="absolute bottom-10 right-10 w-72 h-72 bg-amber-500/5 rounded-full filter blur-3xl pointer-events-none"></div>
 
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center mb-16">
-            <span className="inline-block bg-brand-medium/10 text-brand-dark px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
-              Feedback por E-mail
+            <span className="inline-block bg-[#2ecc71]/10 text-[#1a5c3a] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-[#2ecc71]/20">
+              Relatos de Quem Usa
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 mb-4 tracking-tight">
-              O que as famílias estão dizendo...
+            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-4 tracking-tight">
+              O que dizem as famílias e profissionais...
             </h2>
             <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto font-medium">
-              Relatos reais enviados diretamente para a nossa caixa de entrada por mães, pais e profissionais de todo o Brasil.
+              E-mails reais enviados diretamente para nossa caixa de entrada por mães, pais e terapeutas de todo o Brasil.
             </p>
           </div>
 
           {/* Trust Stat Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16 max-w-4xl mx-auto">
             <div className="bg-white border border-gray-100 p-6 rounded-3xl shadow-xs flex flex-col items-center text-center">
               <div className="flex gap-0.5 mb-2">
                 {[1, 2, 3, 4, 5].map(s => <Star key={s} className="w-5 h-5 text-amber-400 fill-amber-400" />)}
               </div>
               <h4 className="text-xl font-black text-gray-900 mb-1">4.9 / 5 Estrelas</h4>
-              <p className="text-xs text-gray-500 font-medium">Média de satisfação com base em mais de 3.500 avaliações de pais e profissionais.</p>
+              <p className="text-[11px] text-gray-500 font-medium leading-relaxed">Média de aprovação técnica e pedagógica com base em mais de 3.500 avaliações de usuários.</p>
             </div>
             
             <div className="bg-white border border-gray-100 p-6 rounded-3xl shadow-xs flex flex-col items-center text-center">
-              <div className="w-10 h-10 bg-brand-light text-brand-medium rounded-full flex items-center justify-center mb-2 font-bold text-lg">
+              <div className="w-10 h-10 bg-[#f3fdf6] text-[#2ecc71] rounded-full flex items-center justify-center mb-2 font-bold text-lg">
                 ❤️
               </div>
               <h4 className="text-xl font-black text-gray-900 mb-1">+3.500 Famílias</h4>
-              <p className="text-xs text-gray-500 font-medium">Crianças que conquistaram rotinas mais previsíveis, leves e com menos crises de ansiedade.</p>
+              <p className="text-[11px] text-gray-500 font-medium leading-relaxed">Crianças com TEA e TDAH que conquistaram rotinas mais leves, seguras e felizes.</p>
             </div>
 
             <div className="bg-white border border-gray-100 p-6 rounded-3xl shadow-xs flex flex-col items-center text-center">
               <div className="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-2 font-bold text-lg">
                 🛡️
               </div>
-              <h4 className="text-xl font-black text-gray-900 mb-1">Garantia Incondicional</h4>
-              <p className="text-xs text-gray-500 font-medium">Experimente por até 7 dias sem compromisso. Se não gostar, devolvemos 100% do seu dinheiro.</p>
+              <h4 className="text-xl font-black text-gray-900 mb-1">Satisfação Total</h4>
+              <p className="text-[11px] text-gray-500 font-medium leading-relaxed">Garantia total de 14 dias para você testar sem qualquer compromisso.</p>
             </div>
           </div>
 
@@ -1870,7 +2315,7 @@ export default function App() {
                 onClick={() => setSelectedDepoType(tab.id as any)}
                 className={`px-5 py-2.5 rounded-full text-xs font-bold tracking-wide transition-all uppercase cursor-pointer border ${
                   selectedDepoType === tab.id
-                    ? 'bg-brand-medium text-white shadow-md shadow-brand-medium/20 border-brand-medium'
+                    ? 'bg-[#2ecc71] text-white shadow-md shadow-[#2ecc71]/20 border-[#2ecc71]'
                     : 'bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-950 border-gray-100'
                 }`}
               >
@@ -2042,7 +2487,7 @@ export default function App() {
                             <Paperclip className="w-3.5 h-3.5 text-gray-400 shrink-0" />
                             <span className="truncate font-medium text-[11px] text-gray-600">{dep.attachment}</span>
                           </div>
-                          <span className="text-brand-medium font-bold text-[9px] uppercase tracking-wider bg-brand-medium/10 px-2 py-0.5 rounded-sm shrink-0 select-none">
+                          <span className="text-[#2ecc71] font-bold text-[9px] uppercase tracking-wider bg-[#2ecc71]/10 px-2 py-0.5 rounded-sm shrink-0 select-none">
                             Impresso
                           </span>
                         </div>
@@ -2060,7 +2505,7 @@ export default function App() {
                         <div className="bg-[#f2faf7] border-l-4 border-[#00a884]/60 p-3 rounded-r-xl text-xs">
                           <div className="flex justify-between items-center mb-1">
                             <span className="font-bold text-[#006e56] uppercase tracking-wide text-[10px]">Suporte • Ana do TEA Pequenos Passos</span>
-                            <span className="text-[9px] text-gray-400">Resposta Automática</span>
+                            <span className="text-[9px] text-gray-400">Resposta</span>
                           </div>
                           <p className="text-gray-700 leading-relaxed mt-1 font-normal italic">"{dep.reply}"</p>
                         </div>
@@ -2088,96 +2533,123 @@ export default function App() {
       </section>
 
       {/* Planos (Pricing) Section */}
-      <section id="planos" className="py-20 px-4 bg-white">
+      <section id="planos" className="py-24 px-4 bg-gray-50 border-b border-gray-100">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16 px-4">
-            <h2 className="text-4xl sm:text-5xl font-black text-gray-900 mb-4">Escolha seu Acesso</h2>
-            <p className="text-gray-500 font-medium mb-4">Invista no bem-estar e autonomia da sua criança</p>
-            <div className="inline-flex items-center gap-2 bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-red-100">
-              <Clock className="w-3 h-3" />
-              <span>O PREÇO IRÁ SUBIR EM BREVE</span>
+            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-[#2ecc71]/20">
+              Acesso Imediato
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-4 tracking-tight">Escolha seu Acesso ao Kit</h2>
+            <p className="text-base sm:text-lg text-gray-650 max-w-xl mx-auto font-medium mb-6">Invista no desenvolvimento, organização e tranquilidade da sua criança.</p>
+            <div className="inline-flex items-center gap-2 bg-red-50 text-red-600 px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-red-150 shadow-2xs">
+              <Clock className="w-3.5 h-3.5 animate-pulse" />
+              <span>Oferta especial válida apenas para hoje</span>
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
              {/* Plano Básico */}
-             <div className="bg-white border-2 border-gray-200 rounded-3xl p-8 flex flex-col items-center text-center relative hover:border-gray-300 transition-colors">
-               <h3 className="text-xl font-black text-gray-800 mb-2 uppercase tracking-wide">Plano Básico</h3>
-               <p className="text-sm text-gray-500 mb-6 italic">“O essencial para começar”</p>
-               <div className="mb-6">
-                 <span className="text-gray-400 line-through text-sm">R$47</span>
-                 <div className="flex items-center justify-center gap-1">
-                   <span className="text-gray-900 font-bold text-2xl">R$</span>
-                   <span className="text-gray-900 font-black text-6xl">10</span>
+             <div className="bg-white border-2 border-gray-200 rounded-[32px] p-8 sm:p-10 flex flex-col justify-between items-center text-center relative hover:border-gray-300 transition-all duration-300 hover:shadow-lg">
+               <div className="w-full">
+                 <span className="text-[10px] font-black bg-gray-100 text-gray-500 px-4 py-1 rounded-full uppercase tracking-wider mb-3 inline-block">
+                   O Essencial
+                 </span>
+                 <h3 className="text-2xl font-black text-gray-900 mb-1 uppercase tracking-wide">Plano Básico</h3>
+                 <p className="text-xs text-gray-500 mb-6 font-medium">Ideais iniciais de organização de rotina</p>
+                 
+                 <div className="bg-gray-50/80 rounded-2xl p-5 mb-8 border border-gray-100">
+                   <span className="text-gray-400 line-through text-xs font-bold block mb-1">De R$ 47,00 por apenas</span>
+                   <div className="flex items-center justify-center gap-1">
+                     <span className="text-gray-950 font-extrabold text-2xl">R$</span>
+                     <span className="text-gray-950 font-black text-5xl sm:text-6xl tracking-tight">10,00</span>
+                   </div>
+                   <span className="text-[10px] text-gray-400 font-bold block mt-1">Taxa única • Sem mensalidade</span>
                  </div>
+
+                 <ul className="text-left space-y-3.5 mb-8 w-full border-t border-gray-100 pt-6">
+                   {[
+                     "Rotina Diária e Semanal",
+                     "Pictogramas Escolares Básicos",
+                     "Atividades de Vida Diária (AVDs)",
+                     "Painel Primeiro/Depois",
+                     "Recorte, Cole e Atividades",
+                     "Alfabetização Inicial",
+                     "Uso Imediato em PDF"
+                   ].map((item, idx) => (
+                     <li key={idx} className="flex items-start gap-3 text-xs sm:text-sm text-gray-650 font-medium">
+                       <Check className="w-4 h-4 text-[#2ecc71] shrink-0 mt-0.5" />
+                       <span>{item}</span>
+                     </li>
+                   ))}
+                   {[
+                     "Pranchas de Comunicação",
+                     "Histórias Sociais de Regulação",
+                     "Materiais para Adolescentes",
+                     "Atualizações Vitalícias"
+                   ].map((item, idx) => (
+                     <li key={idx} className="flex items-start gap-3 text-xs sm:text-sm text-gray-400 font-medium line-through decoration-gray-300">
+                       <XCircle className="w-4 h-4 text-gray-300 shrink-0 mt-0.5" />
+                       <span>{item}</span>
+                     </li>
+                   ))}
+                 </ul>
                </div>
-               <ul className="text-left space-y-3 mb-10 w-full">
-                 {[
-                   "Apoio Visual / Rotina",
-                   "Pictogramas Escolares",
-                   "AVDS (Atividades de Vida Diária)",
-                   "Core / Palavras Essenciais",
-                   "Recorte / Cole / Ligar / Pintar",
-                   "Alfabetização",
-                   "Festividades"
-                 ].map((item, idx) => (
-                   <li key={idx} className="flex items-center gap-3 text-sm text-gray-600">
-                     <Check className="w-4 h-4 text-brand-medium flex-shrink-0" />
-                     {item}
-                   </li>
-                 ))}
-               </ul>
+
                <button 
                  onClick={handleBasicClick}
-                 className="mt-auto w-full bg-gray-900 text-white font-black py-4 rounded-2xl hover:bg-black transition-all"
+                 className="w-full bg-gray-900 text-white font-black py-4.5 rounded-2xl hover:bg-black hover:scale-[1.01] transition-all duration-300 cursor-pointer shadow-sm text-sm uppercase tracking-wider"
                >
-                 COMPRAR AGORA
+                 Adquirir Plano Básico
                </button>
              </div>
 
              {/* Plano Premium */}
-             <div className="bg-brand-light border-4 border-brand-medium rounded-3xl p-8 flex flex-col items-center text-center relative shadow-2xl shadow-brand-medium/20 scale-105">
-               <div className="absolute -top-5 bg-brand-medium text-white px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest animate-bounce">
-                  Mais Vendido
+             <div className="bg-[#f3fdf6] border-4 border-[#2ecc71] rounded-[32px] p-8 sm:p-10 flex flex-col justify-between items-center text-center relative shadow-xl shadow-emerald-950/5 scale-100 md:scale-[1.03] transition-all duration-300 hover:shadow-2xl">
+               <div className="absolute -top-5 bg-[#2ecc71] text-white px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest shadow-md">
+                  RECOMENDADO • COMPLETO
                </div>
-               <h3 className="text-xl font-black text-brand-dark mb-2 uppercase tracking-wide">Plano Premium</h3>
-               <p className="text-sm text-brand-dark/60 mb-6 font-bold italic">“Tudo do Básico +”</p>
-               <div className="mb-6">
-                 <span className="text-brand-dark/40 line-through text-sm">R$97</span>
-                 <div className="flex items-center justify-center gap-1">
-                   <span className="text-brand-dark font-bold text-2xl">R$</span>
-                   <span className="text-brand-dark font-black text-6xl">27,90</span>
+               <div className="w-full">
+                 <span className="text-[10px] font-black bg-[#2ecc71]/10 text-[#1a5c3a] px-4 py-1 rounded-full uppercase tracking-wider mb-3 inline-block">
+                   Melhor Custo-Benefício
+                 </span>
+                 <h3 className="text-2xl font-black text-[#1a5c3a] mb-1 uppercase tracking-wide">Plano Premium</h3>
+                 <p className="text-xs text-[#1a5c3a]/70 mb-6 font-bold">Acesso vitalício a todas as 14+ categorias de materiais</p>
+                 
+                 <div className="bg-[#1a5c3a] rounded-2xl p-5 mb-8 border border-[#2ecc71]/20 shadow-inner">
+                   <span className="text-white/60 line-through text-xs font-bold block mb-1">De R$ 97,00 por apenas</span>
+                   <div className="flex items-center justify-center gap-1 text-white">
+                     <span className="font-extrabold text-2xl text-[#2ecc71]">R$</span>
+                     <span className="font-black text-5xl sm:text-6xl tracking-tight text-white">27,90</span>
+                   </div>
+                   <span className="text-[10px] text-[#2ecc71] font-bold block mt-1">Taxa única • Acesso e Atualizações Vitalícias</span>
                  </div>
+
+                 <ul className="text-left space-y-3 mb-8 w-full border-t border-[#2ecc71]/10 pt-6">
+                   {[
+                     "Tudo do Plano Básico",
+                     "Pranchas de Comunicação Rápida",
+                     "Histórias Sociais de Comportamento",
+                     "Painel Anti-Crise Completo",
+                     "Rotinas de Higiene Passo a Passo",
+                     "Quadro de Recompensas e Incentivos",
+                     "Calendário Interativo de Parede",
+                     "Manual de Adaptação Escolar",
+                     "Apoio para Pré-Adolescentes",
+                     "Atualizações Vitalícias Gratuitas"
+                   ].map((item, idx) => (
+                     <li key={idx} className="flex items-start gap-3 text-xs sm:text-sm text-[#1a5c3a] font-bold">
+                       <CheckCircle2 className="w-4.5 h-4.5 text-[#2ecc71] shrink-0 mt-0.5" />
+                       <span>{item}</span>
+                     </li>
+                   ))}
+                 </ul>
                </div>
-               <ul className="text-left space-y-2 mb-10 w-full overflow-y-auto max-h-[400px] pr-2 custom-scrollbar">
-                 {[
-                   "Pranchas Prontas",
-                   "Histórias Sociais",
-                   "Livros e Histórias",
-                   "Conceitos Matemáticos",
-                   "Vamos Falar?",
-                   "Canto e Voz",
-                   "Ciência / Biologia",
-                   "Músicas",
-                   "Receitas",
-                   "Atividades Diversas",
-                   "The AAC Coach",
-                   "Brinquedos e Brincadeiras",
-                   "Adolescentes",
-                   "Posts Técnicos",
-                   "Atualizações vitalícias"
-                 ].map((item, idx) => (
-                   <li key={idx} className="flex items-center gap-3 text-xs sm:text-sm text-brand-dark font-bold">
-                     <CheckCircle2 className="w-4 h-4 text-brand-medium flex-shrink-0" />
-                     {item}
-                   </li>
-                 ))}
-               </ul>
+
                <button 
                  onClick={() => window.location.href = 'https://pay.cakto.com.br/p2i9bv8_888747'}
-                 className="mt-auto w-full bg-brand-medium text-white font-black py-4 rounded-2xl hover:bg-brand-medium/90 transition-all shadow-lg shadow-brand-medium/30 uppercase tracking-widest transform hover:scale-105 active:scale-95"
+                 className="w-full bg-[#2ecc71] text-white font-black py-4.5 rounded-2xl hover:bg-[#27b966] hover:scale-[1.01] transition-all duration-300 cursor-pointer shadow-md shadow-[#2ecc71]/20 text-sm uppercase tracking-wider"
                >
-                 QUERO ACESSO PREMIUM
+                 Quero o Kit Completo
                </button>
              </div>
           </div>
@@ -2185,28 +2657,30 @@ export default function App() {
       </section>
 
       {/* Sobre a Criadora Section */}
-      <section id="sobre" className="bg-gray-50 py-20 px-4">
+      <section id="sobre" className="py-24 px-4 bg-white border-b border-gray-100">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-3xl p-8 sm:p-12 shadow-sm border border-gray-100 flex flex-col md:flex-row gap-12 items-center">
-            <div className="w-48 h-48 sm:w-64 sm:h-64 rounded-2xl overflow-hidden shadow-xl flex-shrink-0 rotate-3">
-              <img src="https://i.imgur.com/G4DaqP5.png" alt="Ana Paula Souza" className="w-full h-full object-cover object-[center_20%]" />
+          <div className="bg-gray-50 rounded-[36px] p-8 sm:p-12 border border-gray-100 flex flex-col md:flex-row gap-12 items-center">
+            <div className="w-48 h-48 sm:w-64 sm:h-64 rounded-3xl overflow-hidden shadow-2xl flex-shrink-0 rotate-2 border-4 border-white">
+              <img src="https://i.imgur.com/G4DaqP5.png" alt="Ana Paula Souza" className="w-full h-full object-cover object-[center_20%]" referrerPolicy="no-referrer" />
             </div>
             <div>
-              <span className="text-brand-medium font-bold text-sm uppercase mb-2 block">Idealizadora do Projeto</span>
-              <h2 className="text-3xl font-black text-gray-900 mb-4">Ana Paula Souza</h2>
-              <p className="text-gray-600 leading-relaxed mb-6">
-                Psicopedagoga & Especialista em TEA com mais de 10 anos de experiência clínica e educacional. 
-                Minha missão é simplificar o dia a dia de famílias atípicas através de ferramentas visuais práticas e comprovadas.
+              <span className="text-[#2ecc71] font-black text-xs uppercase tracking-widest mb-2 block">Idealizadora do Projeto</span>
+              <h2 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">Dra. Ana Paula Souza</h2>
+              <p className="text-sm sm:text-base text-gray-650 leading-relaxed font-medium mb-6">
+                Psicopedagoga, especialista em Neurodesenvolvimento e TEA, com mais de 10 anos de prática clínica e escolar auxiliando famílias atípicas.
               </p>
-              <div className="flex gap-4">
+              <p className="text-xs sm:text-sm text-gray-500 leading-relaxed font-medium mb-6">
+                “Minha missão é trazer leveza para o lar de famílias que convivem com o autismo. Criei estes materiais visuais para dar independência às crianças e segurança emocional aos pais.”
+              </p>
+              <div className="flex gap-6 border-t border-gray-250/40 pt-6">
                  <div className="flex flex-col">
-                   <span className="text-2xl font-black text-brand-dark leading-none">10+</span>
-                   <span className="text-[10px] uppercase font-bold text-gray-400">Anos Exp</span>
+                   <span className="text-3xl font-black text-[#1a5c3a] leading-none">10+</span>
+                   <span className="text-[9px] uppercase font-bold text-gray-400 mt-1">Anos de Atuação</span>
                  </div>
-                 <div className="w-px h-8 bg-gray-200"></div>
+                 <div className="w-px h-10 bg-gray-200"></div>
                  <div className="flex flex-col">
-                   <span className="text-2xl font-black text-brand-dark leading-none">3k+</span>
-                   <span className="text-[10px] uppercase font-bold text-gray-400">Famílias</span>
+                   <span className="text-3xl font-black text-[#1a5c3a] leading-none">+3.500</span>
+                   <span className="text-[9px] uppercase font-bold text-gray-400 mt-1">Alunos e Famílias</span>
                  </div>
               </div>
             </div>
@@ -2215,40 +2689,51 @@ export default function App() {
       </section>
 
       {/* Garantia Section */}
-       <section id="garantia" className="py-20 px-4 bg-white text-center">
-         <div className="max-w-3xl mx-auto bg-brand-light p-8 sm:p-12 rounded-[50px] border-4 border-dashed border-brand-medium/30">
-            <ShieldCheck className="w-20 h-20 text-brand-medium mx-auto mb-6" />
-            <h2 className="text-3xl font-black text-gray-900 mb-4">Garantia Total de 14 Dias</h2>
-            <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto font-medium">
-              Não tem risco. Se você testar o material e sentir que não ajudou a reduzir as crises ou organizar a rotina do seu filho, devolvemos 100% do seu dinheiro. Sem perguntas, sem burocracia.
-            </p>
-         </div>
-       </section>
+      <section id="garantia" className="py-24 px-4 bg-white border-b border-gray-100 text-center">
+        <div className="max-w-3xl mx-auto bg-[#f3fdf6] p-8 sm:p-12 rounded-[40px] border-2 border-dashed border-[#2ecc71]/40 shadow-xs">
+          <ShieldCheck className="w-20 h-20 text-[#2ecc71] mx-auto mb-6" />
+          <h2 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">Garantia Blindada de Satisfação</h2>
+          <p className="text-sm sm:text-base text-gray-650 leading-relaxed max-w-2xl mx-auto font-medium">
+            Seu risco é zero. Use todo o material com a sua criança por até 14 dias inteiros. Se você sentir que os cartões e quadros não ajudaram a dar mais previsibilidade e diminuir as crises no dia a dia, basta enviar um único e-mail e devolvemos 100% do seu dinheiro, sem perguntas e sem complicação.
+          </p>
+        </div>
+      </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="bg-gray-50 py-20 px-4">
+      <section id="faq" className="bg-gray-50 py-24 px-4">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-black text-gray-900 text-center mb-12">Dúvidas Frequentes</h2>
-          <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-gray-100">
+          <div className="text-center mb-16">
+            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-[#2ecc71]/20">
+              Dúvidas Respondidas
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-4 tracking-tight">Perguntas Frequentes</h2>
+            <p className="text-base text-gray-600 font-medium">Ficou com alguma dúvida? Encontre a resposta rápida para as suas principais perguntas abaixo.</p>
+          </div>
+
+          <div className="space-y-4">
             <FAQItem 
               question="Como recebo o acesso ao material?" 
-              answer="O acesso é imediato! Assim que seu pagamento for confirmado (no cartão ou PIX), você receberá um e-mail com o link para baixar todos os arquivos em PDF diretamente para o seu computador ou celular." 
+              answer="O acesso é totalmente imediato! Assim que o seu pagamento por PIX ou Cartão de Crédito for processado, nosso sistema envia automaticamente em seu e-mail cadastrado as instruções e o link para acessar a área de membros exclusiva e fazer o download de todos os PDFs do Kit." 
             />
             <FAQItem 
-              question="Para qual idade o kit é indicado?" 
-              answer="As rotinas visuais são indicadas para crianças a partir dos 2 anos de idade até a pré-adolescência, dependendo do nível de suporte e compreensão visual da criança." 
+              question="Para qual faixa etária o material é recomendado?" 
+              answer="O material é recomendado para crianças atípicas (TEA, TDAH, atrasos no desenvolvimento) a partir dos 2 anos até a pré-adolescência, pois a comunicação alternativa e as rotinas visuais se adaptam facilmente aos diferentes níveis de suporte." 
             />
             <FAQItem 
-              question="Preciso de internet constante para usar?" 
-              answer="Não. Uma vez baixado o material, você pode acessá-lo offline. A internet é necessária apenas para baixar os arquivos inicialmente." 
+              question="O material é enviado impresso pelo Correio?" 
+              answer="Não. O material é 100% digital e entregue em formato PDF de altíssima resolução. Isso garante que você pague um preço extremamente acessível (sem frete) e possa imprimir os cartões quantas vezes quiser, imediatamente, sem precisar esperar semanas pela entrega física." 
             />
             <FAQItem 
-              question="O material serve para ser usado na escola?" 
-              answer="Com certeza! Muitos professores utilizam nossos cartões em salas de recursos e salas regulares para auxiliar na inclusão e previsibilidade dos alunos atípicos." 
+              question="Como devo fazer a impressão dos cartões?" 
+              answer="Você pode imprimir em casa em qualquer impressora convencional ou em uma gráfica de sua preferência. Recomendamos imprimir em papel de gramatura ligeiramente superior (como 120g ou 180g) e plastificar para que as peças fiquem rígidas, seguras e extremamente duráveis para o manuseio diário." 
             />
             <FAQItem 
-              question="Terei suporte se tiver alguma dúvida?" 
-              answer="Sim! Temos um canal de suporte via e-mail e WhatsApp para ajudar você com qualquer problema técnico ou dúvida sobre como utilizar os materiais da melhor forma." 
+              question="O pagamento é mensal ou taxa única?" 
+              answer="Taxa única! Não há mensalidades, cobranças recorrentes ou taxas escondidas. Você faz a inscrição apenas uma vez e garante o acesso permanente e vitalício ao kit e a todas as futuras atualizações que fizermos." 
+            />
+            <FAQItem 
+              question="Se eu tiver dúvidas ou precisar de ajuda?" 
+              answer="Damos suporte total! Se você tiver qualquer dúvida técnica para baixar os arquivos ou dificuldades de aplicação prática com sua criança, basta falar com a nossa equipe especializada diretamente no WhatsApp de suporte que fica disponível dentro da plataforma de alunos." 
             />
           </div>
         </div>
