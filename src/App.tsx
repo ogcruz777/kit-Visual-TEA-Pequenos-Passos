@@ -1829,6 +1829,8 @@ export default function App() {
     return () => clearInterval(interval);
   }, [isAutoPlaying, userInteracted, visibleCards, kitMaterials.length]);
 
+
+
   return (
     <div className="min-h-screen pt-16 sm:pt-20">
       <UrgencyBar />
@@ -1905,8 +1907,18 @@ export default function App() {
             Mais de 200 cartões visuais prontos para imprimir, organizados por categorias e desenvolvidos para apoiar famílias, professores e profissionais no dia a dia.
           </p>
 
-          {/* Benefits in bullet points (Hero section bullets for fast scanning) */}
-          <div className="max-w-2xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-4 text-left">
+          {/* Mockup premium occupying a lot of space, made larger (max-w-3xl) and closer (my-4) */}
+          <div className="relative my-4 sm:my-6 max-w-3xl mx-auto rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_15px_35px_rgba(26,92,58,0.1)] border-2 sm:border-4 border-white bg-white group hover:scale-[1.01] transition-all duration-500">
+            <img 
+              src="https://i.imgur.com/cSq8323.png" 
+              alt="Kit Visual TEA - Pequenos Passos Mockup Completo" 
+              className="w-full h-auto object-cover"
+              referrerPolicy="no-referrer"
+            />
+          </div>
+
+          {/* Benefits in bullet points (Hero section bullets for fast scanning) - placed below the mockup image */}
+          <div className="max-w-2xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-6 sm:mb-8 text-left">
             {[
               "Materiais 100% prontos para imprimir",
               "Redução imediata da ansiedade e crises",
@@ -1918,17 +1930,6 @@ export default function App() {
                 <span className="text-xs sm:text-sm font-bold text-gray-800">{benefit}</span>
               </div>
             ))}
-          </div>
-
-          {/* Mockup premium occupying a lot of space, made larger (max-w-3xl) and closer (my-4) */}
-          <div className="relative my-2 sm:my-4 max-w-3xl mx-auto rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_15px_35px_rgba(26,92,58,0.1)] border-2 sm:border-4 border-white bg-white group hover:scale-[1.01] transition-all duration-500">
-            <img 
-              src="https://i.imgur.com/nCpW8NS.png" 
-              alt="Kit Visual TEA - Pequenos Passos Mockup Completo" 
-              className="w-full h-auto object-cover"
-              referrerPolicy="no-referrer"
-            />
-
           </div>
 
           {/* CTA Button bien destacado */}
