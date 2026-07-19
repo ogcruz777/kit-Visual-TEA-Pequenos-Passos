@@ -7,6 +7,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   CheckCircle2, 
   XCircle, 
+  X,
   Clock, 
   Star, 
   Check, 
@@ -1642,6 +1643,45 @@ const WhatsAppAudio = ({ duration }: { duration: string }) => {
   );
 };
 
+// --- Hero Images Showcase Array ---
+const heroImages = [
+  {
+    src: "https://i.imgur.com/cSq8323.png",
+    title: "Kit Completo Pequenos Passos",
+    subtitle: "Mais de 200 cartões visuais estruturados para imprimir e começar a usar hoje mesmo."
+  },
+  {
+    src: "https://i.imgur.com/3gNWaxg.jpeg",
+    title: "Rotina Diária e Semanal",
+    subtitle: "Estruture as atividades da manhã, tarde e noite de forma visual e intuitiva."
+  },
+  {
+    src: "https://i.imgur.com/5PjxTPA.jpeg",
+    title: "Comunicação e Sentimentos",
+    subtitle: "Apoie a expressão de necessidades, sentimentos e combinados sociais de forma lúdica."
+  },
+  {
+    src: "https://i.imgur.com/tOEgYCe.jpeg",
+    title: "Higiene e Autonomia",
+    subtitle: "Guias visuais passo a passo para escovar os dentes, tomar banho, ir ao banheiro e desfralde."
+  },
+  {
+    src: "https://i.imgur.com/jrrOlF8.jpeg",
+    title: "Kit Anti-Crise e Regulação",
+    subtitle: "Recursos práticos para acalmar, regular sensorialmente e preparar para transições."
+  },
+  {
+    src: "https://i.imgur.com/7Sb4HQd.jpeg",
+    title: "Atividades e Aprendizagem",
+    subtitle: "Jogos educativos, pareamento de cores, números, formas e rotinas escolares adaptadas."
+  },
+  {
+    src: "https://i.imgur.com/Wu9t5HJ.jpeg",
+    title: "Histórias Sociais Interativas",
+    subtitle: "Facilite a compreensão de regras sociais, comportamentos e novos ambientes."
+  }
+];
+
 // --- Main App ---
 
 export default function App() {
@@ -1652,6 +1692,17 @@ export default function App() {
 
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [visibleCards, setVisibleCards] = useState(3);
+
+  const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
+  const [isHeroAutoPlaying, setIsHeroAutoPlaying] = useState(true);
+
+  useEffect(() => {
+    if (!isHeroAutoPlaying) return;
+    const interval = setInterval(() => {
+      setCurrentHeroSlide((prev) => (prev + 1) % heroImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [isHeroAutoPlaying]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -1829,7 +1880,109 @@ export default function App() {
     return () => clearInterval(interval);
   }, [isAutoPlaying, userInteracted, visibleCards, kitMaterials.length]);
 
+  // --- Estado do Popup de Desconto Premium ---
+  const [showDiscountPopup, setShowDiscountPopup] = useState(false);
+  const [secondsRemaining, setSecondsRemaining] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const stored = sessionStorage.getItem('popup_timer_seconds');
+      if (stored) {
+        const parsed = parseInt(stored, 10);
+        return isNaN(parsed) ? 480 : parsed;
+      }
+    }
+    return 480;
+  });
 
+  // Gatilho do Popup de Desconto (5 segundos após carregar, apenas uma vez por sessão)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const popupSeen = sessionStorage.getItem('discount_popup_seen');
+      if (!popupSeen) {
+        const timer = setTimeout(() => {
+          setShowDiscountPopup(true);
+          sessionStorage.setItem('discount_popup_seen', 'true');
+        }, 5000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, []);
+
+  // Intervalo do Cronômetro do Popup
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSecondsRemaining((prev) => {
+        if (prev <= 0) {
+          clearInterval(interval);
+          return 0;
+        }
+        const newVal = prev - 1;
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('popup_timer_seconds', newVal.toString());
+        }
+        return newVal;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // --- Estado do Segundo Popup (Scroll 70%) ---
+  const [showScrollPopup, setShowScrollPopup] = useState(false);
+
+  // Gatilho do Segundo Popup via Scroll (70% da altura da página)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleScroll = () => {
+      const scrolled = window.scrollY;
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalHeight <= 0) return;
+      const percentage = (scrolled / totalHeight) * 100;
+
+      if (percentage >= 70) {
+        const popup1Closed = sessionStorage.getItem('popup1Closed') === 'true';
+        const popup2Shown = sessionStorage.getItem('popup2Shown') === 'true';
+
+        // Só aparece se o popup 1 já foi fechado e o popup 2 ainda não foi exibido nesta sessão
+        if (popup1Closed && !popup2Shown) {
+          setShowScrollPopup(true);
+          sessionStorage.setItem('popup2Shown', 'true');
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const closePopup1 = () => {
+    setShowDiscountPopup(false);
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('popup1Closed', 'true');
+    }
+  };
+
+  const handleCTAClick = () => {
+    closePopup1();
+    if (secondsRemaining <= 0) {
+      document.getElementById('planos')?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.location.href = 'https://pay.cakto.com.br/p2i9bv8_888747';
+    }
+  };
+
+  const handleDeclineClick = () => {
+    closePopup1();
+  };
+
+  const handleScrollCTAClick = () => {
+    setShowScrollPopup(false);
+    window.location.href = 'https://pay.cakto.com.br/y3g3fhw_888684'; // Redireciona para checkout do plano básico
+  };
+
+  const handleScrollDeclineClick = () => {
+    setShowScrollPopup(false);
+  };
 
   return (
     <div className="min-h-screen pt-16 sm:pt-20">
@@ -1907,14 +2060,71 @@ export default function App() {
             Mais de 200 cartões visuais prontos para imprimir, organizados por categorias e desenvolvidos para apoiar famílias, professores e profissionais no dia a dia.
           </p>
 
-          {/* Mockup premium occupying a lot of space, made larger (max-w-3xl) and closer (my-4) */}
-          <div className="relative my-4 sm:my-6 max-w-3xl mx-auto rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_15px_35px_rgba(26,92,58,0.1)] border-2 sm:border-4 border-white bg-white group hover:scale-[1.01] transition-all duration-500">
-            <img 
-              src="https://i.imgur.com/cSq8323.png" 
-              alt="Kit Visual TEA - Pequenos Passos Mockup Completo" 
-              className="w-full h-auto object-cover"
-              referrerPolicy="no-referrer"
-            />
+          {/* Mockup premium com Carrossel Automático (Vitrine de Produtos - Sem bloco/rodapé) */}
+          <div 
+            className="relative my-6 sm:my-8 max-w-3xl mx-auto rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_15px_35px_rgba(26,92,58,0.1)] border-2 sm:border-4 border-white bg-white group/hero-carousel transition-all duration-500"
+            onMouseEnter={() => setIsHeroAutoPlaying(false)}
+            onMouseLeave={() => setIsHeroAutoPlaying(true)}
+          >
+            {/* Imagem do Slide Ativo em Proporção Natural */}
+            <div className="relative w-full overflow-hidden flex items-center justify-center">
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={currentHeroSlide}
+                  src={heroImages[currentHeroSlide].src}
+                  alt={heroImages[currentHeroSlide].title}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.35, ease: "easeInOut" }}
+                  className="w-full h-auto object-contain select-none"
+                  referrerPolicy="no-referrer"
+                />
+              </AnimatePresence>
+
+              {/* Botões Laterais de Navegação (visíveis no hover) */}
+              <button
+                onClick={() => {
+                  setCurrentHeroSlide((prev) => (prev - 1 + heroImages.length) % heroImages.length);
+                }}
+                className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 bg-white/90 hover:bg-white text-[#1a5c3a] rounded-full flex items-center justify-center shadow-lg cursor-pointer border-none transition-all hover:scale-105 active:scale-95 opacity-0 group-hover/hero-carousel:opacity-100 focus:opacity-100 focus:outline-none z-10"
+                aria-label="Slide anterior"
+              >
+                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
+              </button>
+
+              <button
+                onClick={() => {
+                  setCurrentHeroSlide((prev) => (prev + 1) % heroImages.length);
+                }}
+                className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 bg-white/90 hover:bg-white text-[#1a5c3a] rounded-full flex items-center justify-center shadow-lg cursor-pointer border-none transition-all hover:scale-105 active:scale-95 opacity-0 group-hover/hero-carousel:opacity-100 focus:opacity-100 focus:outline-none z-10"
+                aria-label="Próximo slide"
+              >
+                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
+              </button>
+
+              {/* Badge de Destaque da Vitrine */}
+              <div className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-[#1a5c3a]/90 backdrop-blur-xs text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full shadow-md tracking-wider flex items-center gap-1.5 z-10">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#1db863] animate-ping" />
+                VITRINE • {currentHeroSlide + 1} de {heroImages.length}
+              </div>
+
+              {/* Dots de navegação flutuantes discretos e elegantes */}
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-black/40 backdrop-blur-xs px-3 py-2 rounded-full z-10 shadow-lg">
+                {heroImages.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentHeroSlide(idx)}
+                    className={`h-2 rounded-full cursor-pointer transition-all duration-300 border-none ${
+                      currentHeroSlide === idx 
+                        ? 'w-5 bg-[#1db863]' 
+                        : 'w-2 bg-white/60 hover:bg-white'
+                    }`}
+                    aria-label={`Ir para slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Benefits in bullet points (Hero section bullets for fast scanning) - placed below the mockup image */}
@@ -2973,6 +3183,292 @@ export default function App() {
                     Não, prefiro economizar e ficar sem os materiais extras
                   </button>
                 </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Premium Discount Popup */}
+      <AnimatePresence>
+        {showDiscountPopup && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+            {/* Backdrop Overlay */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="absolute inset-0 bg-black/75 backdrop-blur-[5px]"
+            />
+
+            {/* Popup Container */}
+            <motion.div 
+              initial={{ y: 100, opacity: 0, scale: 0.9 }}
+              animate={{ 
+                y: 0, 
+                opacity: 1, 
+                scale: 1,
+                transition: { type: 'spring', damping: 15, stiffness: 100 }
+              }}
+              exit={{ y: 100, opacity: 0, scale: 0.9 }}
+              className="relative bg-gradient-to-b from-emerald-50/30 via-white to-white w-[90%] max-w-[370px] rounded-[24px] p-7 shadow-[0_24px_64px_rgba(0,0,0,0.25)] border border-[#1a7a4a]/10 flex flex-col overflow-y-auto max-h-[90vh] custom-scrollbar z-10"
+            >
+              {/* Close button X at top-right */}
+              <button 
+                onClick={handleDeclineClick} 
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1.5 rounded-full hover:bg-gray-100/80 transition-all cursor-pointer border-none bg-transparent" 
+                aria-label="Fechar"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* TOP SECTION */}
+              <div className="text-center text-[32px] mb-3">🧩</div>
+              <div className="flex justify-center mb-3">
+                <span className="bg-[#e03030] text-white font-extrabold text-[11px] uppercase tracking-widest px-4 py-1.5 rounded-full shadow-md flex items-center gap-1.5 animate-pulse">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white inline-block animate-ping" />
+                  🔴 SOMENTE AGORA
+                </span>
+              </div>
+
+              {/* HEADLINE */}
+              <h3 className="text-[#1a7a4a] text-[22px] font-black text-center leading-snug mb-2 font-sans tracking-tight">
+                Você garante o Kit Premium que vale R$ 97,00
+              </h3>
+
+              {/* SUBHEADLINE */}
+              <p className="text-gray-500 text-[13px] text-center leading-relaxed mb-4">
+                Identificamos que é sua primeira visita. Por isso liberamos uma condição especial que não aparece para todo mundo:
+              </p>
+
+              {/* PRICE BOX */}
+              <div className="border-2 border-dashed border-[#1db863]/35 bg-[#eefbf4] rounded-[20px] p-5 text-center relative overflow-hidden shadow-xs mb-4">
+                <div className="text-gray-500 text-[11px] font-bold uppercase tracking-widest mb-1.5">
+                  Plano Premium — Acesso Vitalício
+                </div>
+                <div className="text-red-500 text-[15px] line-through font-bold">
+                  De R$ 97,00
+                </div>
+                <div className="text-emerald-500 text-[18px] font-bold leading-none my-0.5">
+                  ↓
+                </div>
+                <div className="text-[#1a7a4a] text-center font-serif leading-none tracking-tight my-1 flex items-center justify-center gap-1">
+                  <span className="text-[26px] font-bold self-start mt-1">R$</span>
+                  <span className="text-[56px] font-black">27,90</span>
+                </div>
+                <div className="inline-block bg-[#f5c518] text-gray-900 text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-wider mb-2 shadow-xs">
+                  71% DE DESCONTO
+                </div>
+                <div className="block">
+                  <span className="inline-block bg-[#25a862] text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                    Você economiza R$ 69,10
+                  </span>
+                </div>
+                <div className="text-gray-400 text-[11px] italic mt-2.5 block font-medium">
+                  Pagamento único — sem mensalidade
+                </div>
+              </div>
+
+              {/* COUNTDOWN TIMER */}
+              <div className="flex flex-col items-center mb-4.5 w-full bg-gray-50/70 p-3.5 rounded-2xl border border-gray-100">
+                <span className="text-[#1a7a4a] font-bold text-[12px] uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                  <Clock className="w-4 h-4" /> Esta oferta some em:
+                </span>
+                <div className="flex items-center justify-center gap-2.5 w-full">
+                  {secondsRemaining > 0 ? (
+                    <>
+                      {/* Minuto Box */}
+                      <div className="bg-gradient-to-b from-[#1a7a4a] to-[#125433] text-white w-[64px] h-[60px] rounded-[14px] flex flex-col items-center justify-center shadow-md relative">
+                        <span className="text-[26px] font-black leading-none">{Math.floor(secondsRemaining / 60).toString().padStart(2, '0')}</span>
+                        <span className="text-[8px] font-bold tracking-widest text-emerald-100/70 uppercase mt-0.5">MIN</span>
+                      </div>
+                      {/* Separador */}
+                      <div className="text-[24px] font-black text-[#1a7a4a] leading-none animate-pulse">
+                        :
+                      </div>
+                      {/* Segundo Box */}
+                      <div className="bg-gradient-to-b from-[#1a7a4a] to-[#125433] text-white w-[64px] h-[60px] rounded-[14px] flex flex-col items-center justify-center shadow-md relative">
+                        <span className="text-[26px] font-black leading-none">{(secondsRemaining % 60).toString().padStart(2, '0')}</span>
+                        <span className="text-[8px] font-bold tracking-widest text-emerald-100/70 uppercase mt-0.5">SEG</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="bg-[#e03030] text-white text-[14px] font-black w-full h-[60px] rounded-[14px] flex items-center justify-center shadow-xs uppercase tracking-widest animate-pulse">
+                      Oferta expirada!
+                    </div>
+                  )}
+                </div>
+                <span className="text-[#e03030] text-[11px] font-bold mt-2 text-center flex items-center gap-1">
+                  ⚠️ Após esse tempo você perde esse desconto
+                </span>
+              </div>
+
+              {/* COMPACT CHECKLIST */}
+              <ul className="list-none space-y-1.5 mb-5 w-full">
+                {[
+                  "+200 Materiais Visuais em PDF",
+                  "Cartões de Comunicação e Histórias Sociais",
+                  "Kit Anti-Crise + Guia Escolar",
+                  "Garantia de 14 dias"
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2.5 text-[13px] font-bold py-1.5 border-b border-gray-50 text-gray-800 hover:bg-emerald-50/40 px-2 rounded-lg transition-all">
+                    <div className="w-5 h-5 bg-[#d4f5e3] rounded-full flex items-center justify-center shrink-0">
+                      <Check className="w-3.5 h-3.5 text-[#1a7a4a] stroke-[3]" />
+                    </div>
+                    <span className="leading-tight">{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* CTA BUTTON */}
+              <motion.button 
+                onClick={handleCTAClick}
+                className="w-full bg-gradient-to-r from-[#1db863] to-[#179c53] hover:from-[#19a155] hover:to-[#148346] text-white font-extrabold text-[16px] tracking-[0.5px] py-4 rounded-full border-none cursor-pointer mb-3 shadow-lg shadow-[#1db863]/25 active:scale-95 transition-all flex items-center justify-center gap-2"
+                animate={{
+                  scale: [1, 1.02, 1],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                {secondsRemaining > 0 ? "GARANTIR MEU ACESSO AGORA" : "Ver planos disponíveis"}
+              </motion.button>
+
+              {/* DECLINE LINK */}
+              <button 
+                onClick={handleDeclineClick}
+                className="text-center text-[12px] text-gray-400 hover:text-gray-600 cursor-pointer block mx-auto mb-3.5 font-bold transition-colors bg-transparent border-none py-1"
+              >
+                Não, prefiro pagar R$ 97,00 depois
+              </button>
+
+              {/* SECURITY FOOTER */}
+              <div className="flex items-center justify-center gap-4 text-[11px] text-gray-400 font-bold border-t border-gray-100 pt-3 mt-1">
+                <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-[#1db863]" /> Compra Segura</span>
+                <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-[#1db863]" /> Acesso Imediato</span>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Scroll-Triggered Basic Discount Popup */}
+      <AnimatePresence>
+        {showScrollPopup && (
+          <div className="fixed inset-0 z-[9998] flex items-center justify-center p-4">
+            {/* Backdrop Overlay */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="absolute inset-0 bg-black/65 backdrop-blur-[3px]"
+            />
+
+            {/* Popup Container */}
+            <motion.div 
+              initial={{ y: 80, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 80, opacity: 0 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="relative bg-gradient-to-b from-emerald-50/40 via-white to-white w-[90%] max-w-[350px] rounded-[24px] p-7 shadow-[0_24px_56px_rgba(0,0,0,0.22)] border border-[#1a7a4a]/10 flex flex-col overflow-y-auto max-h-[90vh] custom-scrollbar z-10"
+            >
+              {/* Close button X at top-right */}
+              <button 
+                onClick={handleScrollDeclineClick} 
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1.5 rounded-full hover:bg-gray-100/80 transition-all cursor-pointer border-none bg-transparent" 
+                aria-label="Fechar"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* TOP SECTION */}
+              <div className="text-center text-[28px] mb-2 animate-bounce">🧩</div>
+              <div className="flex justify-center mb-3">
+                <span className="bg-[#d4f5e3] text-[#1a7a4a] font-extrabold text-[11px] uppercase tracking-widest px-4 py-1.5 rounded-full shadow-sm flex items-center gap-1">
+                  AINDA EM DÚVIDA?
+                </span>
+              </div>
+
+              {/* HEADLINE */}
+              <h3 className="text-[#1a7a4a] text-[20px] font-black text-center leading-[1.3] mb-2 font-sans tracking-tight">
+                Você chegou até aqui…
+              </h3>
+
+              {/* SUBHEADLINE */}
+              <p className="text-gray-500 text-[14px] text-center leading-relaxed mb-4">
+                Isso significa que você quer transformar a rotina do seu filho.<br /><br />
+                Comece agora sem risco por apenas:
+              </p>
+
+              {/* BIG PRICE */}
+              <div className="text-center mb-4 bg-gray-50/70 rounded-[16px] py-4 px-3 border border-gray-100/80">
+                <div className="text-gray-400 text-[13px] line-through font-bold mb-0.5">
+                  De R$ 47,00
+                </div>
+                <div className="text-emerald-500 text-[16px] font-extrabold leading-none mb-1">
+                  Por apenas:
+                </div>
+                <div className="text-[#1a7a4a] font-black font-serif leading-none tracking-tight flex items-center justify-center gap-1 my-1">
+                  <span className="text-[28px] font-bold self-start mt-2">R$</span>
+                  <span className="text-[68px] font-extrabold">10</span>
+                  <span className="text-[18px] text-gray-400 font-bold self-end mb-2">/único</span>
+                </div>
+                <div className="inline-block bg-[#f5c518] text-gray-900 text-[11px] font-black px-4 py-1 rounded-full uppercase tracking-wider mb-1.5 shadow-xs">
+                  78% DE DESCONTO
+                </div>
+                <span className="text-[11px] text-gray-400 mt-1 block font-bold uppercase tracking-wider">
+                  Pagamento único — Sem mensalidades
+                </span>
+              </div>
+
+              {/* COMPACT CHECKLIST */}
+              <ul className="list-none space-y-1.5 mb-4 w-full">
+                {[
+                  "+50 Rotinas Visuais em PDF",
+                  "Acesso imediato por e-mail",
+                  "Garantia de 14 dias"
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2.5 text-[13px] font-bold py-1.5 border-b border-gray-50 text-gray-800 hover:bg-emerald-50/40 px-2 rounded-lg transition-all">
+                    <div className="w-5 h-5 bg-[#d4f5e3] rounded-full flex items-center justify-center shrink-0">
+                      <Check className="w-3.5 h-3.5 text-[#1a7a4a] stroke-[3]" />
+                    </div>
+                    <span className="leading-tight">{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* UPGRADE NOTE */}
+              <div className="bg-[#d4f5e3]/60 border-l-4 border-[#1a7a4a] rounded-r-[12px] p-[11px] px-3.5 mb-[16px] text-left shadow-xs">
+                <p className="text-[#1a7a4a] text-[12px] font-bold leading-normal flex items-start gap-2">
+                  <span className="text-sm shrink-0">💡</span>
+                  <span>Depois você pode fazer upgrade para o Premium por apenas R$ 17,90 a mais</span>
+                </p>
+              </div>
+
+              {/* CTA BUTTON */}
+              <button 
+                onClick={handleScrollCTAClick}
+                className="w-full bg-gradient-to-r from-[#1db863] to-[#179c53] hover:from-[#19a155] hover:to-[#148346] text-white font-extrabold text-[16px] py-4.5 rounded-full border-none cursor-pointer mb-[10px] shadow-lg shadow-[#1db863]/25 active:scale-98 transition-all duration-300"
+              >
+                COMEÇAR POR R$ 10 AGORA
+              </button>
+
+              {/* DECLINE LINK */}
+              <button 
+                onClick={handleScrollDeclineClick}
+                className="text-center text-[12px] text-gray-400 hover:text-gray-600 cursor-pointer block mx-auto mb-3.5 font-bold transition-colors bg-transparent border-none py-1"
+              >
+                Prefiro continuar vendo a página
+              </button>
+
+              {/* SECURITY FOOTER */}
+              <div className="flex items-center justify-center gap-4 text-[11px] text-gray-400 font-bold border-t border-gray-100 pt-3 mt-1">
+                <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-[#1db863]" /> Compra Segura</span>
+                <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-[#1db863]" /> Acesso em 5 minutos</span>
               </div>
             </motion.div>
           </div>
