@@ -1729,134 +1729,154 @@ export default function App() {
 
   const kitMaterials = [
     {
-      id: "rotina-manha",
-      title: "1. Rotina da Manhã",
-      desc: "Cartões passo a passo para acordar bem, arrumar a mochila, vestir a farda e iniciar o dia de forma pacífica.",
-      items: ["Acordar tranquilo", "Fazer a cama", "Vestir a roupa", "Tomar café da manhã"],
-      badge: "Essencial",
-      color: "bg-amber-500",
-      emoji: "🌅",
-      image: "https://i.imgur.com/FUU0W6l.png"
-    },
-    {
-      id: "higiene",
-      title: "2. Higiene Completa",
-      desc: "Passo a passo visual detalhado para escovar os dentes, tomar banho, usar o banheiro e lavar as mãos de forma independente.",
-      items: ["Escovação perfeita", "Passo a passo do banho", "Uso do vaso sanitário", "Lavar as mãos"],
-      badge: "Autonomia",
-      color: "bg-blue-500",
-      emoji: "🚿",
-      image: "https://i.imgur.com/IMJgT7r.png"
-    },
-    {
-      id: "alimentacao",
-      title: "3. Alimentação Saudável",
-      desc: "Suporte para diminuir a seletividade alimentar, regras de comportamento à mesa e pedidos visuais de alimentos.",
-      items: ["Sentar para comer", "Provar novos alimentos", "Usar os talheres", "Pedir água/comida"],
-      badge: "Comportamento",
-      color: "bg-emerald-500",
-      emoji: "🍽️",
-      image: "https://i.imgur.com/LbAWuW2.png"
-    },
-    {
-      id: "escola",
-      title: "4. Rotina Escolar",
-      desc: "Pictogramas criados para organizar o material, prestar atenção na professora, fazer as tarefas e interagir com colegas.",
-      items: ["Organizar mochila", "Prestar atenção", "Hora do recreio", "Fazer dever de casa"],
-      badge: "Inclusão",
-      color: "bg-indigo-500",
-      emoji: "🎒",
-      image: "https://i.imgur.com/9tpq1fN.png"
-    },
-    {
-      id: "comunicacao",
-      title: "5. Comunicação Alternativa",
-      desc: "Pranchas de comunicação rápida para crianças não verbais ou em fase de aquisição de fala expressarem desejos e dores.",
-      items: ["Pranchas rápidas", "Expressar dor", "Pedir ajuda", "Dizer Sim/Não"],
-      badge: "Padrão Ouro",
+      id: "pranchas-prontas",
+      title: "1. Pranchas Prontas",
+      desc: "Símbolos e pranchas prontas para comunicação alternativa fáceis de aplicar no dia a dia, ideais para focar no desenvolvimento expressivo.",
+      items: ["Comunicação rápida", "Expressar necessidades", "Rotinas estruturadas", "Comunicação Aumentativa"],
+      badge: "Comunicação",
       color: "bg-rose-500",
-      emoji: "💬",
+      emoji: "📋",
       image: "https://i.imgur.com/GOctx7p.png"
     },
     {
-      id: "emocoes",
-      title: "6. Expressão das Emoções",
-      desc: "Identificação e validação de sentimentos como raiva, medo, alegria, cansaço ou sobrecarga sensorial para evitar desregulações.",
-      items: ["Quadro de sentimentos", "Termômetro da raiva", "Apoio para frustração", "Expressar cansaço"],
-      badge: "Regulação",
-      color: "bg-purple-500",
-      emoji: "🧠",
-      image: "https://i.imgur.com/8FTej6x.png"
+      id: "historias-sociais",
+      title: "2. Histórias Sociais",
+      desc: "Narrativas visuais lúdicas e explicativas para ensinar combinados, comportamentos adequados e preparar para novas situações.",
+      items: ["Regras de convivência", "Lidar com frustrações", "Mudança de rotina", "Interação com colegas"],
+      badge: "Comportamento",
+      color: "bg-emerald-500",
+      emoji: "📖",
+      image: "https://i.imgur.com/Wu9t5HJ.jpeg"
     },
     {
-      id: "combinados",
-      title: "7. Combinados e Regras",
-      desc: "Suporte visual para estabelecer combinados claros e limites firmes de forma leve, lúdica e extremely didática.",
-      items: ["Guardar brinquedos", "Falar em tom adequado", "Esperar a minha vez", "Respeitar limites"],
-      badge: "Convivência",
-      color: "bg-yellow-500",
-      emoji: "🤝",
-      image: "https://i.imgur.com/4BszRqb.png"
-    },
-    {
-      id: "recompensas",
-      title: "8. Quadro de Recompensas",
-      desc: "Quadro de incentivos e tokens para gamificar pequenas tarefas diárias e celebrar cada pequena vitória conquistada.",
-      items: ["Quadro de estrelas", "Meta semanal", "Comemoração lúdica", "Foco no progresso"],
-      badge: "Motivação",
-      color: "bg-[#2ecc71]",
-      emoji: "🏆",
-      image: "https://i.imgur.com/RJPHWbo.png"
-    },
-    {
-      id: "sono",
-      title: "9. Higiene do Sono",
-      desc: "Rituais visuais noturnos para acalmar a mente, se preparar para deitar e dormir no horário correto sem choro.",
-      items: ["Desconectar telas", "Colocar o pijama", "Ler história curta", "Dormir sozinho"],
-      badge: "Bem Estar",
-      color: "bg-slate-700",
-      emoji: "🌙",
+      id: "livros-historias",
+      title: "3. Livros e Histórias",
+      desc: "Livros e histórias infantis adaptadas com suporte visual projetados para prender a atenção e incentivar o interesse pela leitura.",
+      items: ["Leitura adaptada", "Foco visual", "Atividades de compreensão", "Estímulo à imaginação"],
+      badge: "Leitura",
+      color: "bg-blue-500",
+      emoji: "📚",
       image: "https://i.imgur.com/lkaUlVI.png"
     },
     {
-      id: "calendario",
-      title: "10. Calendário Interativo",
-      desc: "Painel completo para trabalhar a noção de tempo, clima, dias da semana, meses, datas festivas e aniversários.",
-      items: ["Dias da semana", "Tempo e clima", "Meses do ano", "Marcação de eventos"],
+      id: "conceitos-matematicos",
+      title: "4. Conceitos Matemáticos",
+      desc: "Atividades práticas e ilustradas para ensinar números, contagem guiada, formas geométricas e noções lógicas elementares.",
+      items: ["Contagem guiada", "Pareamento de formas", "Sequenciamento numérico", "Noções de quantidade"],
       badge: "Cognitivo",
+      color: "bg-amber-500",
+      emoji: "🔢",
+      image: "https://i.imgur.com/7Sb4HQd.jpeg"
+    },
+    {
+      id: "vamos-falar",
+      title: "5. Vamos Falar?",
+      desc: "Exercícios divertidos e lúdicos com foco fonoaudiológico para estimular a fala funcional, novas palavras e vocalização ativa.",
+      items: ["Estímulo de fonemas", "Vocabulário básico", "Sons imitativos", "Fala espontânea"],
+      badge: "Fonoaudiologia",
+      color: "bg-indigo-500",
+      emoji: "🗣️",
+      image: "https://i.imgur.com/LbAWuW2.png"
+    },
+    {
+      id: "canto-voz",
+      title: "6. Canto e Voz",
+      desc: "Recursos musicais interativos para explorar o tom de voz, melodia, expressão corporal e controle adequado do volume da fala.",
+      items: ["Exercícios de sopro/vocal", "Ritmo e cantigas", "Controle de altura", "Jogos cantados"],
+      badge: "Expressão",
+      color: "bg-purple-500",
+      emoji: "🎤",
+      image: "https://i.imgur.com/RJPHWbo.png"
+    },
+    {
+      id: "ciencia-biologia",
+      title: "7. Ciência / Biologia",
+      desc: "Explicações visuais e divertidas para compreender o corpo humano, animais, plantas e os fenômenos da natureza.",
+      items: ["Partes do corpo", "Reino animal", "Meio ambiente", "Ciência no dia a dia"],
+      badge: "Descobertas",
       color: "bg-cyan-500",
-      emoji: "📅",
+      emoji: "🔬",
       image: "https://i.imgur.com/jfCQtdx.png"
     },
     {
-      id: "quadros-rotina",
-      title: "11. Quadros de Rotina Prontos",
-      desc: "Modelos prontos de painéis horizontais e verticais: 'Primeiro/Depois', 'Manhã/Tarde/Noite' em formato profissional.",
-      items: ["Quadro Primeiro/Depois", "Rotina de 3 turnos", "Painel semanal", "Apoio de bolso"],
-      badge: "Prático",
-      color: "bg-lime-600",
-      emoji: "📋",
-      image: "https://i.imgur.com/CR6PENG.png"
+      id: "musicas",
+      title: "8. Músicas",
+      desc: "Letras ilustradas e cartões musicais criados para apoiar as rotinas e tornar os momentos de transição diários mais suaves.",
+      items: ["Canções de rotina", "Gestos musicais", "Apoio visual musical", "Sons do dia a dia"],
+      badge: "Musicalização",
+      color: "bg-[#2ecc71]",
+      emoji: "🎵",
+      image: "https://i.imgur.com/VqDFZjk.png"
     },
     {
-      id: "cartoes",
-      title: "12. Cartões de Transição",
-      desc: "Evite crises avisando visualmente a criança antes de mudar de ambiente (ir embora do parque, sair da terapia, etc).",
-      items: ["Aviso de 5 minutos", "Sair de casa", "Mudar de atividade", "Esperar no carro"],
-      badge: "Anti-crise",
+      id: "receitas",
+      title: "9. Receitas",
+      desc: "Receitas visuais super fáceis de seguir passo a passo para fazer na cozinha, estimulando integração sensorial e autonomia.",
+      items: ["Ingredientes ilustrados", "Passo a passo culinário", "Exploração tátil", "Comida divertida"],
+      badge: "Vida Prática",
+      color: "bg-yellow-500",
+      emoji: "🍳",
+      image: "https://i.imgur.com/FUU0W6l.png"
+    },
+    {
+      id: "atividades-diversas",
+      title: "10. Atividades Diversas",
+      desc: "Jogos educativos, tracejados, quebra-cabeças e desafios interativos para desenvolver a coordenação motora fina e raciocínio.",
+      items: ["Coordenação fina", "Desenho guiado", "Ligar pontos", "Recortar e colar"],
+      badge: "Coordenação",
+      color: "bg-violet-600",
+      emoji: "🧩",
+      image: "https://i.imgur.com/9tpq1fN.png"
+    },
+    {
+      id: "aac-coach",
+      title: "11. The AAC Coach",
+      desc: "Suporte e estratégias de modelagem para pais e profissionais conduzirem a Comunicação Alternativa com extrema confiança.",
+      items: ["Estratégias de modelagem", "Guia do parceiro", "Construção de repertório", "Suporte no dia a dia"],
+      badge: "Profissional",
+      color: "bg-slate-700",
+      emoji: "🧠",
+      image: "https://i.imgur.com/IMJgT7r.png"
+    },
+    {
+      id: "brinquedos-brincadeiras",
+      title: "12. Brinquedos e Brincadeiras",
+      desc: "Direcionamento visual para ensinar a brincar de forma funcional, interagir de forma assertiva e compartilhar com os amigos.",
+      items: ["Brincar funcional", "Dividir brinquedos", "Esperar a vez", "Combinados de jogo"],
+      badge: "Socialização",
+      color: "bg-lime-600",
+      emoji: "🧸",
+      image: "https://i.imgur.com/4BszRqb.png"
+    },
+    {
+      id: "adolescentes",
+      title: "13. Adolescentes",
+      desc: "Suporte adaptado para a transição para a adolescência, focado em puberdade, higiene pessoal independente e socialização madura.",
+      items: ["Mudanças corporais", "Higiene na puberdade", "Autonomia ampliada", "Regulação em público"],
+      badge: "Crescimento",
       color: "bg-pink-500",
-      emoji: "🔄",
+      emoji: "🧑",
       image: "https://i.imgur.com/jQI7lUS.png"
     },
     {
-      id: "materiais-extras",
-      title: "13. Materiais Extras e Atividades",
-      desc: "Atividades lúdicas complementares de recortar, colar, ligar pontos e colorir para focar em coordenação motora fina.",
-      items: ["Coordenação fina", "Desenho guiado", "Ligar pontos", "Recortar e colar"],
-      badge: "Lúdico",
-      color: "bg-violet-600",
-      emoji: "🎨",
-      image: "https://i.imgur.com/VqDFZjk.png"
+      id: "posts-tecnicos",
+      title: "14. Posts Técnicos",
+      desc: "Infográficos explicativos e suporte teórico fundamentado cientificamente em Análise do Comportamento Aplicada (ABA).",
+      items: ["Infográficos didáticos", "Respostas para dúvidas", "Análise de comportamento", "Dicas científicas"],
+      badge: "Conhecimento",
+      color: "bg-teal-600",
+      emoji: "📝",
+      image: "https://i.imgur.com/3gNWaxg.jpeg"
+    },
+    {
+      id: "atualizacoes-vitalicias",
+      title: "15. Atualizações vitalícias",
+      desc: "Acesso permanente a novos materiais inseridos todos os meses na plataforma, sem custos adicionais de assinatura.",
+      items: ["Novos materiais mensais", "Acesso sem limites", "Sem mensalidades", "Suporte prioritário"],
+      badge: "Sem Limites",
+      color: "bg-[#1db863]",
+      emoji: "🔄",
+      image: "https://i.imgur.com/5PjxTPA.jpeg"
     }
   ];
 
@@ -2899,13 +2919,13 @@ export default function App() {
 
                  <ul className="text-left space-y-2 sm:space-y-3.5 mb-5 sm:mb-8 w-full border-t border-gray-100 pt-4 sm:pt-6">
                    {[
-                     "Rotina Diária e Semanal",
-                     "Pictogramas Escolares Básicos",
-                     "Atividades de Vida Diária (AVDs)",
-                     "Painel Primeiro/Depois",
-                     "Recorte, Cole e Atividades",
-                     "Alfabetização Inicial",
-                     "Uso Imediato em PDF"
+                     "Apoio Visual / Rotina",
+                     "Pictogramas Escolares",
+                     "AVDS (Atividades de Vida Diária)",
+                     "Core / Palavras Essenciais",
+                     "Recorte / Cole / Ligar / Pintar",
+                     "Alfabetização",
+                     "Festividades"
                    ].map((item, idx) => (
                      <li key={idx} className="flex items-start gap-2 sm:gap-3 text-xs sm:text-sm text-gray-655 font-medium">
                        <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#2ecc71] shrink-0 mt-0.5" />
@@ -2913,10 +2933,21 @@ export default function App() {
                      </li>
                    ))}
                    {[
-                     "Pranchas de Comunicação",
-                     "Histórias Sociais de Regulação",
-                     "Materiais para Adolescentes",
-                     "Atualizações Vitalícias"
+                     "Pranchas Prontas",
+                     "Histórias Sociais",
+                     "Livros e Histórias",
+                     "Conceitos Matemáticos",
+                     "Vamos Falar?",
+                     "Canto e Voz",
+                     "Ciência / Biologia",
+                     "Músicas",
+                     "Receitas",
+                     "Atividades Diversas",
+                     "The AAC Coach",
+                     "Brinquedos e Brincadeiras",
+                     "Adolescentes",
+                     "Posts Técnicos",
+                     "Atualizações vitalícias"
                    ].map((item, idx) => (
                      <li key={idx} className="flex items-start gap-2 sm:gap-3 text-xs sm:text-sm text-gray-400 font-medium line-through decoration-gray-300">
                        <XCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-300 shrink-0 mt-0.5" />
@@ -2944,7 +2975,7 @@ export default function App() {
                    Melhor Custo-Benefício
                  </span>
                  <h3 className="text-2xl font-black text-[#1a5c3a] mb-1 uppercase tracking-wide">Plano Premium</h3>
-                 <p className="text-xs text-[#1a5c3a]/70 mb-6 font-bold">Acesso vitalício a todas as 13 categorias de materiais</p>
+                 <p className="text-xs text-[#1a5c3a]/70 mb-6 font-bold">Acesso vitalício a todas as 15 categorias de materiais</p>
                  
                  <div className="bg-[#1a5c3a] rounded-2xl p-5 mb-8 border border-[#2ecc71]/20 shadow-inner">
                    <span className="text-white/60 line-through text-xs font-bold block mb-1">De R$ 97,00 por apenas</span>
@@ -2957,16 +2988,22 @@ export default function App() {
 
                  <ul className="text-left space-y-3 mb-8 w-full border-t border-[#2ecc71]/10 pt-6">
                    {[
-                     "Tudo do Plano Básico",
-                     "Pranchas de Comunicação Rápida",
-                     "Histórias Sociais de Comportamento",
-                     "Painel Anti-Crise Completo",
-                     "Rotinas de Higiene Passo a Passo",
-                     "Quadro de Recompensas e Incentivos",
-                     "Calendário Interativo de Parede",
-                     "Manual de Adaptação Escolar",
-                     "Apoio para Pré-Adolescentes",
-                     "Atualizações Vitalícias Gratuitas"
+                     "Tudo do Básico e mais",
+                     "Pranchas Prontas",
+                     "Histórias Sociais",
+                     "Livros e Histórias",
+                     "Conceitos Matemáticos",
+                     "Vamos Falar?",
+                     "Canto e Voz",
+                     "Ciência / Biologia",
+                     "Músicas",
+                     "Receitas",
+                     "Atividades Diversas",
+                      "The AAC Coach",
+                      "Brinquedos e Brincadeiras",
+                      "Adolescentes",
+                      "Posts Técnicos",
+                      "Atualizações vitalícias"
                    ].map((item, idx) => (
                      <li key={idx} className="flex items-start gap-3 text-xs sm:text-sm text-[#1a5c3a] font-bold">
                        <CheckCircle2 className="w-4.5 h-4.5 text-[#2ecc71] shrink-0 mt-0.5" />
