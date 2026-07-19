@@ -1729,154 +1729,134 @@ export default function App() {
 
   const kitMaterials = [
     {
-      id: "pranchas-prontas",
-      title: "1. Pranchas Prontas",
-      desc: "Símbolos e pranchas prontas para comunicação alternativa fáceis de aplicar no dia a dia, ideais para focar no desenvolvimento expressivo.",
-      items: ["Comunicação rápida", "Expressar necessidades", "Rotinas estruturadas", "Comunicação Aumentativa"],
-      badge: "Comunicação",
-      color: "bg-rose-500",
-      emoji: "📋",
-      image: "https://i.imgur.com/GOctx7p.png"
-    },
-    {
-      id: "historias-sociais",
-      title: "2. Histórias Sociais",
-      desc: "Narrativas visuais lúdicas e explicativas para ensinar combinados, comportamentos adequados e preparar para novas situações.",
-      items: ["Regras de convivência", "Lidar com frustrações", "Mudança de rotina", "Interação com colegas"],
-      badge: "Comportamento",
-      color: "bg-emerald-500",
-      emoji: "📖",
-      image: "https://i.imgur.com/Wu9t5HJ.jpeg"
-    },
-    {
-      id: "livros-historias",
-      title: "3. Livros e Histórias",
-      desc: "Livros e histórias infantis adaptadas com suporte visual projetados para prender a atenção e incentivar o interesse pela leitura.",
-      items: ["Leitura adaptada", "Foco visual", "Atividades de compreensão", "Estímulo à imaginação"],
-      badge: "Leitura",
-      color: "bg-blue-500",
-      emoji: "📚",
-      image: "https://i.imgur.com/lkaUlVI.png"
-    },
-    {
-      id: "conceitos-matematicos",
-      title: "4. Conceitos Matemáticos",
-      desc: "Atividades práticas e ilustradas para ensinar números, contagem guiada, formas geométricas e noções lógicas elementares.",
-      items: ["Contagem guiada", "Pareamento de formas", "Sequenciamento numérico", "Noções de quantidade"],
-      badge: "Cognitivo",
+      id: "rotina-manha",
+      title: "1. Rotina da Manhã",
+      desc: "Cartões passo a passo para acordar bem, arrumar a mochila, vestir a farda e iniciar o dia de forma pacífica.",
+      items: ["Acordar tranquilo", "Fazer a cama", "Vestir a roupa", "Tomar café da manhã"],
+      badge: "Essencial",
       color: "bg-amber-500",
-      emoji: "🔢",
-      image: "https://i.imgur.com/7Sb4HQd.jpeg"
-    },
-    {
-      id: "vamos-falar",
-      title: "5. Vamos Falar?",
-      desc: "Exercícios divertidos e lúdicos com foco fonoaudiológico para estimular a fala funcional, novas palavras e vocalização ativa.",
-      items: ["Estímulo de fonemas", "Vocabulário básico", "Sons imitativos", "Fala espontânea"],
-      badge: "Fonoaudiologia",
-      color: "bg-indigo-500",
-      emoji: "🗣️",
-      image: "https://i.imgur.com/LbAWuW2.png"
-    },
-    {
-      id: "canto-voz",
-      title: "6. Canto e Voz",
-      desc: "Recursos musicais interativos para explorar o tom de voz, melodia, expressão corporal e controle adequado do volume da fala.",
-      items: ["Exercícios de sopro/vocal", "Ritmo e cantigas", "Controle de altura", "Jogos cantados"],
-      badge: "Expressão",
-      color: "bg-purple-500",
-      emoji: "🎤",
-      image: "https://i.imgur.com/RJPHWbo.png"
-    },
-    {
-      id: "ciencia-biologia",
-      title: "7. Ciência / Biologia",
-      desc: "Explicações visuais e divertidas para compreender o corpo humano, animais, plantas e os fenômenos da natureza.",
-      items: ["Partes do corpo", "Reino animal", "Meio ambiente", "Ciência no dia a dia"],
-      badge: "Descobertas",
-      color: "bg-cyan-500",
-      emoji: "🔬",
-      image: "https://i.imgur.com/jfCQtdx.png"
-    },
-    {
-      id: "musicas",
-      title: "8. Músicas",
-      desc: "Letras ilustradas e cartões musicais criados para apoiar as rotinas e tornar os momentos de transição diários mais suaves.",
-      items: ["Canções de rotina", "Gestos musicais", "Apoio visual musical", "Sons do dia a dia"],
-      badge: "Musicalização",
-      color: "bg-[#2ecc71]",
-      emoji: "🎵",
-      image: "https://i.imgur.com/VqDFZjk.png"
-    },
-    {
-      id: "receitas",
-      title: "9. Receitas",
-      desc: "Receitas visuais super fáceis de seguir passo a passo para fazer na cozinha, estimulando integração sensorial e autonomia.",
-      items: ["Ingredientes ilustrados", "Passo a passo culinário", "Exploração tátil", "Comida divertida"],
-      badge: "Vida Prática",
-      color: "bg-yellow-500",
-      emoji: "🍳",
+      emoji: "🌅",
       image: "https://i.imgur.com/FUU0W6l.png"
     },
     {
-      id: "atividades-diversas",
-      title: "10. Atividades Diversas",
-      desc: "Jogos educativos, tracejados, quebra-cabeças e desafios interativos para desenvolver a coordenação motora fina e raciocínio.",
-      items: ["Coordenação fina", "Desenho guiado", "Ligar pontos", "Recortar e colar"],
-      badge: "Coordenação",
-      color: "bg-violet-600",
-      emoji: "🧩",
-      image: "https://i.imgur.com/9tpq1fN.png"
-    },
-    {
-      id: "aac-coach",
-      title: "11. The AAC Coach",
-      desc: "Suporte e estratégias de modelagem para pais e profissionais conduzirem a Comunicação Alternativa com extrema confiança.",
-      items: ["Estratégias de modelagem", "Guia do parceiro", "Construção de repertório", "Suporte no dia a dia"],
-      badge: "Profissional",
-      color: "bg-slate-700",
-      emoji: "🧠",
+      id: "higiene",
+      title: "2. Higiene Completa",
+      desc: "Passo a passo visual detalhado para escovar os dentes, tomar banho, usar o banheiro e lavar as mãos de forma independente.",
+      items: ["Escovação perfeita", "Passo a passo do banho", "Uso do vaso sanitário", "Lavar as mãos"],
+      badge: "Autonomia",
+      color: "bg-blue-500",
+      emoji: "🚿",
       image: "https://i.imgur.com/IMJgT7r.png"
     },
     {
-      id: "brinquedos-brincadeiras",
-      title: "12. Brinquedos e Brincadeiras",
-      desc: "Direcionamento visual para ensinar a brincar de forma funcional, interagir de forma assertiva e compartilhar com os amigos.",
-      items: ["Brincar funcional", "Dividir brinquedos", "Esperar a vez", "Combinados de jogo"],
-      badge: "Socialização",
-      color: "bg-lime-600",
-      emoji: "🧸",
+      id: "alimentacao",
+      title: "3. Alimentação Saudável",
+      desc: "Suporte para diminuir a seletividade alimentar, regras de comportamento à mesa e pedidos visuais de alimentos.",
+      items: ["Sentar para comer", "Provar novos alimentos", "Usar os talheres", "Pedir água/comida"],
+      badge: "Comportamento",
+      color: "bg-emerald-500",
+      emoji: "🍽️",
+      image: "https://i.imgur.com/LbAWuW2.png"
+    },
+    {
+      id: "escola",
+      title: "4. Rotina Escolar",
+      desc: "Pictogramas criados para organizar o material, prestar atenção na professora, fazer as tarefas e interagir com colegas.",
+      items: ["Organizar mochila", "Prestar atenção", "Hora do recreio", "Fazer dever de casa"],
+      badge: "Inclusão",
+      color: "bg-indigo-500",
+      emoji: "🎒",
+      image: "https://i.imgur.com/9tpq1fN.png"
+    },
+    {
+      id: "comunicacao",
+      title: "5. Comunicação Alternativa",
+      desc: "Pranchas de comunicação rápida para crianças não verbais ou em fase de aquisição de fala expressarem desejos e dores.",
+      items: ["Pranchas rápidas", "Expressar dor", "Pedir ajuda", "Dizer Sim/Não"],
+      badge: "Padrão Ouro",
+      color: "bg-rose-500",
+      emoji: "💬",
+      image: "https://i.imgur.com/GOctx7p.png"
+    },
+    {
+      id: "emocoes",
+      title: "6. Expressão das Emoções",
+      desc: "Identificação e validação de sentimentos como raiva, medo, alegria, cansaço ou sobrecarga sensorial para evitar desregulações.",
+      items: ["Quadro de sentimentos", "Termômetro da raiva", "Apoio para frustração", "Expressar cansaço"],
+      badge: "Regulação",
+      color: "bg-purple-500",
+      emoji: "🧠",
+      image: "https://i.imgur.com/8FTej6x.png"
+    },
+    {
+      id: "combinados",
+      title: "7. Combinados e Regras",
+      desc: "Suporte visual para estabelecer combinados claros e limites firmes de forma leve, lúdica e extremamente didática.",
+      items: ["Guardar brinquedos", "Falar em tom adequado", "Esperar a minha vez", "Respeitar limites"],
+      badge: "Convivência",
+      color: "bg-yellow-500",
+      emoji: "🤝",
       image: "https://i.imgur.com/4BszRqb.png"
     },
     {
-      id: "adolescentes",
-      title: "13. Adolescentes",
-      desc: "Suporte adaptado para a transição para a adolescência, focado em puberdade, higiene pessoal independente e socialização madura.",
-      items: ["Mudanças corporais", "Higiene na puberdade", "Autonomia ampliada", "Regulação em público"],
-      badge: "Crescimento",
+      id: "recompensas",
+      title: "8. Quadro de Recompensas",
+      desc: "Quadro de incentivos e tokens para gamificar pequenas tarefas diárias e celebrar cada pequena vitória conquistada.",
+      items: ["Quadro de estrelas", "Meta semanal", "Comemoração lúdica", "Foco no progresso"],
+      badge: "Motivação",
+      color: "bg-[#2ecc71]",
+      emoji: "🏆",
+      image: "https://i.imgur.com/RJPHWbo.png"
+    },
+    {
+      id: "sono",
+      title: "9. Higiene do Sono",
+      desc: "Rituais visuais noturnos para acalmar a mente, se preparar para deitar e dormir no horário correto sem choro.",
+      items: ["Desconectar telas", "Colocar o pijama", "Ler história curta", "Dormir sozinho"],
+      badge: "Bem Estar",
+      color: "bg-slate-700",
+      emoji: "🌙",
+      image: "https://i.imgur.com/lkaUlVI.png"
+    },
+    {
+      id: "calendario",
+      title: "10. Calendário Interativo",
+      desc: "Painel completo para trabalhar a noção de tempo, clima, dias da semana, meses, datas festivas e aniversários.",
+      items: ["Dias da semana", "Tempo e clima", "Meses do ano", "Marcação de eventos"],
+      badge: "Cognitivo",
+      color: "bg-cyan-500",
+      emoji: "📅",
+      image: "https://i.imgur.com/jfCQtdx.png"
+    },
+    {
+      id: "quadros-rotina",
+      title: "11. Quadros de Rotina Prontos",
+      desc: "Modelos prontos de painéis horizontais e verticais: 'Primeiro/Depois', 'Manhã/Tarde/Noite' em formato profissional.",
+      items: ["Quadro Primeiro/Depois", "Rotina de 3 turnos", "Painel semanal", "Apoio de bolso"],
+      badge: "Prático",
+      color: "bg-lime-600",
+      emoji: "📋",
+      image: "https://i.imgur.com/CR6PENG.png"
+    },
+    {
+      id: "cartoes",
+      title: "12. Cartões de Transição",
+      desc: "Evite crises avisando visualmente a criança antes de mudar de ambiente (ir embora do parque, sair da terapia, etc).",
+      items: ["Aviso de 5 minutos", "Sair de casa", "Mudar de atividade", "Esperar no carro"],
+      badge: "Anti-crise",
       color: "bg-pink-500",
-      emoji: "🧑",
+      emoji: "🔄",
       image: "https://i.imgur.com/jQI7lUS.png"
     },
     {
-      id: "posts-tecnicos",
-      title: "14. Posts Técnicos",
-      desc: "Infográficos explicativos e suporte teórico fundamentado cientificamente em Análise do Comportamento Aplicada (ABA).",
-      items: ["Infográficos didáticos", "Respostas para dúvidas", "Análise de comportamento", "Dicas científicas"],
-      badge: "Conhecimento",
-      color: "bg-teal-600",
-      emoji: "📝",
-      image: "https://i.imgur.com/3gNWaxg.jpeg"
-    },
-    {
-      id: "atualizacoes-vitalicias",
-      title: "15. Atualizações vitalícias",
-      desc: "Acesso permanente a novos materiais inseridos todos os meses na plataforma, sem custos adicionais de assinatura.",
-      items: ["Novos materiais mensais", "Acesso sem limites", "Sem mensalidades", "Suporte prioritário"],
-      badge: "Sem Limites",
-      color: "bg-[#1db863]",
-      emoji: "🔄",
-      image: "https://i.imgur.com/5PjxTPA.jpeg"
+      id: "materiais-extras",
+      title: "13. Materiais Extras e Atividades",
+      desc: "Atividades lúdicas complementares de recortar, colar, ligar pontos e colorir para focar em coordenação motora fina.",
+      items: ["Coordenação fina", "Desenho guiado", "Ligar pontos", "Recortar e colar"],
+      badge: "Lúdico",
+      color: "bg-violet-600",
+      emoji: "🎨",
+      image: "https://i.imgur.com/VqDFZjk.png"
     }
   ];
 
@@ -3236,156 +3216,149 @@ export default function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
-              className="absolute inset-0 bg-black/75 backdrop-blur-[5px]"
+              className="absolute inset-0 bg-black/70 backdrop-blur-[4px]"
             />
 
             {/* Popup Container */}
             <motion.div 
-              initial={{ y: 100, opacity: 0, scale: 0.9 }}
+              initial={{ y: "100vh", opacity: 0 }}
               animate={{ 
                 y: 0, 
-                opacity: 1, 
-                scale: 1,
+                opacity: 1,
                 transition: { type: 'spring', damping: 15, stiffness: 100 }
               }}
-              exit={{ y: 100, opacity: 0, scale: 0.9 }}
-              className="relative bg-gradient-to-b from-emerald-50/30 via-white to-white w-[90%] max-w-[370px] rounded-[24px] p-7 shadow-[0_24px_64px_rgba(0,0,0,0.25)] border border-[#1a7a4a]/10 flex flex-col overflow-y-auto max-h-[90vh] custom-scrollbar z-10"
+              exit={{ y: "100vh", opacity: 0 }}
+              className="relative bg-[#ffffff] w-[95%] max-w-[340px] rounded-[24px] p-3.5 sm:p-7 shadow-[0_32px_80px_rgba(0,0,0,0.4),0_0_50px_rgba(29,184,99,0.25)] border-[3px] sm:border-[4px] border-[#1db863] flex flex-col overflow-y-auto max-h-[92vh] custom-scrollbar z-10"
             >
-              {/* Close button X at top-right */}
-              <button 
-                onClick={handleDeclineClick} 
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1.5 rounded-full hover:bg-gray-100/80 transition-all cursor-pointer border-none bg-transparent" 
-                aria-label="Fechar"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
               {/* TOP SECTION */}
-              <div className="text-center text-[32px] mb-3">🧩</div>
-              <div className="flex justify-center mb-3">
-                <span className="bg-[#e03030] text-white font-extrabold text-[11px] uppercase tracking-widest px-4 py-1.5 rounded-full shadow-md flex items-center gap-1.5 animate-pulse">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white inline-block animate-ping" />
-                  🔴 SOMENTE AGORA
+              <div className="text-center text-[24px] sm:text-[32px] mb-1 sm:mb-3 select-none">🧩</div>
+              <div className="flex justify-center mb-2 sm:mb-4">
+                <span className="bg-gradient-to-r from-[#ff1744] to-[#ef4444] text-white font-extrabold text-[10px] sm:text-[12px] uppercase tracking-widest px-[10px] sm:px-[18px] py-[3.5px] sm:py-[7px] rounded-[999px] shadow-[0_6px_16px_rgba(255,23,68,0.4)] flex items-center justify-center gap-1 sm:gap-1.5 animate-pulse">
+                  <span className="w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 bg-white rounded-full animate-ping"></span>
+                  SOMENTE HOJE
                 </span>
               </div>
 
               {/* HEADLINE */}
-              <h3 className="text-[#1a7a4a] text-[22px] font-black text-center leading-snug mb-2 font-sans tracking-tight">
-                Você garante o Kit Premium que vale R$ 97,00
+              <h3 className="text-[#1a7a4a] text-[16px] sm:text-[20px] font-black text-center leading-[1.3] mb-1 sm:mb-2 font-sans tracking-tight">
+                Você garante o Kit Premium completo que vale R$ 97,00
               </h3>
 
               {/* SUBHEADLINE */}
-              <p className="text-gray-500 text-[13px] text-center leading-relaxed mb-4">
-                Identificamos que é sua primeira visita. Por isso liberamos uma condição especial que não aparece para todo mundo:
+              <p className="text-[#6b7280] text-[11px] sm:text-[13px] text-center leading-[1.6] mb-1.5 sm:mb-4">
+                Tudo isso incluso no seu acesso:
               </p>
 
-              {/* PRICE BOX */}
-              <div className="border-2 border-dashed border-[#1db863]/35 bg-[#eefbf4] rounded-[20px] p-5 text-center relative overflow-hidden shadow-xs mb-4">
-                <div className="text-gray-500 text-[11px] font-bold uppercase tracking-widest mb-1.5">
-                  Plano Premium — Acesso Vitalício
+              {/* CONTENT LIST */}
+              <div className="grid grid-cols-2 gap-x-1.5 sm:gap-x-2 gap-y-0 mb-2 sm:mb-3 w-full">
+                {/* Column 1 */}
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>📋</span><span>Pranchas Prontas</span></div>
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>📖</span><span>Histórias Sociais</span></div>
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>📚</span><span>Livros e Histórias</span></div>
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>🔢</span><span>Conceitos Matemáticos</span></div>
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>💬</span><span>Vamos Falar?</span></div>
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>🎵</span><span>Canto e Voz</span></div>
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>🔬</span><span>Ciência / Biologia</span></div>
                 </div>
-                <div className="text-red-500 text-[15px] line-through font-bold">
+                {/* Column 2 */}
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>🎶</span><span>Músicas</span></div>
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>🍽️</span><span>Receitas</span></div>
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>⭐</span><span>Atividades Diversas</span></div>
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>👨‍💻</span><span>The AAC Coach</span></div>
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>🧸</span><span>Brinquedos e Brincadeiras</span></div>
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>👦</span><span>Adolescentes</span></div>
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>📝</span><span>Posts Técnicos</span></div>
+                </div>
+              </div>
+
+              {/* Below list full width item */}
+              <div className="w-full text-center font-bold text-[#1a7a4a] text-[11px] sm:text-[13px] bg-[#d4f5e3] rounded-[8px] p-[4px] sm:p-[6px] mb-2 sm:mb-4 flex items-center justify-center gap-1.5 leading-tight shadow-xs">
+                <span>♾️</span> <span>Atualizações Vitalícias</span>
+              </div>
+
+              {/* PRICE BOX */}
+              <div className="bg-gradient-to-br from-[#eafaf1] to-[#d4f5e3] rounded-[14px] sm:rounded-[18px] p-2.5 sm:p-5 mt-1.5 sm:mt-[14px] w-full flex flex-col items-center border-2 border-[#1db863]/30 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] relative overflow-hidden">
+                <div className="absolute top-0 right-0 bg-[#ffd600] text-black text-[8px] sm:text-[9px] font-black px-2 py-0.5 rounded-bl-[10px] uppercase tracking-wider shadow-sm border-l border-b border-[#f5c518]">
+                  MELHOR PREÇO
+                </div>
+                <div className="text-[#e03030] text-[11px] sm:text-[14px] line-through font-extrabold leading-tight">
                   De R$ 97,00
                 </div>
-                <div className="text-emerald-500 text-[18px] font-bold leading-none my-0.5">
-                  ↓
+                <div className="text-[#1a7a4a] text-[13px] sm:text-[16px] font-bold my-0 leading-none">
+                  Por apenas:
                 </div>
-                <div className="text-[#1a7a4a] text-center font-serif leading-none tracking-tight my-1 flex items-center justify-center gap-1">
-                  <span className="text-[26px] font-bold self-start mt-1">R$</span>
-                  <span className="text-[56px] font-black">27,90</span>
+                <div className="text-[#1a7a4a] text-center font-black leading-none tracking-tight my-0.5 sm:my-1 flex items-baseline justify-center gap-0.5 sm:gap-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  <span className="text-[14px] sm:text-[18px] font-bold text-[#1a7a4a]">R$</span>
+                  <span className="text-[32px] sm:text-[50px] font-black tracking-tight text-[#115e33]">27,90</span>
+                  <span className="text-[10px] sm:text-[12px] font-bold text-[#1a7a4a]/70">/único</span>
                 </div>
-                <div className="inline-block bg-[#f5c518] text-gray-900 text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-wider mb-2 shadow-xs">
-                  71% DE DESCONTO
-                </div>
-                <div className="block">
-                  <span className="inline-block bg-[#25a862] text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                <div className="flex flex-col items-center gap-1 mt-1 w-full">
+                  <div className="bg-[#ffd600] text-black text-[9px] sm:text-[11px] font-black px-2.5 py-0.5 sm:px-3.5 sm:py-1 rounded-md shadow-[0_4px_10px_rgba(255,214,0,0.35)] uppercase tracking-wider border border-yellow-300 scale-105">
+                    🔥 71% DE DESCONTO
+                  </div>
+                  <div className="bg-[#00c853] text-white text-[9px] sm:text-[11px] font-black px-2.5 py-0.5 sm:px-3.5 sm:py-1.5 rounded-full uppercase tracking-wider leading-none shadow-md">
                     Você economiza R$ 69,10
-                  </span>
-                </div>
-                <div className="text-gray-400 text-[11px] italic mt-2.5 block font-medium">
-                  Pagamento único — sem mensalidade
+                  </div>
                 </div>
               </div>
 
               {/* COUNTDOWN TIMER */}
-              <div className="flex flex-col items-center mb-4.5 w-full bg-gray-50/70 p-3.5 rounded-2xl border border-gray-100">
-                <span className="text-[#1a7a4a] font-bold text-[12px] uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-                  <Clock className="w-4 h-4" /> Esta oferta some em:
+              <div className="flex flex-col items-center my-2 sm:my-4 w-full">
+                <span className="text-gray-500 font-bold text-[10px] sm:text-[12px] mb-1 sm:mb-2">
+                  Esta oferta some hoje em:
                 </span>
-                <div className="flex items-center justify-center gap-2.5 w-full">
-                  {secondsRemaining > 0 ? (
-                    <>
-                      {/* Minuto Box */}
-                      <div className="bg-gradient-to-b from-[#1a7a4a] to-[#125433] text-white w-[64px] h-[60px] rounded-[14px] flex flex-col items-center justify-center shadow-md relative">
-                        <span className="text-[26px] font-black leading-none">{Math.floor(secondsRemaining / 60).toString().padStart(2, '0')}</span>
-                        <span className="text-[8px] font-bold tracking-widest text-emerald-100/70 uppercase mt-0.5">MIN</span>
-                      </div>
-                      {/* Separador */}
-                      <div className="text-[24px] font-black text-[#1a7a4a] leading-none animate-pulse">
-                        :
-                      </div>
-                      {/* Segundo Box */}
-                      <div className="bg-gradient-to-b from-[#1a7a4a] to-[#125433] text-white w-[64px] h-[60px] rounded-[14px] flex flex-col items-center justify-center shadow-md relative">
-                        <span className="text-[26px] font-black leading-none">{(secondsRemaining % 60).toString().padStart(2, '0')}</span>
-                        <span className="text-[8px] font-bold tracking-widest text-emerald-100/70 uppercase mt-0.5">SEG</span>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="bg-[#e03030] text-white text-[14px] font-black w-full h-[60px] rounded-[14px] flex items-center justify-center shadow-xs uppercase tracking-widest animate-pulse">
-                      Oferta expirada!
+                {secondsRemaining > 0 ? (
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    {/* Minutes Box */}
+                    <div className="bg-[#1a7a4a] text-white font-black text-[15px] sm:text-[22px] px-2 py-0.5 sm:px-3 sm:py-1.5 rounded-md sm:rounded-lg shadow-md min-w-[34px] sm:min-w-[45px] text-center">
+                      {Math.floor(secondsRemaining / 60).toString().padStart(2, '0')}
                     </div>
-                  )}
-                </div>
-                <span className="text-[#e03030] text-[11px] font-bold mt-2 text-center flex items-center gap-1">
-                  ⚠️ Após esse tempo você perde esse desconto
+                    <span className="text-[#1a7a4a] font-black text-[15px] sm:text-[22px] animate-pulse leading-none">:</span>
+                    {/* Seconds Box */}
+                    <div className="bg-[#1a7a4a] text-white font-black text-[15px] sm:text-[22px] px-2 py-0.5 sm:px-3 sm:py-1.5 rounded-md sm:rounded-lg shadow-md min-w-[34px] sm:min-w-[45px] text-center">
+                      {(secondsRemaining % 60).toString().padStart(2, '0')}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-[#e03030] font-black text-[11px] sm:text-[14px] uppercase tracking-wider animate-pulse">
+                    Oferta do dia encerrada!
+                  </div>
+                )}
+                <span className="text-[#e03030] text-[9px] sm:text-[11px] font-bold mt-1 sm:mt-2 text-center leading-tight">
+                  Após esse tempo você perde esse desconto
                 </span>
               </div>
-
-              {/* COMPACT CHECKLIST */}
-              <ul className="list-none space-y-1.5 mb-5 w-full">
-                {[
-                  "+200 Materiais Visuais em PDF",
-                  "Cartões de Comunicação e Histórias Sociais",
-                  "Kit Anti-Crise + Guia Escolar",
-                  "Garantia de 14 dias"
-                ].map((item, idx) => (
-                  <li key={idx} className="flex items-center gap-2.5 text-[13px] font-bold py-1.5 border-b border-gray-50 text-gray-800 hover:bg-emerald-50/40 px-2 rounded-lg transition-all">
-                    <div className="w-5 h-5 bg-[#d4f5e3] rounded-full flex items-center justify-center shrink-0">
-                      <Check className="w-3.5 h-3.5 text-[#1a7a4a] stroke-[3]" />
-                    </div>
-                    <span className="leading-tight">{item}</span>
-                  </li>
-                ))}
-              </ul>
 
               {/* CTA BUTTON */}
               <motion.button 
                 onClick={handleCTAClick}
-                className="w-full bg-gradient-to-r from-[#1db863] to-[#179c53] hover:from-[#19a155] hover:to-[#148346] text-white font-extrabold text-[16px] tracking-[0.5px] py-4 rounded-full border-none cursor-pointer mb-3 shadow-lg shadow-[#1db863]/25 active:scale-95 transition-all flex items-center justify-center gap-2"
+                className="w-full bg-gradient-to-r from-[#00ff66] via-[#00c853] to-[#009929] hover:from-[#00ff88] hover:to-[#00b33c] text-white font-black text-[13px] sm:text-[16.5px] p-3 sm:p-[19px] rounded-[999px] border-none cursor-pointer transition-all uppercase tracking-widest flex items-center justify-center gap-2 text-center shadow-[0_12px_28px_rgba(0,200,83,0.45)] active:scale-95 border-b-[3px] sm:border-b-[4px] border-[#007d32]"
                 animate={{
-                  scale: [1, 1.02, 1],
+                  scale: [1, 1.04, 1],
                 }}
                 transition={{
-                  duration: 3,
+                  duration: 1.8,
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
               >
-                {secondsRemaining > 0 ? "GARANTIR MEU ACESSO AGORA" : "Ver planos disponíveis"}
+                {secondsRemaining > 0 ? "⚡ GARANTIR MEU ACESSO" : "Ver planos disponíveis"}
               </motion.button>
 
               {/* DECLINE LINK */}
               <button 
                 onClick={handleDeclineClick}
-                className="text-center text-[12px] text-gray-400 hover:text-gray-600 cursor-pointer block mx-auto mb-3.5 font-bold transition-colors bg-transparent border-none py-1"
+                className="text-center text-[10px] sm:text-[12px] text-gray-400 hover:text-gray-600 cursor-pointer block mx-auto mt-1.5 sm:mt-3.5 font-bold transition-colors bg-transparent border-none py-1"
               >
                 Não, prefiro pagar R$ 97,00 depois
               </button>
 
               {/* SECURITY FOOTER */}
-              <div className="flex items-center justify-center gap-4 text-[11px] text-gray-400 font-bold border-t border-gray-100 pt-3 mt-1">
-                <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-[#1db863]" /> Compra Segura</span>
-                <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-[#1db863]" /> Acesso Imediato</span>
+              <div className="flex items-center justify-center gap-2.5 sm:gap-4 text-[9px] sm:text-[11px] text-gray-400 font-bold border-t border-gray-100 pt-2 mt-2 sm:pt-3 sm:mt-3">
+                <span className="flex items-center gap-1">🔒 Compra Segura</span>
+                <span className="flex items-center gap-1">⚡ Acesso Imediato</span>
               </div>
             </motion.div>
           </div>
@@ -3401,111 +3374,143 @@ export default function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="absolute inset-0 bg-black/65 backdrop-blur-[3px]"
+              transition={{ duration: 0.4 }}
+              className="absolute inset-0 bg-black/70 backdrop-blur-[4px]"
             />
 
             {/* Popup Container */}
             <motion.div 
-              initial={{ y: 80, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 80, opacity: 0 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="relative bg-gradient-to-b from-emerald-50/40 via-white to-white w-[90%] max-w-[350px] rounded-[24px] p-7 shadow-[0_24px_56px_rgba(0,0,0,0.22)] border border-[#1a7a4a]/10 flex flex-col overflow-y-auto max-h-[90vh] custom-scrollbar z-10"
+              initial={{ y: "100vh", opacity: 0 }}
+              animate={{ 
+                y: 0, 
+                opacity: 1,
+                transition: { type: 'spring', damping: 15, stiffness: 100 }
+              }}
+              exit={{ y: "100vh", opacity: 0 }}
+              className="relative bg-[#ffffff] w-[95%] max-w-[340px] rounded-[24px] p-3.5 sm:p-7 shadow-[0_32px_80px_rgba(0,0,0,0.4),0_0_50px_rgba(245,197,24,0.25)] border-[3px] sm:border-[4px] border-[#f5c518] flex flex-col overflow-y-auto max-h-[92vh] custom-scrollbar z-10"
             >
-              {/* Close button X at top-right */}
-              <button 
-                onClick={handleScrollDeclineClick} 
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1.5 rounded-full hover:bg-gray-100/80 transition-all cursor-pointer border-none bg-transparent" 
-                aria-label="Fechar"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
               {/* TOP SECTION */}
-              <div className="text-center text-[28px] mb-2 animate-bounce">🧩</div>
-              <div className="flex justify-center mb-3">
-                <span className="bg-[#d4f5e3] text-[#1a7a4a] font-extrabold text-[11px] uppercase tracking-widest px-4 py-1.5 rounded-full shadow-sm flex items-center gap-1">
-                  AINDA EM DÚVIDA?
+              <div className="text-center text-[24px] sm:text-[32px] mb-1 sm:mb-3 select-none">🧩</div>
+              <div className="flex justify-center mb-2 sm:mb-4">
+                <span className="bg-gradient-to-r from-[#ff1744] to-[#ef4444] text-white font-extrabold text-[10px] sm:text-[12px] uppercase tracking-widest px-[10px] sm:px-[18px] py-[3.5px] sm:py-[7px] rounded-[999px] shadow-[0_6px_16px_rgba(255,23,68,0.4)] flex items-center justify-center gap-1 sm:gap-1.5 animate-pulse">
+                  <span className="w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 bg-white rounded-full animate-ping"></span>
+                  OPORTUNIDADE ÚNICA
                 </span>
               </div>
 
               {/* HEADLINE */}
-              <h3 className="text-[#1a7a4a] text-[20px] font-black text-center leading-[1.3] mb-2 font-sans tracking-tight">
-                Você chegou até aqui…
+              <h3 className="text-[#1a7a4a] text-[16px] sm:text-[20px] font-black text-center leading-[1.3] mb-1 sm:mb-2 font-sans tracking-tight">
+                Você garante o Kit Básico completo que vale R$ 47,00
               </h3>
 
               {/* SUBHEADLINE */}
-              <p className="text-gray-500 text-[14px] text-center leading-relaxed mb-4">
-                Isso significa que você quer transformar a rotina do seu filho.<br /><br />
-                Comece agora sem risco por apenas:
+              <p className="text-[#6b7280] text-[11px] sm:text-[13px] text-center leading-[1.6] mb-1.5 sm:mb-4">
+                Tudo isso incluso no seu acesso básico:
               </p>
 
-              {/* BIG PRICE */}
-              <div className="text-center mb-4 bg-gray-50/70 rounded-[16px] py-4 px-3 border border-gray-100/80">
-                <div className="text-gray-400 text-[13px] line-through font-bold mb-0.5">
+              {/* CONTENT LIST */}
+              <div className="grid grid-cols-2 gap-x-1.5 sm:gap-x-2 gap-y-0 mb-2 sm:mb-3 w-full">
+                {/* Column 1 */}
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>🌅</span><span>Rotinas Visuais</span></div>
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>🏫</span><span>Pictogramas Escala</span></div>
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>🧼</span><span>Vida Diária (AVDS)</span></div>
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>💬</span><span>Palavras Chave</span></div>
+                </div>
+                {/* Column 2 */}
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>✂️</span><span>Atividades Práticas</span></div>
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>📚</span><span>Alfabetização</span></div>
+                  <div className="flex items-center gap-[3px] sm:gap-[6px] text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[4px] leading-tight"><span>🎈</span><span>Festividades</span></div>
+                </div>
+              </div>
+
+              {/* Below list full width item */}
+              <div className="w-full text-center font-bold text-[#1a7a4a] text-[11px] sm:text-[13px] bg-[#d4f5e3] rounded-[8px] p-[4px] sm:p-[6px] mb-2 sm:mb-4 flex items-center justify-center gap-1.5 leading-tight shadow-xs">
+                <span>💡</span> <span>Permite upgrade para o Premium depois!</span>
+              </div>
+
+              {/* PRICE BOX */}
+              <div className="bg-gradient-to-br from-[#fefef0] to-[#fef9e7] rounded-[14px] sm:rounded-[18px] p-2.5 sm:p-5 mt-1.5 sm:mt-[14px] w-full flex flex-col items-center border-2 border-[#f5c518]/50 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] relative overflow-hidden">
+                <div className="absolute top-0 right-0 bg-[#ff1744] text-white text-[8px] sm:text-[9px] font-black px-2 py-0.5 rounded-bl-[10px] uppercase tracking-wider shadow-sm">
+                  SÓ R$ 10
+                </div>
+                <div className="text-[#e03030] text-[11px] sm:text-[14px] line-through font-extrabold leading-tight">
                   De R$ 47,00
                 </div>
-                <div className="text-emerald-500 text-[16px] font-extrabold leading-none mb-1">
-                  Por apenas:
+                <div className="text-[#1a7a4a] text-[13px] sm:text-[16px] font-bold my-0 leading-none">
+                  Apenas hoje:
                 </div>
-                <div className="text-[#1a7a4a] font-black font-serif leading-none tracking-tight flex items-center justify-center gap-1 my-1">
-                  <span className="text-[28px] font-bold self-start mt-2">R$</span>
-                  <span className="text-[68px] font-extrabold">10</span>
-                  <span className="text-[18px] text-gray-400 font-bold self-end mb-2">/único</span>
+                <div className="text-[#1a7a4a] text-center font-black leading-none tracking-tight my-0.5 sm:my-1 flex items-baseline justify-center gap-0.5 sm:gap-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  <span className="text-[14px] sm:text-[18px] font-bold text-[#1a7a4a]">R$</span>
+                  <span className="text-[32px] sm:text-[50px] font-black tracking-tight text-[#115e33]">10,00</span>
+                  <span className="text-[10px] sm:text-[12px] font-bold text-[#1a7a4a]/70">/único</span>
                 </div>
-                <div className="inline-block bg-[#f5c518] text-gray-900 text-[11px] font-black px-4 py-1 rounded-full uppercase tracking-wider mb-1.5 shadow-xs">
-                  78% DE DESCONTO
+                <div className="flex flex-col items-center gap-1 mt-1 w-full">
+                  <div className="bg-[#ffd600] text-black text-[9px] sm:text-[11px] font-black px-2.5 py-0.5 sm:px-3.5 sm:py-1 rounded-md shadow-[0_4px_10px_rgba(255,214,0,0.35)] uppercase tracking-wider border border-yellow-300 scale-105">
+                    🔥 78% DE DESCONTO
+                  </div>
+                  <div className="bg-[#00c853] text-white text-[9px] sm:text-[11px] font-black px-2.5 py-0.5 sm:px-3.5 sm:py-1.5 rounded-full uppercase tracking-wider leading-none shadow-md">
+                    Você economiza R$ 37,00
+                  </div>
                 </div>
-                <span className="text-[11px] text-gray-400 mt-1 block font-bold uppercase tracking-wider">
-                  Pagamento único — Sem mensalidades
+              </div>
+
+              {/* COUNTDOWN TIMER */}
+              <div className="flex flex-col items-center my-2 sm:my-4 w-full">
+                <span className="text-gray-500 font-bold text-[10px] sm:text-[12px] mb-1 sm:mb-2">
+                  Esta oferta some hoje em:
+                </span>
+                {secondsRemaining > 0 ? (
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    {/* Minutes Box */}
+                    <div className="bg-[#1a7a4a] text-white font-black text-[15px] sm:text-[22px] px-2 py-0.5 sm:px-3 sm:py-1.5 rounded-md sm:rounded-lg shadow-md min-w-[34px] sm:min-w-[45px] text-center">
+                      {Math.floor(secondsRemaining / 60).toString().padStart(2, '0')}
+                    </div>
+                    <span className="text-[#1a7a4a] font-black text-[15px] sm:text-[22px] animate-pulse leading-none">:</span>
+                    {/* Seconds Box */}
+                    <div className="bg-[#1a7a4a] text-white font-black text-[15px] sm:text-[22px] px-2 py-0.5 sm:px-3 sm:py-1.5 rounded-md sm:rounded-lg shadow-md min-w-[34px] sm:min-w-[45px] text-center">
+                      {(secondsRemaining % 60).toString().padStart(2, '0')}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-[#e03030] font-black text-[11px] sm:text-[14px] uppercase tracking-wider animate-pulse">
+                    Oferta do dia encerrada!
+                  </div>
+                )}
+                <span className="text-[#e03030] text-[9px] sm:text-[11px] font-bold mt-1 sm:mt-2 text-center leading-tight">
+                  Após esse tempo você perde esse desconto
                 </span>
               </div>
 
-              {/* COMPACT CHECKLIST */}
-              <ul className="list-none space-y-1.5 mb-4 w-full">
-                {[
-                  "+50 Rotinas Visuais em PDF",
-                  "Acesso imediato por e-mail",
-                  "Garantia de 14 dias"
-                ].map((item, idx) => (
-                  <li key={idx} className="flex items-center gap-2.5 text-[13px] font-bold py-1.5 border-b border-gray-50 text-gray-800 hover:bg-emerald-50/40 px-2 rounded-lg transition-all">
-                    <div className="w-5 h-5 bg-[#d4f5e3] rounded-full flex items-center justify-center shrink-0">
-                      <Check className="w-3.5 h-3.5 text-[#1a7a4a] stroke-[3]" />
-                    </div>
-                    <span className="leading-tight">{item}</span>
-                  </li>
-                ))}
-              </ul>
-
-              {/* UPGRADE NOTE */}
-              <div className="bg-[#d4f5e3]/60 border-l-4 border-[#1a7a4a] rounded-r-[12px] p-[11px] px-3.5 mb-[16px] text-left shadow-xs">
-                <p className="text-[#1a7a4a] text-[12px] font-bold leading-normal flex items-start gap-2">
-                  <span className="text-sm shrink-0">💡</span>
-                  <span>Depois você pode fazer upgrade para o Premium por apenas R$ 17,90 a mais</span>
-                </p>
-              </div>
-
               {/* CTA BUTTON */}
-              <button 
+              <motion.button 
                 onClick={handleScrollCTAClick}
-                className="w-full bg-gradient-to-r from-[#1db863] to-[#179c53] hover:from-[#19a155] hover:to-[#148346] text-white font-extrabold text-[16px] py-4.5 rounded-full border-none cursor-pointer mb-[10px] shadow-lg shadow-[#1db863]/25 active:scale-98 transition-all duration-300"
+                className="w-full bg-gradient-to-r from-[#00ff66] via-[#00c853] to-[#009929] hover:from-[#00ff88] hover:to-[#00b33c] text-white font-black text-[13px] sm:text-[16.5px] p-3 sm:p-[19px] rounded-[999px] border-none cursor-pointer transition-all uppercase tracking-widest flex items-center justify-center gap-2 text-center shadow-[0_12px_28px_rgba(0,200,83,0.45)] active:scale-95 border-b-[3px] sm:border-b-[4px] border-[#007d32]"
+                animate={{
+                  scale: [1, 1.04, 1],
+                }}
+                transition={{
+                  duration: 1.8,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
               >
-                COMEÇAR POR R$ 10 AGORA
-              </button>
+                {secondsRemaining > 0 ? "⚡ COMEÇAR POR R$ 10" : "Ver planos disponíveis"}
+              </motion.button>
 
               {/* DECLINE LINK */}
               <button 
                 onClick={handleScrollDeclineClick}
-                className="text-center text-[12px] text-gray-400 hover:text-gray-600 cursor-pointer block mx-auto mb-3.5 font-bold transition-colors bg-transparent border-none py-1"
+                className="text-center text-[10px] sm:text-[12px] text-gray-400 hover:text-gray-600 cursor-pointer block mx-auto mt-1.5 sm:mt-3.5 font-bold transition-colors bg-transparent border-none py-1"
               >
-                Prefiro continuar vendo a página
+                Não, prefiro continuar vendo a página
               </button>
 
               {/* SECURITY FOOTER */}
-              <div className="flex items-center justify-center gap-4 text-[11px] text-gray-400 font-bold border-t border-gray-100 pt-3 mt-1">
-                <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-[#1db863]" /> Compra Segura</span>
-                <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-[#1db863]" /> Acesso em 5 minutos</span>
+              <div className="flex items-center justify-center gap-2.5 sm:gap-4 text-[9px] sm:text-[11px] text-gray-400 font-bold border-t border-gray-100 pt-2 mt-2 sm:pt-3 sm:mt-3">
+                <span className="flex items-center gap-1">🔒 Compra Segura</span>
+                <span className="flex items-center gap-1">⚡ Acesso Imediato</span>
               </div>
             </motion.div>
           </div>
