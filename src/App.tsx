@@ -3024,7 +3024,7 @@ export default function App() {
                </div>
 
                <button 
-                 onClick={() => window.location.href = 'https://pay.cakto.com.br/gghiyjq_992080'}
+                 onClick={() => window.location.href = 'https://pay.cakto.com.br/p2i9bv8_888747'}
                  className="w-full bg-[#2ecc71] text-white font-black py-4.5 rounded-2xl hover:bg-[#27b966] hover:scale-[1.01] transition-all duration-300 cursor-pointer shadow-md shadow-[#2ecc71]/20 text-sm uppercase tracking-wider"
                >
                  Quero o Kit Completo
