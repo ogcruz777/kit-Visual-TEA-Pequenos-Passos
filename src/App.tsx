@@ -1994,7 +1994,7 @@ export default function App() {
 
   const handleCTAClick = () => {
     closePopup1();
-    document.getElementById('planos')?.scrollIntoView({ behavior: 'smooth' });
+    window.location.href = 'https://pay.cakto.com.br/p2i9bv8_888747';
   };
 
   const handleDeclineClick = () => {
