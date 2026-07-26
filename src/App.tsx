@@ -96,7 +96,7 @@ const UrgencyBar = () => {
   const seconds = timeLeft % 60;
 
   return (
-    <div id="urgency-bar" className="fixed top-0 left-0 w-full bg-[#e74c3c] text-white py-2.5 px-4 z-50 shadow-md border-b border-[#c0392b] flex justify-center items-center gap-2.5 sm:gap-3 font-sans select-none">
+    <div id="urgency-bar" className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-[#e74c3c] text-white py-2.5 px-3.5 z-50 shadow-md border-b border-[#c0392b] flex justify-center items-center gap-2 sm:gap-3 font-sans select-none">
       <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs tracking-wider uppercase font-extrabold text-white">
         <span className="inline-flex h-2 w-2 rounded-full bg-white animate-ping" />
         <span className="text-white">Oferta Especial</span>
@@ -175,7 +175,7 @@ const SalesNotification = () => {
           animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
           exit={{ opacity: 0, x: 120, scale: 0.9 }}
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          className="fixed top-[70px] sm:top-[85px] right-4 z-[99] bg-white/95 backdrop-blur-md shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl p-4 border border-gray-150 flex items-center gap-3.5 w-[310px] sm:w-[340px] select-none"
+          className="fixed top-[60px] left-1/2 -translate-x-1/2 z-[99] bg-white/95 backdrop-blur-md shadow-[0_20px_50px_rgba(0,0,0,0.2)] rounded-2xl p-3.5 border border-gray-150 flex items-center gap-3 w-[90%] max-w-[380px] select-none"
         >
           {/* Green Purchase Pulse Icon */}
           <div className="relative shrink-0 flex items-center justify-center w-11 h-11 rounded-full bg-[#f3fdf6] border border-[#2ecc71]/20">
@@ -2015,57 +2015,37 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen pt-16 sm:pt-20">
-      <UrgencyBar />
-      <SalesNotification />
-      {/* Floating Bouncing CTA (Fica Pulando na Tela e Acompanha o Scroll) */}
-      <AnimatePresence>
-        {showStickyCTA && !showDiscountPopup && !showScrollPopup && !showUpsell && (
-          <>
-            {/* Mobile Floating Bouncing CTA */}
-            <div className="fixed bottom-6 left-4 right-4 z-[99999] sm:hidden">
+    <div className="bg-[#0f172a] min-h-screen font-sans antialiased selection:bg-[#2ecc71] selection:text-white">
+      {/* Mobile-first App Container Frame */}
+      <div className="max-w-md w-full mx-auto bg-white min-h-screen shadow-[0_0_60px_rgba(0,0,0,0.5)] relative border-x border-slate-200/80 pt-14 sm:pt-16 overflow-x-hidden">
+        <UrgencyBar />
+        <SalesNotification />
+        {/* Floating Bouncing CTA (Centered in Mobile Frame) */}
+        <AnimatePresence>
+          {showStickyCTA && !showDiscountPopup && !showScrollPopup && !showUpsell && (
+            <div className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[92%] max-w-[410px] z-[99999]">
               <motion.button 
                 onClick={scrollToPricing}
                 animate={{ 
-                  y: [0, -10, 0],
+                  y: [0, -8, 0],
                 }}
                 transition={{
                   duration: 1.5,
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="w-full bg-[#2ecc71] hover:bg-[#27ae60] text-white font-black py-4 rounded-2xl shadow-[0_12px_45px_rgba(46,204,113,0.6)] flex items-center justify-center gap-3 uppercase tracking-wider text-sm cursor-pointer border border-white/25"
-              >
-                <ShoppingBag className="w-5 h-5 shrink-0" />
-                Quero o Kit com Desconto
-              </motion.button>
-            </div>
-
-            {/* Desktop Floating Bouncing CTA */}
-            <div className="fixed bottom-8 right-8 z-[99999] hidden sm:block">
-              <motion.button 
-                onClick={scrollToPricing}
-                animate={{ 
-                  y: [0, -14, 0],
-                }}
-                transition={{
-                  duration: 1.6,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-                className="bg-[#2ecc71] hover:bg-[#27ae60] text-white font-black px-8 py-4.5 rounded-full shadow-[0_15px_45px_rgba(46,204,113,0.6)] flex items-center justify-center gap-3 uppercase tracking-wider text-sm cursor-pointer border border-white/25 transition-all duration-300 hover:scale-105 active:scale-95"
+                className="w-full bg-[#2ecc71] hover:bg-[#27ae60] text-white font-black py-3.5 sm:py-4 rounded-2xl shadow-[0_12px_40px_rgba(46,204,113,0.65)] flex items-center justify-center gap-2.5 uppercase tracking-wider text-xs sm:text-sm cursor-pointer border border-white/25 transition-all duration-300 hover:scale-[1.02] active:scale-95"
               >
                 <ShoppingBag className="w-5 h-5 text-white animate-pulse shrink-0" />
                 <span>Quero o Kit com Desconto</span>
-                <span className="flex h-2.5 w-2.5 relative shrink-0">
+                <span className="flex h-2.5 w-2.5 relative shrink-0 ml-1">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
                 </span>
               </motion.button>
             </div>
-          </>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
 
       {/* Hero Section */}
       <section id="hero" className="bg-white px-4 pt-6 pb-10 sm:pt-10 sm:pb-14 overflow-hidden relative border-b border-gray-100">
@@ -2078,16 +2058,15 @@ export default function App() {
           </span>
 
           {/* Headline - extremely strong */}
-          <h1 className="text-2xl sm:text-5xl md:text-6xl font-black text-gray-900 leading-tight mb-2.5 sm:mb-3.5 tracking-tight max-w-4xl mx-auto">
-            Tudo o que você precisa para <br />
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-gray-900 leading-tight mb-2.5 sm:mb-3.5 tracking-tight max-w-4xl mx-auto">
             <span className="bg-gradient-to-r from-[#1a5c3a] via-[#2ecc71] to-[#1a5c3a] bg-clip-text text-transparent">
-              organizar a rotina de crianças com TEA
-            </span> <br className="hidden md:inline" /> em um único kit.
+              +200 Recursos Visuais
+            </span> para Transformar a Rotina de Crianças com TEA
           </h1>
 
           {/* Subheadline - explaining exactly who and what */}
           <p className="text-xs sm:text-base text-gray-650 mb-3 sm:mb-4 max-w-2xl mx-auto leading-relaxed font-medium">
-            Mais de 200 cartões visuais prontos para imprimir, organizados por categorias e desenvolvidos para apoiar famílias, professores e profissionais no dia a dia.
+            Tenha acesso a mais de 200 recursos visuais prontos para imprimir e ajude a tornar a rotina mais previsível, organizada e independente — sem precisar criar materiais do zero.
           </p>
 
           {/* Mockup premium com Carrossel Automático (Vitrine de Produtos - Sem bloco/rodapé) */}
@@ -3607,6 +3586,7 @@ export default function App() {
           </div>
         )}
       </AnimatePresence>
+      </div>
     </div>
   );
 }
