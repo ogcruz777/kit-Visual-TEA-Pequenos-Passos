@@ -2027,7 +2027,7 @@ export default function App() {
 
   const handleScrollCTAClick = () => {
     setShowScrollPopup(false);
-    document.getElementById('planos')?.scrollIntoView({ behavior: 'smooth' });
+    setShowUpsell(true);
   };
 
   const handleScrollDeclineClick = () => {
@@ -3383,13 +3383,13 @@ export default function App() {
               </div>
 
               {/* HEADLINE */}
-              <h3 className="text-[#1a7a4a] text-[16px] sm:text-[21px] font-black text-center leading-[1.3] mb-1 sm:mb-2 font-sans tracking-tight">
-                Você garante o Kit Premium completo que vale R$ 97,00
+              <h3 className="text-[#1a7a4a] text-[17px] sm:text-[22px] font-black text-center leading-[1.3] mb-1 sm:mb-2 font-sans tracking-tight">
+                GARANTA O KIT PREMIUM COMPLETO POR APENAS R$ 27,90!
               </h3>
 
               {/* SUBHEADLINE */}
-              <p className="text-[#6b7280] text-[11px] sm:text-[13px] text-center leading-[1.6] mb-1.5 sm:mb-3">
-                Tudo isso incluso no seu acesso:
+              <p className="text-[#6b7280] text-[11px] sm:text-[13px] text-center leading-[1.6] mb-1.5 sm:mb-3 font-medium">
+                Tudo isso incluso no seu acesso vitalício (De R$ 97,00 por R$ 27,90):
               </p>
 
               {/* CONTENT LIST */}
@@ -3527,13 +3527,13 @@ export default function App() {
               </div>
 
               {/* HEADLINE */}
-              <h3 className="text-[#1a7a4a] text-[16px] sm:text-[21px] font-black text-center leading-[1.3] mb-1 sm:mb-2 font-sans tracking-tight">
-                Você garante o Kit Básico completo que vale R$ 47,00
+              <h3 className="text-[#1a7a4a] text-[17px] sm:text-[22px] font-black text-center leading-[1.3] mb-1 sm:mb-2 font-sans tracking-tight">
+                GARANTA O KIT BÁSICO COMPLETO POR APENAS R$ 10,00!
               </h3>
 
               {/* SUBHEADLINE */}
-              <p className="text-[#6b7280] text-[11px] sm:text-[13px] text-center leading-[1.6] mb-1.5 sm:mb-3">
-                Tudo isso incluso no seu acesso básico:
+              <p className="text-[#6b7280] text-[11px] sm:text-[13px] text-center leading-[1.6] mb-1.5 sm:mb-3 font-medium">
+                Tudo isso incluso no seu acesso básico (De R$ 47,00 por R$ 10,00):
               </p>
 
               {/* CONTENT LIST */}
