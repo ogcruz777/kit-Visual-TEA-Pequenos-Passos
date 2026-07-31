@@ -1646,11 +1646,6 @@ const WhatsAppAudio = ({ duration }: { duration: string }) => {
 // --- Hero Images Showcase Array ---
 const heroImages = [
   {
-    src: "https://i.imgur.com/cSq8323.png",
-    title: "Kit Completo Pequenos Passos",
-    subtitle: "Mais de 200 cartões visuais estruturados para imprimir e começar a usar hoje mesmo."
-  },
-  {
     src: "https://i.imgur.com/3gNWaxg.jpeg",
     title: "Rotina Diária e Semanal",
     subtitle: "Estruture as atividades da manhã, tarde e noite de forma visual e intuitiva."
@@ -1717,6 +1712,31 @@ export default function App() {
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Precarregamento preventivo de todas as imagens em segundo plano
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // 1. Precarrega todas as imagens da vitrine principal
+    heroImages.forEach((item) => {
+      const img = new Image();
+      img.src = item.src;
+    });
+
+    // 2. Precarrega as capas dos materiais do kit
+    kitMaterials.forEach((item) => {
+      if (item.image) {
+        const img = new Image();
+        img.src = item.image;
+      }
+    });
+
+    // 3. Precarrega imagens dos cartões de prévia
+    Object.values(defaultKitImages).forEach((url) => {
+      const img = new Image();
+      img.src = getDirectImageUrl(url);
+    });
   }, []);
 
   const popup1TimeoutRef = useRef<any>(null);
@@ -2082,6 +2102,9 @@ export default function App() {
                   key={currentHeroSlide}
                   src={heroImages[currentHeroSlide].src}
                   alt={heroImages[currentHeroSlide].title}
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
