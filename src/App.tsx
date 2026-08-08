@@ -59,6 +59,40 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
+type KitType = 'basico' | 'oferta' | 'premium';
+
+interface KitCheckoutInfo {
+  name: string;
+  basePrice: string;
+  totalPrice: string;
+  baseCheckoutUrl: string;
+  bonusCheckoutUrl: string;
+}
+
+const KIT_CHECKOUT_MAP: Record<KitType, KitCheckoutInfo> = {
+  basico: {
+    name: 'Kit TEA Básico',
+    basePrice: 'R$ 19,90',
+    totalPrice: 'R$ 29,90',
+    baseCheckoutUrl: 'https://pay.cakto.com.br/y3g3fhw_888684',
+    bonusCheckoutUrl: 'https://pay.cakto.com.br/3cq9yv3_1026160',
+  },
+  oferta: {
+    name: 'Kit TEA Completo (Oferta)',
+    basePrice: 'R$ 29,90',
+    totalPrice: 'R$ 39,90',
+    baseCheckoutUrl: 'https://pay.cakto.com.br/gghiyjq_992080',
+    bonusCheckoutUrl: 'https://pay.cakto.com.br/3aqobuo_1026227',
+  },
+  premium: {
+    name: 'Kit TEA Premium',
+    basePrice: 'R$ 39,60',
+    totalPrice: 'R$ 49,60',
+    baseCheckoutUrl: 'https://pay.cakto.com.br/p2i9bv8_888747',
+    bonusCheckoutUrl: 'https://pay.cakto.com.br/p46qy5e_1026285',
+  },
+};
+
 // --- Subcomponents ---
 
 const UrgencyBar = () => {
@@ -1739,26 +1773,26 @@ export default function App() {
     });
   }, []);
 
-  const popup1TimeoutRef = useRef<any>(null);
+  const popup2TimeoutRef = useRef<any>(null);
 
-  const triggerPopup1WithDelay = () => {
+  const triggerPopup2WithDelay = () => {
     if (typeof window === 'undefined') return;
-    const discountPopupSeen = sessionStorage.getItem('discount_popup_seen') === 'true';
+    const discountPopupSeen = sessionStorage.getItem('popup2_discount_seen') === 'true';
     if (!discountPopupSeen) {
-      if (popup1TimeoutRef.current) return; // já agendado
+      if (popup2TimeoutRef.current) return; // já agendado
 
-      popup1TimeoutRef.current = setTimeout(() => {
+      popup2TimeoutRef.current = setTimeout(() => {
         setShowDiscountPopup(true);
-        sessionStorage.setItem('discount_popup_seen', 'true');
-      }, 5000); // 5 segundos de atraso ao chegar nos planos
+        sessionStorage.setItem('popup2_discount_seen', 'true');
+      }, 6000); // 6 segundos de atraso ao chegar na seção de opções de kit
     }
   };
 
   const scrollToPricing = () => {
     document.getElementById('planos')?.scrollIntoView({ behavior: 'smooth' });
     
-    // Inicia o timer de 5 segundos para mostrar o Popup 1 (Premium Discount) se ainda não tiver sido exibido
-    triggerPopup1WithDelay();
+    // Inicia o timer de 6 segundos para mostrar o Popup 2 (Kit Premium R$ 39,60) após chegar nos planos
+    triggerPopup2WithDelay();
   };
 
   const handleBasicClick = () => {
@@ -1918,7 +1952,7 @@ export default function App() {
     return () => clearInterval(interval);
   }, [isAutoPlaying, userInteracted, visibleCards, kitMaterials.length]);
 
-  // --- Estado do Popup de Desconto Premium ---
+  // --- Estado do Popup 2 (Desconto Premium R$ 39,60) ---
   const [showDiscountPopup, setShowDiscountPopup] = useState(false);
   const [secondsRemaining, setSecondsRemaining] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -1931,9 +1965,11 @@ export default function App() {
     return 480;
   });
 
-  // Limpa chaves anteriores apenas para que ao recarregar o teste de popup funcione de forma limpa nesta sessão de review
+  // Limpa chaves para permitir testes limpos
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('popup1_basic_seen');
+      sessionStorage.removeItem('popup2_discount_seen');
       sessionStorage.removeItem('discount_popup_seen');
       sessionStorage.removeItem('popup1Closed');
       sessionStorage.removeItem('popup2Shown');
@@ -1941,7 +1977,7 @@ export default function App() {
     }
   }, []);
 
-  // Intervalo do Cronômetro do Popup 1
+  // Cronômetro do Popup
   useEffect(() => {
     const interval = setInterval(() => {
       setSecondsRemaining((prev) => {
@@ -1960,78 +1996,89 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Gatilho do Popup de Desconto Premium (ao chegar no plano básico / seção de planos)
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const handleScrollForPopup1 = () => {
-      const planosSection = document.getElementById('planos');
-      if (!planosSection) return;
-
-      const rect = planosSection.getBoundingClientRect();
-      // Quando o topo da seção de planos estiver perto de entrar na tela (85% da altura da janela)
-      if (rect.top <= window.innerHeight * 0.85) {
-        triggerPopup1WithDelay();
-      }
-    };
-
-    window.addEventListener('scroll', handleScrollForPopup1);
-    // Executa uma vez de imediato caso já tenha carregado na posição
-    handleScrollForPopup1();
-
-    return () => {
-      window.removeEventListener('scroll', handleScrollForPopup1);
-      if (popup1TimeoutRef.current) {
-        clearTimeout(popup1TimeoutRef.current);
-      }
-    };
-  }, []);
-
-  // --- Estado do Segundo Popup (Timer 10s) ---
+  // --- POPUP 1: Kit Básico R$ 19,90 ---
+  // Aparece com 13 segundos de página aberta
   const [showScrollPopup, setShowScrollPopup] = useState(false);
 
-  // Gatilho do Segundo Popup (Kit Básico R$ 10,00) nos primeiros 10 segundos de página aberta
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     const timer = setTimeout(() => {
-      const popup2Shown = sessionStorage.getItem('popup2Shown') === 'true';
-      if (!popup2Shown) {
+      const popup1Seen = sessionStorage.getItem('popup1_basic_seen') === 'true';
+      if (!popup1Seen) {
         setShowScrollPopup(true);
-        sessionStorage.setItem('popup2Shown', 'true');
+        sessionStorage.setItem('popup1_basic_seen', 'true');
       }
-    }, 10000); // 10 segundos
+    }, 13000); // 13 segundos de página aberta
 
     return () => clearTimeout(timer);
   }, []);
 
-  const closePopup1 = () => {
-    setShowDiscountPopup(false);
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('popup1Closed', 'true');
-    }
-  };
-
-  const handleCTAClick = () => {
-    closePopup1();
-    window.location.href = 'https://pay.cakto.com.br/p2i9bv8_888747';
-  };
-
-  const handleDeclineClick = () => {
-    closePopup1();
-    document.getElementById('planos')?.scrollIntoView({ behavior: 'smooth' });
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('popup2Shown', 'true');
-    }
-  };
-
+  // Ação do botão do POPUP 1: Direciona o comprador lá pra baixo pra ver as 2 opções de kit (#planos)
   const handleScrollCTAClick = () => {
     setShowScrollPopup(false);
-    setShowUpsell(true);
+    document.getElementById('planos')?.scrollIntoView({ behavior: 'smooth' });
+    // Inicia a contagem dos 6s ao chegar em #planos
+    triggerPopup2WithDelay();
   };
 
   const handleScrollDeclineClick = () => {
     setShowScrollPopup(false);
+  };
+
+  // --- POPUP 2: Kit Premium R$ 39,60 ---
+  // Aparece 6 segundos após chegar na seção de planos (#planos)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleScrollForPlanos = () => {
+      const planosSection = document.getElementById('planos');
+      if (!planosSection) return;
+
+      const rect = planosSection.getBoundingClientRect();
+      if (rect.top <= window.innerHeight * 0.85 && rect.bottom >= 0) {
+        triggerPopup2WithDelay();
+      }
+    };
+
+    window.addEventListener('scroll', handleScrollForPlanos);
+    handleScrollForPlanos();
+
+    return () => {
+      window.removeEventListener('scroll', handleScrollForPlanos);
+      if (popup2TimeoutRef.current) {
+        clearTimeout(popup2TimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // --- Estado do Pre-Checkout Orderbump (3 Bônus por + R$ 10,00) ---
+  const [preCheckoutKit, setPreCheckoutKit] = useState<KitType | null>(null);
+  const [isPreCheckoutLoading, setIsPreCheckoutLoading] = useState(false);
+  const [showPreCheckoutModal, setShowPreCheckoutModal] = useState(false);
+
+  const triggerPreCheckout = (kit: KitType) => {
+    setShowDiscountPopup(false);
+    setShowScrollPopup(false);
+    setShowUpsell(false);
+    setPreCheckoutKit(kit);
+    setIsPreCheckoutLoading(true);
+
+    setTimeout(() => {
+      setIsPreCheckoutLoading(false);
+      setShowPreCheckoutModal(true);
+    }, 1200);
+  };
+
+  // Aceitar o Kit Premium de R$ 39,60
+  const handleCTAClick = () => {
+    triggerPreCheckout('premium');
+  };
+
+  // Recusar o Kit Premium de R$ 39,60 e insistir no Básico -> Abre POPUP 3 (Kit Completo por R$ 29,90)
+  const handleDeclineClick = () => {
+    setShowDiscountPopup(false);
+    setShowUpsell(true);
   };
 
   return (
@@ -2040,7 +2087,7 @@ export default function App() {
       <SalesNotification />
       {/* Floating Bouncing CTA (Fica Pulando na Tela e Acompanha o Scroll) */}
       <AnimatePresence>
-        {showStickyCTA && !showDiscountPopup && !showScrollPopup && !showUpsell && (
+        {showStickyCTA && !showDiscountPopup && !showScrollPopup && !showUpsell && !isPreCheckoutLoading && !showPreCheckoutModal && (
           <>
             {/* Mobile Floating Bouncing CTA */}
             <div className="fixed bottom-6 left-4 right-4 z-[99999] sm:hidden">
@@ -2092,13 +2139,13 @@ export default function App() {
         <div className="max-w-5xl mx-auto text-center relative z-10">
           
           {/* Top category pill */}
-          <span className="inline-flex items-center gap-2 bg-[#f3fdf6] text-[#1a5c3a] px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-extrabold tracking-wider mb-2.5 sm:mb-3.5 border border-[#2ecc71]/20 shadow-xs uppercase">
+          <span className="inline-flex items-center gap-2 bg-[#f3fdf6] text-[#1a5c3a] px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-extrabold tracking-wider mb-3.5 sm:mb-3.5 border border-[#2ecc71]/20 shadow-xs uppercase">
             <Sparkles className="w-3.5 h-3.5 text-[#2ecc71]" />
             Para Famílias, Professores e Clínicas
           </span>
 
           {/* Headline - extremely strong */}
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-gray-900 leading-tight mb-2.5 sm:mb-3.5 tracking-tight max-w-4xl mx-auto">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-gray-900 leading-tight mb-3.5 sm:mb-3.5 tracking-tight max-w-4xl mx-auto">
             <span className="bg-gradient-to-r from-[#1a5c3a] via-[#2ecc71] to-[#1a5c3a] bg-clip-text text-transparent">
               +200 Recursos Visuais
             </span> para Transformar a Rotina de Crianças com TEA
@@ -2265,7 +2312,7 @@ export default function App() {
       <section id="problema" className="bg-gray-50 py-12 px-4 border-b border-gray-100">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-6 sm:mb-10">
-            <span className="inline-block bg-red-50 text-red-600 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-2.5 sm:mb-3 border border-red-100">
+            <span className="inline-block bg-red-50 text-red-600 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-3.5 sm:mb-3 border border-red-100">
               O Desafio Diário
             </span>
             <h2 className="text-2xl sm:text-5xl font-black text-gray-900 mb-2 tracking-tight">O Dia a Dia com TEA Não Precisa Ser Exaustivo</h2>
@@ -2467,7 +2514,7 @@ export default function App() {
 
           {/* Interactive Explore Tool Banner inside Abundance Section */}
           <div className="mt-10 sm:mt-20 bg-[#f3fdf6] border-2 border-[#2ecc71]/20 rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-center max-w-4xl mx-auto animate-pulse">
-            <span className="inline-block bg-[#2ecc71] text-white text-[9px] sm:text-[10px] font-black px-3 py-0.5 sm:px-4 sm:py-1 rounded-full uppercase tracking-widest mb-2.5 sm:mb-3">
+            <span className="inline-block bg-[#2ecc71] text-white text-[9px] sm:text-[10px] font-black px-3 py-0.5 sm:px-4 sm:py-1 rounded-full uppercase tracking-widest mb-3.5 sm:mb-3">
               Experimente Grátis
             </span>
             <h3 className="text-lg sm:text-2xl font-black text-[#1a5c3a] mb-1.5 sm:mb-2">Quer Interagir com o Kit Agora Mesmo?</h3>
@@ -2486,7 +2533,7 @@ export default function App() {
       <section id="demonstracao" className="py-10 sm:py-14 px-4 bg-gray-50 border-b border-gray-100">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-6 sm:mb-10">
-            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2.5 sm:mb-3 border border-[#2ecc71]/20">
+            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-3.5 sm:mb-3 border border-[#2ecc71]/20">
               Passo a Passo
             </span>
             <h2 className="text-2xl sm:text-5xl font-black text-gray-900 mb-2 tracking-tight">
@@ -2525,7 +2572,7 @@ export default function App() {
       <section id="beneficios" className="py-10 sm:py-14 px-4 bg-white border-b border-gray-100">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-6 sm:mb-10">
-            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2.5 sm:mb-3 border border-[#2ecc71]/20">
+            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-3.5 sm:mb-3 border border-[#2ecc71]/20">
               Vantagens Exclusivas
             </span>
             <h2 className="text-2xl sm:text-5xl font-black text-gray-900 mb-2 tracking-tight">
@@ -2561,7 +2608,7 @@ export default function App() {
       <section id="bonus" className="py-10 sm:py-14 px-4 bg-white border-b border-gray-100">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-6 sm:mb-10">
-            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2.5 sm:mb-3 border border-[#2ecc71]/20">
+            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-3.5 sm:mb-3 border border-[#2ecc71]/20">
               Presentes Exclusivos
             </span>
             <h2 className="text-2xl sm:text-5xl font-black text-gray-900 mb-2 tracking-tight">
@@ -2648,7 +2695,7 @@ export default function App() {
 
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center mb-6 sm:mb-10">
-            <span className="inline-block bg-[#2ecc71]/10 text-[#1a5c3a] px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2.5 sm:mb-3 border border-[#2ecc71]/20">
+            <span className="inline-block bg-[#2ecc71]/10 text-[#1a5c3a] px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-3.5 sm:mb-3 border border-[#2ecc71]/20">
               Relatos de Quem Usa
             </span>
             <h2 className="text-2xl sm:text-5xl font-black text-gray-900 mb-1.5 sm:mb-2 tracking-tight">
@@ -2916,10 +2963,10 @@ export default function App() {
       </section>
 
       {/* Planos (Pricing) Section */}
-      <section id="planos" className="py-10 sm:py-14 px-4 bg-gray-50 border-b border-gray-100">
+      <section id="planos" className="py-12 sm:py-20 px-4 sm:px-8 bg-gray-50 border-b border-gray-100">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-6 sm:mb-10 px-4">
-            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2.5 sm:mb-3 border border-[#2ecc71]/20">
+            <span className="inline-block bg-[#f3fdf6] text-[#1a5c3a] px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-3.5 sm:mb-3 border border-[#2ecc71]/20">
               Acesso Imediato
             </span>
             <h2 className="text-2xl sm:text-5xl font-black text-gray-900 mb-1.5 sm:mb-2 tracking-tight">Escolha seu Acesso ao Kit</h2>
@@ -2932,9 +2979,9 @@ export default function App() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 max-w-4xl mx-auto items-stretch">
              {/* Plano Básico */}
-             <div className="bg-white border-2 border-gray-200 rounded-[24px] sm:rounded-[32px] p-5 sm:p-10 flex flex-col justify-between items-center text-center relative hover:border-gray-300 transition-all duration-300 hover:shadow-lg">
+             <div className="bg-white border-2 border-gray-200 rounded-[28px] sm:rounded-[36px] p-6 sm:p-8 md:p-10 flex flex-col justify-between items-center text-center relative hover:border-gray-300 transition-all duration-300 hover:shadow-lg">
                <div className="w-full">
-                 <span className="text-[9px] sm:text-[10px] font-black bg-gray-100 text-gray-500 px-3 py-0.5 sm:px-4 sm:py-1 rounded-full uppercase tracking-wider mb-2.5 sm:mb-3 inline-block">
+                 <span className="text-[9px] sm:text-[10px] font-black bg-gray-100 text-gray-500 px-3 py-0.5 sm:px-4 sm:py-1 rounded-full uppercase tracking-wider mb-3.5 sm:mb-3 inline-block">
                    O Essencial
                  </span>
                  <h3 className="text-xl sm:text-2xl font-black text-gray-900 mb-0.5 sm:mb-1 uppercase tracking-wide">Plano Básico</h3>
@@ -2944,7 +2991,7 @@ export default function App() {
                    <span className="text-gray-400 line-through text-[10px] sm:text-xs font-bold block mb-0.5 sm:mb-1">De R$ 47,00 por apenas</span>
                    <div className="flex items-center justify-center gap-1">
                      <span className="text-gray-950 font-extrabold text-xl sm:text-2xl">R$</span>
-                     <span className="text-gray-950 font-black text-4xl sm:text-6xl tracking-tight">10,00</span>
+                     <span className="text-gray-950 font-black text-4xl sm:text-6xl tracking-tight">19,90</span>
                    </div>
                    <span className="text-[9px] sm:text-[10px] text-gray-400 font-bold block mt-0.5 sm:mt-1">Taxa única • Sem mensalidade</span>
                  </div>
@@ -2998,7 +3045,7 @@ export default function App() {
              </div>
              
              {/* Plano Premium */}
-             <div className="bg-[#f3fdf6] border-4 border-[#2ecc71] rounded-[32px] p-8 sm:p-10 flex flex-col justify-between items-center text-center relative shadow-xl shadow-emerald-950/5 scale-100 md:scale-[1.03] transition-all duration-300 hover:shadow-2xl">
+             <div className="bg-[#f3fdf6] border-4 border-[#2ecc71] rounded-[32px] p-6 sm:p-8 md:p-10 flex flex-col justify-between items-center text-center relative shadow-xl shadow-emerald-950/5 scale-100 md:scale-[1.03] transition-all duration-300 hover:shadow-2xl">
                <div className="absolute -top-5 bg-[#2ecc71] text-white px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest shadow-md">
                   RECOMENDADO • COMPLETO
                </div>
@@ -3011,11 +3058,12 @@ export default function App() {
                  
                  <div className="bg-[#1a5c3a] rounded-2xl p-5 mb-8 border border-[#2ecc71]/20 shadow-inner">
                    <span className="text-white/60 line-through text-xs font-bold block mb-1">De R$ 97,00 por apenas</span>
-                   <div className="flex items-center justify-center gap-1 text-white">
-                     <span className="font-extrabold text-2xl text-[#2ecc71]">R$</span>
-                     <span className="font-black text-5xl sm:text-6xl tracking-tight text-white">27,90</span>
+                   <span className="text-[#2ecc71] font-black text-xs uppercase tracking-widest block mb-0.5">Apenas</span>
+                   <div className="flex items-center justify-center gap-1.5 text-white">
+                     <span className="font-extrabold text-xl sm:text-2xl text-[#2ecc71]">3x de R$</span>
+                     <span className="font-black text-5xl sm:text-6xl tracking-tight text-white">13,20</span>
                    </div>
-                   <span className="text-[10px] text-[#2ecc71] font-bold block mt-1">Taxa única • Acesso e Atualizações Vitalícias</span>
+                   <span className="text-[11px] text-[#2ecc71] font-bold block mt-2">ou R$ 39,60 à vista • Acesso Vitalício</span>
                  </div>
 
                  <ul className="text-left space-y-3 mb-8 w-full border-t border-[#2ecc71]/10 pt-6">
@@ -3046,7 +3094,7 @@ export default function App() {
                </div>
 
                <button 
-                 onClick={() => window.location.href = 'https://pay.cakto.com.br/p2i9bv8_888747'}
+                 onClick={() => triggerPreCheckout('premium')}
                  className="w-full bg-[#2ecc71] text-white font-black py-4.5 rounded-2xl hover:bg-[#27b966] hover:scale-[1.01] transition-all duration-300 cursor-pointer shadow-md shadow-[#2ecc71]/20 text-sm uppercase tracking-wider"
                >
                  Quero o Kit Completo
@@ -3193,155 +3241,137 @@ export default function App() {
         </div>
       </footer>
 
-      {/* Upsell Modal */}
+                                                                  {/* Upsell Modal */}
       <AnimatePresence>
         {showUpsell && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2.5 sm:p-4">
             {/* Backdrop Overlay */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowUpsell(false)}
-              className="absolute inset-0 bg-black/75 backdrop-blur-[4px]"
+              className="absolute inset-0 bg-black/80 backdrop-blur-[6px]"
             />
             {/* Modal Body */}
             <motion.div 
-              initial={{ scale: 0.9, opacity: 0, y: 30 }}
-              animate={{ 
-                scale: 1, 
-                opacity: 1, 
-                y: 0,
-                transition: { type: 'spring', damping: 18, stiffness: 120 }
-              }}
-              exit={{ scale: 0.9, opacity: 0, y: 30 }}
-              className="relative bg-white w-[94%] sm:w-full sm:max-w-[460px] rounded-[28px] p-4 sm:p-6 shadow-[0_24px_60px_rgba(0,0,0,0.45),0_0_40px_rgba(46,204,113,0.2)] border-[3px] border-[#2ecc71] flex flex-col overflow-y-auto max-h-[96vh] custom-scrollbar z-10"
+              id="upsell-modal"
+              initial={{ scale: 0.92, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0, transition: { type: "spring", damping: 22, stiffness: 150 } }}
+              exit={{ scale: 0.92, opacity: 0, y: 15 }}
+              className="relative bg-white w-full max-w-[490px] rounded-[24px] p-4 sm:p-5 shadow-[0_25px_70px_rgba(0,0,0,0.5),0_0_50px_rgba(46,204,113,0.25)] border-[3px] border-[#2ecc71] flex flex-col overflow-y-auto max-h-[96vh] custom-scrollbar z-10 gap-2.5"
             >
+              {/* Close Button */}
+              <button 
+                onClick={() => setShowUpsell(false)}
+                className="absolute top-3 right-3 w-7 h-7 rounded-full bg-gray-100 text-gray-400 hover:text-gray-800 hover:bg-gray-200 flex items-center justify-center text-xs font-black transition-colors cursor-pointer z-20"
+                title="Fechar"
+              >
+                ✕
+              </button>
+
               {/* TOP ICON & ANCHOR */}
-              <div className="text-center text-[24px] sm:text-[32px] mb-0.5 select-none animate-bounce">🎁</div>
-              <div className="flex justify-center mb-1.5 sm:mb-2.5">
-                <span className="bg-gradient-to-r from-[#e67e22] to-[#2ecc71] text-white font-black text-[9px] sm:text-[10px] uppercase tracking-wider px-3 py-1 rounded-full shadow-[0_3px_8px_rgba(46,204,113,0.2)] flex items-center justify-center gap-1 animate-pulse">
-                  <span className="w-1 h-1 bg-white rounded-full animate-ping"></span>
-                  OFERTA DE ÚLTIMA CHANCE
+              <div className="flex flex-col items-center text-center pt-0.5 px-1 gap-1">
+                <div className="text-2xl sm:text-3xl leading-none select-none">🎁</div>
+                <span className="bg-gradient-to-r from-[#e67e22] to-[#2ecc71] text-white font-black text-[9.5px] sm:text-[10.5px] uppercase tracking-wider px-3.5 py-1 rounded-full shadow-xs flex items-center justify-center gap-1.5 animate-pulse">
+                  <span className="w-1.5 h-1.5 bg-white rounded-full animate-ping"></span>
+                  OFERTA EXCLUSIVA DE ÚLTIMA CHANCE
                 </span>
+                <h3 className="text-gray-900 text-base sm:text-lg font-black leading-tight tracking-tight mt-0.5">
+                  ESPERE! Leve o <span className="text-[#2ecc71]">Kit Completo (Premium)</span> por apenas mais <span className="text-red-600 font-extrabold underline decoration-2">R$ 10,00</span>!
+                </h3>
+                <p className="text-gray-500 text-[11px] sm:text-xs leading-tight font-medium">
+                  Você escolheu o plano Básico, mas por apenas R$ 10 a mais você garante mais de 300 atividades adicionais:
+                </p>
               </div>
 
-              {/* HEADLINE */}
-              <h3 className="text-gray-900 text-[16px] sm:text-[21px] font-black text-center leading-[1.2] mb-1 font-sans tracking-tight">
-                ESPERE! Leve o <span className="text-[#2ecc71]">Kit Completo (Premium)</span> por apenas mais <span className="text-[#2ecc71] font-extrabold underline decoration-2">R$ 9,90</span>!
-              </h3>
+              {/* PRICE HIGHLIGHT BOX - COMPACT & PERFECTLY CENTERED */}
+              <div id="upsell-price-box" className="bg-gradient-to-br from-[#fffbeb] via-[#fef3c7] to-[#fde68a] rounded-xl p-3.5 sm:p-4 w-full border-[2px] border-[#eab308] shadow-md text-center relative overflow-hidden flex flex-col items-center justify-center gap-1.5">
+                <div className="absolute top-0 right-0 bg-red-600 text-white text-[9px] font-black px-3 py-0.5 rounded-bl-lg uppercase tracking-wider">
+                  80% OFF APLICADO
+                </div>
 
-              {/* SUBHEADLINE */}
-              <p className="text-gray-500 text-[10px] sm:text-xs text-center leading-normal mb-2.5">
-                Você escolheu o plano Básico, mas se recusar perderá mais de 300 atividades vitais:
-              </p>
+                <div className="text-gray-700 text-[11px] sm:text-xs font-bold pt-0.5">
+                  Básico (R$ 19,90) + Upgrade Premium (+ R$ 10,00)
+                </div>
+
+                <div className="flex flex-col items-center justify-center w-full my-0.5">
+                  <span className="text-red-700 font-black text-[10px] sm:text-[11px] uppercase tracking-wider">
+                    APENAS TAXA ÚNICA DE
+                  </span>
+                  <div className="flex items-center justify-center gap-1 text-[#dc2626] my-0.5">
+                    <span className="text-xl sm:text-2xl font-black leading-none">R$</span>
+                    <span className="text-5xl sm:text-6xl font-black tracking-tighter leading-none drop-shadow-md">
+                      29,90
+                    </span>
+                  </div>
+                  <span className="text-[10.5px] sm:text-[11px] font-extrabold text-gray-700">
+                    (Sem mensalidades • Acesso Vitalício)
+                  </span>
+                </div>
+
+                <div className="bg-[#2ecc71]/20 text-[#155e37] text-[10.5px] sm:text-[11px] font-black px-3 py-1 rounded-full uppercase tracking-wider border border-[#2ecc71]/30">
+                  ⚡ Economia total de R$ 67,10 hoje!
+                </div>
+              </div>
 
               {/* COMPARATIVE VALUE CONTAINER */}
-              <div className="grid grid-cols-2 gap-2 mb-3 text-xs">
+              <div className="grid grid-cols-2 gap-2 text-xs">
                 {/* Basic Card */}
-                <div className="bg-red-50/70 border border-red-100 rounded-xl p-2 sm:p-3 flex flex-col justify-between">
+                <div className="bg-red-50/70 border border-red-100 rounded-lg p-2.5 flex flex-col justify-between">
                   <div>
-                    <div className="font-extrabold text-red-700 uppercase tracking-wider text-[8px] sm:text-[9px] mb-1 flex items-center gap-1">
-                      <XCircle className="w-3 h-3 text-red-600" />
-                      PLANO BÁSICO
+                    <div className="font-extrabold text-red-700 uppercase tracking-wider text-[9px] mb-1 flex items-center gap-1">
+                      <XCircle className="w-3 h-3 text-red-600 shrink-0" />
+                      <span>PLANO BÁSICO</span>
                     </div>
-                    <ul className="space-y-0.5 text-gray-400 text-[9.5px] sm:text-[11px] font-medium leading-tight">
-                      <li className="flex items-center gap-0.5">
-                        <span>❌</span> <span className="truncate">Sem Pranchas Extra</span>
-                      </li>
-                      <li className="flex items-center gap-0.5">
-                        <span>❌</span> <span className="truncate">Sem Histórias Sociais</span>
-                      </li>
-                      <li className="flex items-center gap-0.5">
-                        <span>❌</span> <span className="truncate">Sem Livros/Conceitos</span>
-                      </li>
-                      <li className="flex items-center gap-0.5">
-                        <span>❌</span> <span className="truncate">Sem Adolescentes</span>
-                      </li>
+                    <ul className="space-y-1 text-gray-500 text-[10px] sm:text-[10.5px] font-medium leading-tight">
+                      <li>❌ Sem Pranchas Extra</li>
+                      <li>❌ Sem Histórias Sociais</li>
+                      <li>❌ Sem Livros / Músicas</li>
+                      <li>❌ Sem Adolescentes</li>
                     </ul>
                   </div>
-                  <div className="mt-1.5 text-gray-600 font-extrabold text-[10px] sm:text-xs">
-                    R$ 10,00
+                  <div className="mt-2 pt-1 border-t border-red-100 text-gray-500 font-bold text-[10.5px]">
+                    R$ 19,90
                   </div>
                 </div>
 
                 {/* Premium Card */}
-                <div className="bg-[#e8f8f0] border-2 border-[#2ecc71] rounded-xl p-2 sm:p-3 flex flex-col justify-between shadow-xs relative overflow-hidden">
-                  <div className="absolute top-0 right-0 bg-[#2ecc71] text-white text-[7px] px-1 py-0.5 rounded-bl font-black tracking-widest uppercase">
-                    MUITO +
-                  </div>
+                <div className="bg-[#e8f8f0] border-2 border-[#2ecc71] rounded-lg p-2.5 flex flex-col justify-between shadow-xs">
                   <div>
-                    <div className="font-extrabold text-[#1a5c3a] uppercase tracking-wider text-[8px] sm:text-[9px] mb-1 flex items-center gap-1">
-                      <Star className="w-3 h-3 text-[#2ecc71] fill-[#2ecc71]" />
-                      KIT PREMIUM
+                    <div className="font-extrabold text-[#1a5c3a] uppercase tracking-wider text-[9px] mb-1 flex items-center gap-1">
+                      <Star className="w-3 h-3 text-[#2ecc71] fill-[#2ecc71] shrink-0" />
+                      <span>KIT PREMIUM</span>
                     </div>
-                    <ul className="space-y-0.5 text-gray-700 text-[9.5px] sm:text-[11px] font-bold leading-tight">
-                      <li className="flex items-center gap-0.5">
-                        <span className="text-[#2ecc71]">✅</span> <span className="truncate">+450 Pranchas (TUDO)</span>
-                      </li>
-                      <li className="flex items-center gap-0.5">
-                        <span className="text-[#2ecc71]">✅</span> <span className="truncate">Histórias de Conduta</span>
-                      </li>
-                      <li className="flex items-center gap-0.5">
-                        <span className="text-[#2ecc71]">✅</span> <span className="truncate">Livros Ilustrados</span>
-                      </li>
-                      <li className="flex items-center gap-0.5">
-                        <span className="text-[#2ecc71]">✅</span> <span className="truncate">Atualizações Grátis</span>
-                      </li>
+                    <ul className="space-y-1 text-gray-800 text-[10px] sm:text-[10.5px] font-bold leading-tight">
+                      <li>✅ +450 Pranchas (TUDO)</li>
+                      <li>✅ Histórias Sociais</li>
+                      <li>✅ Livros Ilustrados</li>
+                      <li>✅ Atividades + Músicas</li>
                     </ul>
                   </div>
-                  <div className="mt-1.5 text-[#27ae60] font-black text-[10px] sm:text-xs flex items-center gap-0.5 flex-wrap">
-                    <span>Apenas + R$ 9,90</span>
+                  <div className="mt-2 pt-1 border-t border-[#2ecc71]/20 text-[#27ae60] font-black text-[10.5px]">
+                    Apenas + R$ 10,00
                   </div>
-                </div>
-              </div>
-
-              {/* PRICE BOX WITH GRID STRUCTURE */}
-              <div className="bg-gradient-to-br from-[#fffbeb] via-[#fef3c7] to-[#fde68a] rounded-[20px] p-3 mb-3.5 w-full border-[1.5px] border-[#eab308] shadow-[0_6px_16px_rgba(234,179,8,0.1)] text-center relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-red-600 text-white text-[7px] sm:text-[8px] font-black px-2 py-0.5 rounded-bl-[10px] uppercase tracking-wider shadow-sm">
-                  80% DE DESCONTO
-                </div>
-                
-                <div className="text-gray-500 text-[9px] sm:text-[10px] font-bold leading-none mb-0.5">
-                  Básico (R$ 10,00) + Kit Premium (+ R$ 9,90) =
-                </div>
-                
-                {/* PRICE DISPLAY */}
-                <div className="flex items-center justify-center gap-1 my-0.5">
-                  <span className="text-[16px] sm:text-[20px] font-black text-red-600 leading-none mt-1">R$</span>
-                  <span className="text-3xl sm:text-5xl font-black tracking-tighter text-red-600 leading-none">
-                    19,90
-                  </span>
-                  <span className="text-[9px] sm:text-[10px] font-extrabold text-gray-700 leading-none self-end mb-0.5">/único</span>
-                </div>
-
-                <div className="bg-[#2ecc71]/10 text-[#1a5c3a] text-[9px] sm:text-[10.5px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider inline-block">
-                  ⚡ Economia total de R$ 77,10 hoje!
                 </div>
               </div>
 
               {/* CTAS */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1.5 pt-0.5">
                 <motion.button 
-                  onClick={() => {
-                    setShowUpsell(false);
-                    window.location.href = 'https://pay.cakto.com.br/gghiyjq_992080';
-                  }}
+                  onClick={() => triggerPreCheckout('oferta')}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full bg-gradient-to-r from-[#2ecc71] to-[#27ae60] text-white font-black py-3 sm:py-4 rounded-xl shadow-md shadow-[#2ecc71]/20 text-xs sm:text-sm uppercase tracking-tight flex items-center justify-center gap-1.5 cursor-pointer border-b-[3px] border-[#1e8449]"
+                  className="w-full bg-gradient-to-r from-[#2ecc71] to-[#27ae60] hover:from-[#34d399] hover:to-[#22c55e] text-white font-black py-3 px-4 rounded-xl shadow-lg shadow-[#2ecc71]/25 text-xs sm:text-sm uppercase tracking-wide flex items-center justify-center gap-2 cursor-pointer border-b-[3px] border-[#1e8449]"
                 >
-                  🔥 LEVAR KIT COMPLETO POR R$ 19,90
+                  🔥 LEVAR KIT COMPLETO POR R$ 29,90
                 </motion.button>
                 
                 <button 
-                  onClick={() => {
-                    setShowUpsell(false);
-                    window.location.href = 'https://pay.cakto.com.br/y3g3fhw_888684';
-                  }}
-                  className="w-full bg-gray-50 hover:bg-red-50 text-gray-400 hover:text-red-600 font-extrabold py-2.5 rounded-xl transition-all text-[10px] uppercase tracking-wider border border-gray-100 hover:border-red-100"
+                  onClick={() => triggerPreCheckout('basico')}
+                  className="w-full text-gray-400 hover:text-red-600 font-bold py-0.5 text-[10.5px] sm:text-[11px] uppercase tracking-wider cursor-pointer transition-colors bg-transparent border-none"
                 >
-                  ❌ Não, recusar e ficar com o Básico de R$ 10
+                  Não, recusar e ficar com o Básico de R$ 19,90
                 </button>
               </div>
             </motion.div>
@@ -3352,141 +3382,147 @@ export default function App() {
       {/* Premium Discount Popup */}
       <AnimatePresence>
         {showDiscountPopup && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2.5 sm:p-4">
             {/* Backdrop Overlay */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="absolute inset-0 bg-black/70 backdrop-blur-[4px]"
+              transition={{ duration: 0.2 }}
+              onClick={() => setShowDiscountPopup(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-[6px]"
             />
 
             {/* Popup Container */}
             <motion.div 
-              initial={{ y: "100vh", opacity: 0 }}
-              animate={{ 
-                y: 0, 
-                opacity: 1,
-                transition: { type: 'spring', damping: 15, stiffness: 100 }
-              }}
-              exit={{ y: "100vh", opacity: 0 }}
-              className="relative bg-[#ffffff] w-[92%] sm:w-full sm:max-w-[460px] rounded-[28px] p-4 sm:p-7 shadow-[0_32px_80px_rgba(0,0,0,0.45),0_0_60px_rgba(29,184,99,0.3)] border-[3px] sm:border-[4px] border-[#1db863] flex flex-col overflow-y-auto max-h-[92vh] custom-scrollbar z-10"
+              id="discount-popup"
+              initial={{ scale: 0.92, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0, transition: { type: "spring", damping: 22, stiffness: 150 } }}
+              exit={{ scale: 0.92, opacity: 0, y: 15 }}
+              className="relative bg-white w-full max-w-[490px] rounded-[24px] p-4 sm:p-5 shadow-[0_32px_80px_rgba(0,0,0,0.5),0_0_60px_rgba(245,197,24,0.35)] border-[3px] border-[#f5c518] flex flex-col overflow-y-auto max-h-[96vh] custom-scrollbar z-10 gap-2.5"
             >
-              {/* TOP SECTION */}
-              <div className="text-center text-[24px] sm:text-[32px] mb-1 sm:mb-2 select-none">🧩</div>
-              <div className="flex justify-center mb-2 sm:mb-3">
-                <span className="bg-gradient-to-r from-[#ff1744] to-[#ef4444] text-white font-extrabold text-[10px] sm:text-[12px] uppercase tracking-widest px-[10px] sm:px-[18px] py-[3.5px] sm:py-[7px] rounded-[999px] shadow-[0_6px_16px_rgba(255,23,68,0.4)] flex items-center justify-center gap-1 sm:gap-1.5 animate-pulse">
-                  <span className="w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 bg-white rounded-full animate-ping"></span>
-                  SOMENTE HOJE
-                </span>
-              </div>
-
-              {/* HEADLINE */}
-              <h3 className="text-[#1a7a4a] text-[17px] sm:text-[22px] font-black text-center leading-[1.3] mb-1 sm:mb-2 font-sans tracking-tight">
-                GARANTA O KIT PREMIUM COMPLETO POR APENAS R$ 27,90!
-              </h3>
-
-              {/* SUBHEADLINE */}
-              <p className="text-[#6b7280] text-[11px] sm:text-[13px] text-center leading-[1.6] mb-1.5 sm:mb-3 font-medium">
-                Tudo isso incluso no seu acesso vitalício (De R$ 97,00 por R$ 27,90):
-              </p>
-
-              {/* CONTENT LIST */}
-              <div className="grid grid-cols-2 gap-x-2.5 sm:gap-x-4 gap-y-1 sm:gap-y-1.5 mb-2.5 sm:mb-3.5 w-full bg-slate-50 rounded-xl p-2.5 sm:p-3.5 border border-slate-100">
-                {/* Column 1 */}
-                <div className="flex flex-col">
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">📋</span><span className="text-left">Pranchas Prontas</span></div>
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">📖</span><span className="text-left">Histórias Sociais</span></div>
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">📚</span><span className="text-left">Livros e Histórias</span></div>
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">🔢</span><span className="text-left">Conceitos Matemáticos</span></div>
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">💬</span><span className="text-left">Vamos Falar?</span></div>
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">🎵</span><span className="text-left">Canto e Voz</span></div>
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">🔬</span><span className="text-left">Ciência / Biologia</span></div>
-                </div>
-                {/* Column 2 */}
-                <div className="flex flex-col">
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">🎶</span><span className="text-left">Músicas</span></div>
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">🍽️</span><span className="text-left">Receitas</span></div>
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">⭐</span><span className="text-left">Atividades Diversas</span></div>
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">👨‍💻</span><span className="text-left">The AAC Coach</span></div>
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">🧸</span><span className="text-left">Brinquedos e Brincadeiras</span></div>
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">👦</span><span className="text-left">Adolescentes</span></div>
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">📝</span><span className="text-left">Posts Técnicos</span></div>
-                </div>
-              </div>
-
-              {/* Below list full width item */}
-              <div className="w-full text-center font-bold text-[#1a7a4a] text-[11px] sm:text-[13px] bg-[#d4f5e3] rounded-[8px] p-[4px] sm:p-[6px] mb-2 sm:mb-4 flex items-center justify-center gap-1.5 leading-tight shadow-xs">
-                <span>♾️</span> <span>Atualizações Vitalícias</span>
-              </div>
-
-              {/* PRICE BOX WITH GRID STRUCTURE */}
-              <div className="bg-gradient-to-br from-[#fffbeb] via-[#fef3c7] to-[#fde68a] rounded-[22px] p-4 sm:p-5 mt-2 sm:mt-[14px] w-full border-[2.5px] border-[#eab308] shadow-[0_8px_24px_rgba(234,179,8,0.18),inset_0_2px_4px_rgba(255,255,255,0.6)] relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-[#ff1744] text-white text-[8px] sm:text-[9.5px] font-black px-2.5 py-0.5 rounded-bl-[12px] uppercase tracking-wider shadow-sm">
-                  RECOMENDADO
-                </div>
-                
-                <div className="grid grid-cols-1 gap-2.5 justify-items-center text-center w-full">
-                  <div className="text-[#e03030]/80 text-[11px] sm:text-[14px] line-through font-extrabold leading-none">
-                    De R$ 97,00
-                  </div>
-                  <div className="text-red-700 text-[12px] sm:text-[14.5px] font-black uppercase tracking-widest leading-none flex items-center justify-center gap-1">
-                    ⚡ SOMENTE HOJE
-                  </div>
-                  
-                  {/* PRICE DISPLAY */}
-                  <div className="flex items-center justify-center gap-1.5 my-0.5">
-                    <span className="text-[22px] sm:text-[30px] font-black text-[#dc2626] leading-none self-start mt-1">R$</span>
-                    <span className="text-5xl sm:text-7xl font-black tracking-tighter text-[#dc2626] drop-shadow-[0_2px_6px_rgba(220,38,38,0.2)] leading-none">
-                      27,90
-                    </span>
-                    <span className="text-[11px] sm:text-[13px] font-extrabold text-gray-800 leading-none self-end mb-1">/único</span>
-                  </div>
-
-                  {/* HIGH-LIGHTED DISCOUNT BADGE */}
-                  <div className="bg-gradient-to-r from-[#ff1744] to-[#ff5d00] text-white text-[11.5px] sm:text-[13.5px] font-black px-4.5 py-1.5 rounded-full shadow-[0_4px_12px_rgba(255,23,68,0.4)] uppercase tracking-wider border border-red-400 scale-105 animate-pulse flex items-center gap-1">
-                    <span>🔥 71% OFF</span>
-                    <span className="text-[9px] sm:text-[10px] opacity-90 font-extrabold bg-white/20 px-1.5 py-0.5 rounded-md">APLICADO!</span>
-                  </div>
-
-                  <div className="bg-[#00c853]/10 text-[#008a36] text-[10px] sm:text-[11.5px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider leading-none">
-                    Você economiza R$ 69,10 hoje
-                  </div>
-                </div>
-              </div>
-
-              {/* SPACE ADJUSTMENT */}
-              <div className="h-3 sm:h-4"></div>
-
-              {/* CTA BUTTON */}
-              <motion.button 
-                onClick={handleCTAClick}
-                className="w-full bg-gradient-to-r from-[#00ff66] via-[#00c853] to-[#009929] hover:from-[#00ff88] hover:to-[#00b33c] text-white font-black text-[13px] sm:text-[16.5px] p-3 sm:p-[19px] rounded-[999px] border-none cursor-pointer transition-all uppercase tracking-widest flex items-center justify-center gap-2 text-center shadow-[0_12px_28px_rgba(0,200,83,0.45)] active:scale-95 border-b-[3px] sm:border-b-[4px] border-[#007d32]"
-                animate={{
-                  scale: [1, 1.04, 1],
-                }}
-                transition={{
-                  duration: 1.8,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                ⚡ GARANTIR MEU ACESSO
-              </motion.button>
-
-              {/* DECLINE LINK */}
+              {/* Close Button */}
               <button 
-                onClick={handleDeclineClick}
-                className="text-center text-[10px] sm:text-[12px] text-gray-400 hover:text-gray-600 cursor-pointer block mx-auto mt-1.5 sm:mt-3.5 font-bold transition-colors bg-transparent border-none py-1"
+                onClick={() => setShowDiscountPopup(false)}
+                className="absolute top-3 right-3 w-7 h-7 rounded-full bg-gray-100 text-gray-400 hover:text-gray-800 hover:bg-gray-200 flex items-center justify-center text-xs font-black transition-colors cursor-pointer z-20"
+                title="Fechar"
               >
-                Não, prefiro a outra oferta de R$ 10,00
+                ✕
               </button>
 
-              {/* SECURITY FOOTER */}
-              <div className="flex items-center justify-center gap-2.5 sm:gap-4 text-[9px] sm:text-[11px] text-gray-400 font-bold border-t border-gray-100 pt-2 mt-2 sm:pt-3 sm:mt-3">
-                <span className="flex items-center gap-1">🔒 Compra Segura</span>
-                <span className="flex items-center gap-1">⚡ Acesso Imediato</span>
+              {/* TOP HEADER */}
+              <div className="flex flex-col items-center text-center pt-0.5 px-1 gap-1">
+                <div className="text-2xl sm:text-3xl leading-none select-none">🎁</div>
+                <span className="bg-gradient-to-r from-[#ff1744] to-[#ef4444] text-white font-black text-[9.5px] sm:text-[10.5px] uppercase tracking-widest px-3.5 py-1 rounded-full shadow-md flex items-center justify-center gap-1.5 animate-pulse">
+                  <span className="w-1.5 h-1.5 bg-white rounded-full animate-ping"></span>
+                  DESCONTO ESPECIAL DE LIBERAÇÃO
+                </span>
+                <h3 className="text-[#1a7a4a] text-base sm:text-lg font-black text-center leading-tight font-sans tracking-tight mt-0.5">
+                  KIT PREMIUM COMPLETO
+                </h3>
+                <p className="text-gray-500 text-[11px] sm:text-xs text-center leading-relaxed font-medium">
+                  Acesso Vitalício sem mensalidades (De R$ 97,00 por apenas 3x de R$ 13,20):
+                </p>
+              </div>
+
+              {/* PRICE HIGHLIGHT CARD - GOLD GRADIENT & VIBRANT */}
+              <div id="discount-price-box" className="bg-gradient-to-br from-amber-400 via-amber-300 to-yellow-500 p-[2px] rounded-xl shadow-[0_8px_24px_rgba(245,158,11,0.22)] relative overflow-hidden w-full">
+                <div className="bg-gradient-to-b from-[#fffef5] via-[#fffdf0] to-[#fef9c3] rounded-[10px] p-3.5 sm:p-4 text-center flex flex-col items-center justify-center gap-1.5 relative">
+                  
+                  {/* DISCOUNT TAG */}
+                  <div className="absolute top-0 right-0 bg-gradient-to-r from-red-600 to-red-500 text-white text-[9px] sm:text-[10px] font-black px-3 py-0.5 rounded-bl-lg uppercase tracking-wider shadow-sm">
+                    59% OFF
+                  </div>
+
+                  <div className="flex items-center justify-center gap-1.5 text-center pt-0.5">
+                    <span className="text-red-600/75 text-[11px] sm:text-xs line-through font-extrabold">
+                      De R$ 97,00
+                    </span>
+                    <span className="text-gray-800 text-[11px] sm:text-xs font-black">
+                      por apenas:
+                    </span>
+                  </div>
+
+                  {/* PRICE DISPLAY */}
+                  <div className="flex flex-col items-center justify-center w-full my-0.5 text-red-600">
+                    <span className="text-red-600 font-black text-[10.5px] sm:text-[11px] uppercase tracking-widest">
+                      APENAS 3X DE
+                    </span>
+                    <div className="flex items-center justify-center gap-1 my-0.5">
+                      <span className="text-xl sm:text-2xl font-black leading-none">R$</span>
+                      <span className="text-5xl sm:text-6xl font-black tracking-tighter leading-none text-red-600 drop-shadow-[0_4px_12px_rgba(220,38,38,0.28)]">
+                        13,20
+                      </span>
+                    </div>
+                    <div className="bg-emerald-100 text-emerald-900 text-[11px] sm:text-xs font-black px-3 py-1 rounded-lg border border-emerald-300 mt-0.5 shadow-2xs">
+                      ou <span className="text-emerald-700 font-extrabold">R$ 39,60 à vista</span> no Pix ou Cartão
+                    </div>
+                  </div>
+
+                  {/* HIGHLIGHTED DISCOUNT BADGES */}
+                  <div className="flex items-center justify-center gap-1.5 flex-wrap pt-0.5">
+                    <div className="bg-gradient-to-r from-red-600 to-amber-600 text-white text-[10px] sm:text-[11px] font-black px-3 py-0.5 rounded-full shadow-xs uppercase tracking-wider border border-red-500 flex items-center gap-1">
+                      <span>🔥 59% OFF</span>
+                      <span className="text-[9px] opacity-90 font-black bg-white/20 px-1 py-0.5 rounded">APLICADO!</span>
+                    </div>
+                    <div className="bg-emerald-100 text-emerald-800 text-[10px] sm:text-[11px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider border border-emerald-300 shadow-2xs">
+                      Economia de R$ 57,40
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* BENEFIT HIGHLIGHTS */}
+              <div className="grid grid-cols-2 gap-1.5 w-full bg-[#f8fafc] rounded-xl p-3 sm:p-3.5 border border-slate-200/80">
+                <div className="flex flex-col space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[10.5px] sm:text-[11.5px] font-extrabold text-[#1a7a4a] leading-tight"><span className="shrink-0 select-none">✨</span><span className="truncate">+450 Pranchas PECS</span></div>
+                  <div className="flex items-center gap-1.5 text-[10.5px] sm:text-[11.5px] font-extrabold text-[#1a7a4a] leading-tight"><span className="shrink-0 select-none">📖</span><span className="truncate">Histórias Sociais</span></div>
+                  <div className="flex items-center gap-1.5 text-[10.5px] sm:text-[11.5px] font-extrabold text-[#1a7a4a] leading-tight"><span className="shrink-0 select-none">🎵</span><span className="truncate">Livros e Músicas</span></div>
+                </div>
+                <div className="flex flex-col space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[10.5px] sm:text-[11.5px] font-extrabold text-[#1a7a4a] leading-tight"><span className="shrink-0 select-none">🔤</span><span className="truncate">Alfabetização & Math</span></div>
+                  <div className="flex items-center gap-1.5 text-[10.5px] sm:text-[11.5px] font-extrabold text-[#1a7a4a] leading-tight"><span className="shrink-0 select-none">🧑‍🎓</span><span className="truncate">Para Adolescentes</span></div>
+                  <div className="flex items-center gap-1.5 text-[10.5px] sm:text-[11.5px] font-extrabold text-[#1a7a4a] leading-tight"><span className="shrink-0 select-none">💬</span><span className="truncate">Suporte & Guias</span></div>
+                </div>
+              </div>
+
+              <div className="w-full text-center font-black text-[#1a7a4a] text-[11px] sm:text-xs bg-[#d4f5e3] rounded-lg py-1.5 px-2.5 flex items-center justify-center gap-1 shadow-2xs">
+                <span>💡</span> <span>Tudo liberado com Acesso Vitalício!</span>
+              </div>
+
+              {/* CTAS */}
+              <div className="flex flex-col gap-1.5 pt-0.5">
+                <motion.button 
+                  onClick={handleCTAClick}
+                  className="w-full bg-gradient-to-r from-[#00ff66] via-[#00c853] to-[#009929] hover:from-[#00ff88] hover:to-[#00b33c] text-white font-black text-[13px] sm:text-[15px] py-3.5 px-4 rounded-xl border-none cursor-pointer transition-all uppercase tracking-wider flex items-center justify-center gap-2 text-center shadow-[0_10px_24px_rgba(0,200,83,0.35)] active:scale-95 border-b-[3px] border-[#007d32]"
+                  animate={{
+                    scale: [1, 1.02, 1],
+                  }}
+                  transition={{
+                    duration: 1.8,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  🔥 QUERO O KIT PREMIUM POR 3X DE R$ 13,20
+                </motion.button>
+
+                {/* DECLINE LINK */}
+                <button 
+                  onClick={handleDeclineClick}
+                  className="text-center text-[10.5px] sm:text-[11px] text-gray-400 hover:text-red-600 font-bold cursor-pointer block mx-auto transition-colors bg-transparent border-none py-0.5 px-2"
+                >
+                  Não quero a promoção, prefiro a oferta de R$ 19,90
+                </button>
+              </div>
+
+              {/* GUARANTEE & SECURITY FOOTER */}
+              <div className="flex items-center justify-center gap-3 text-[10px] text-gray-400 font-bold border-t border-gray-100 pt-2">
+                <span>🔒 Pagamento Seguro</span>
+                <span>•</span>
+                <span>⚡ Acesso Imediato</span>
+                <span>•</span>
+                <span>🛡️ 7 Dias de Garantia</span>
               </div>
             </motion.div>
           </div>
@@ -3496,134 +3532,370 @@ export default function App() {
       {/* Scroll-Triggered Basic Discount Popup */}
       <AnimatePresence>
         {showScrollPopup && (
-          <div className="fixed inset-0 z-[9998] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[9998] flex items-center justify-center p-2.5 sm:p-4">
             {/* Backdrop Overlay */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="absolute inset-0 bg-black/70 backdrop-blur-[4px]"
+              transition={{ duration: 0.3 }}
+              onClick={() => setShowScrollPopup(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-[6px]"
             />
 
             {/* Popup Container */}
             <motion.div 
-              initial={{ y: "100vh", opacity: 0 }}
-              animate={{ 
-                y: 0, 
-                opacity: 1,
-                transition: { type: 'spring', damping: 15, stiffness: 100 }
-              }}
-              exit={{ y: "100vh", opacity: 0 }}
-              className="relative bg-[#ffffff] w-[92%] sm:w-full sm:max-w-[460px] rounded-[28px] p-4 sm:p-7 shadow-[0_32px_80px_rgba(0,0,0,0.45),0_0_60px_rgba(245,197,24,0.3)] border-[3px] sm:border-[4px] border-[#f5c518] flex flex-col overflow-y-auto max-h-[92vh] custom-scrollbar z-10"
+              id="scroll-popup"
+              initial={{ scale: 0.92, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0, transition: { type: "spring", damping: 22, stiffness: 150 } }}
+              exit={{ scale: 0.92, opacity: 0, y: 15 }}
+              className="relative bg-white w-full max-w-[490px] rounded-[24px] p-4 sm:p-5 shadow-[0_32px_80px_rgba(0,0,0,0.5),0_0_60px_rgba(245,197,24,0.35)] border-[3px] border-[#f5c518] flex flex-col overflow-y-auto max-h-[96vh] custom-scrollbar z-10 gap-2.5"
             >
+              {/* Close Button */}
+              <button 
+                onClick={() => setShowScrollPopup(false)}
+                className="absolute top-3 right-3 w-7 h-7 rounded-full bg-gray-100 text-gray-400 hover:text-gray-800 hover:bg-gray-200 flex items-center justify-center text-xs font-black transition-colors cursor-pointer z-20"
+                title="Fechar"
+              >
+                ✕
+              </button>
+
               {/* TOP SECTION */}
-              <div className="text-center text-[24px] sm:text-[32px] mb-1 sm:mb-2 select-none">🧩</div>
-              <div className="flex justify-center mb-2 sm:mb-3">
-                <span className="bg-gradient-to-r from-[#ff1744] to-[#ef4444] text-white font-extrabold text-[10px] sm:text-[12px] uppercase tracking-widest px-[10px] sm:px-[18px] py-[3.5px] sm:py-[7px] rounded-[999px] shadow-[0_6px_16px_rgba(255,23,68,0.4)] flex items-center justify-center gap-1 sm:gap-1.5 animate-pulse">
-                  <span className="w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 bg-white rounded-full animate-ping"></span>
+              <div className="flex flex-col items-center text-center pt-0.5 px-1 gap-1">
+                <div className="text-2xl sm:text-3xl leading-none select-none">🧩</div>
+                <span className="bg-gradient-to-r from-[#ff1744] to-[#ef4444] text-white font-black text-[9.5px] sm:text-[10.5px] uppercase tracking-widest px-3.5 py-1 rounded-full shadow-md flex items-center justify-center gap-1.5 animate-pulse">
+                  <span className="w-1.5 h-1.5 bg-white rounded-full animate-ping"></span>
                   SOMENTE HOJE
                 </span>
+                <h3 className="text-[#1a7a4a] text-base sm:text-lg font-black text-center leading-tight font-sans tracking-tight mt-0.5">
+                  GARANTA O KIT BÁSICO COMPLETO POR APENAS R$ 19,90!
+                </h3>
+                <p className="text-gray-500 text-[11px] sm:text-xs text-center leading-relaxed font-medium">
+                  Tudo isso incluso no seu acesso básico (De R$ 47,00 por R$ 19,90):
+                </p>
               </div>
 
-              {/* HEADLINE */}
-              <h3 className="text-[#1a7a4a] text-[17px] sm:text-[22px] font-black text-center leading-[1.3] mb-1 sm:mb-2 font-sans tracking-tight">
-                GARANTA O KIT BÁSICO COMPLETO POR APENAS R$ 10,00!
-              </h3>
-
-              {/* SUBHEADLINE */}
-              <p className="text-[#6b7280] text-[11px] sm:text-[13px] text-center leading-[1.6] mb-1.5 sm:mb-3 font-medium">
-                Tudo isso incluso no seu acesso básico (De R$ 47,00 por R$ 10,00):
-              </p>
-
               {/* CONTENT LIST */}
-              <div className="grid grid-cols-2 gap-x-2.5 sm:gap-x-4 gap-y-1 sm:gap-y-1.5 mb-2.5 sm:mb-3.5 w-full bg-slate-50 rounded-xl p-2.5 sm:p-3.5 border border-slate-100">
+              <div className="grid grid-cols-2 gap-1.5 w-full bg-[#f8fafc] rounded-xl p-3 sm:p-3.5 border border-slate-200/80">
                 {/* Column 1 */}
-                <div className="flex flex-col">
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">🌅</span><span className="text-left">Rotinas Visuais</span></div>
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">🏫</span><span className="text-left">Pictogramas Escala</span></div>
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">🧼</span><span className="text-left">Vida Diária (AVDS)</span></div>
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">💬</span><span className="text-left">Palavras Chave</span></div>
+                <div className="flex flex-col space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[10.5px] sm:text-[11.5px] font-extrabold text-[#1a7a4a] leading-tight"><span className="shrink-0 select-none">🌅</span><span className="truncate">Rotinas Visuais</span></div>
+                  <div className="flex items-center gap-1.5 text-[10.5px] sm:text-[11.5px] font-extrabold text-[#1a7a4a] leading-tight"><span className="shrink-0 select-none">🏫</span><span className="truncate">Pictogramas Escolar</span></div>
+                  <div className="flex items-center gap-1.5 text-[10.5px] sm:text-[11.5px] font-extrabold text-[#1a7a4a] leading-tight"><span className="shrink-0 select-none">🧼</span><span className="truncate">Vida Diária (AVDs)</span></div>
+                  <div className="flex items-center gap-1.5 text-[10.5px] sm:text-[11.5px] font-extrabold text-[#1a7a4a] leading-tight"><span className="shrink-0 select-none">💬</span><span className="truncate">Palavras Chave</span></div>
                 </div>
                 {/* Column 2 */}
-                <div className="flex flex-col">
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">✂️</span><span className="text-left">Atividades Práticas</span></div>
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">📚</span><span className="text-left">Alfabetização</span></div>
-                  <div className="flex items-start gap-1.5 text-[10px] sm:text-[12px] font-bold text-[#1a7a4a] py-[1.5px] sm:py-[2.5px] leading-tight"><span className="mt-[2px] shrink-0 select-none">🎈</span><span className="text-left">Festividades</span></div>
+                <div className="flex flex-col space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[10.5px] sm:text-[11.5px] font-extrabold text-[#1a7a4a] leading-tight"><span className="shrink-0 select-none">✂️</span><span className="truncate">Atividades Práticas</span></div>
+                  <div className="flex items-center gap-1.5 text-[10.5px] sm:text-[11.5px] font-extrabold text-[#1a7a4a] leading-tight"><span className="shrink-0 select-none">📚</span><span className="truncate">Alfabetização</span></div>
+                  <div className="flex items-center gap-1.5 text-[10.5px] sm:text-[11.5px] font-extrabold text-[#1a7a4a] leading-tight"><span className="shrink-0 select-none">🎈</span><span className="truncate">Festividades</span></div>
                 </div>
               </div>
 
               {/* Below list full width item */}
-              <div className="w-full text-center font-bold text-[#1a7a4a] text-[11px] sm:text-[13px] bg-[#d4f5e3] rounded-[8px] p-[4px] sm:p-[6px] mb-2 sm:mb-4 flex items-center justify-center gap-1.5 leading-tight shadow-xs">
+              <div className="w-full text-center font-black text-[#1a7a4a] text-[11px] sm:text-xs bg-[#d4f5e3] rounded-lg py-1.5 px-2.5 flex items-center justify-center gap-1 shadow-2xs">
                 <span>💡</span> <span>Permite upgrade para o Premium depois!</span>
               </div>
 
-              {/* PRICE BOX WITH GRID STRUCTURE */}
-              <div className="bg-gradient-to-br from-[#fffbeb] via-[#fef3c7] to-[#fde68a] rounded-[22px] p-4 sm:p-5 mt-2 sm:mt-[14px] w-full border-[2.5px] border-[#eab308] shadow-[0_8px_24px_rgba(234,179,8,0.18),inset_0_2px_4px_rgba(255,255,255,0.6)] relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-[#ff1744] text-white text-[8px] sm:text-[9.5px] font-black px-2.5 py-0.5 rounded-bl-[12px] uppercase tracking-wider shadow-sm">
-                  SÓ HOJE
-                </div>
-                
-                <div className="grid grid-cols-1 gap-2.5 justify-items-center text-center w-full">
-                  <div className="text-[#e03030]/80 text-[11px] sm:text-[14px] line-through font-extrabold leading-none">
-                    De R$ 47,00
-                  </div>
-                  <div className="text-red-700 text-[12px] sm:text-[14.5px] font-black uppercase tracking-widest leading-none flex items-center justify-center gap-1">
-                    ⚡ SOMENTE HOJE
+              {/* PRICE BOX WITH GRID STRUCTURE - COMPACT & FULLY VISIBLE */}
+              <div id="scroll-price-box" className="bg-gradient-to-br from-amber-400 via-amber-300 to-yellow-500 p-[2px] rounded-xl shadow-[0_8px_24px_rgba(245,158,11,0.22)] relative overflow-hidden w-full">
+                <div className="bg-gradient-to-b from-[#fffef5] via-[#fffdf0] to-[#fef9c3] rounded-[10px] p-3.5 sm:p-4 text-center flex flex-col items-center justify-center gap-1.5 relative">
+                  <div className="absolute top-0 right-0 bg-gradient-to-r from-red-600 to-red-500 text-white text-[9px] sm:text-[10px] font-black px-3 py-0.5 rounded-bl-lg uppercase tracking-wider shadow-sm">
+                    SÓ HOJE
                   </div>
                   
-                  {/* PRICE DISPLAY */}
-                  <div className="flex items-center justify-center gap-1.5 my-0.5">
-                    <span className="text-[22px] sm:text-[30px] font-black text-[#dc2626] leading-none self-start mt-1">R$</span>
-                    <span className="text-5xl sm:text-7xl font-black tracking-tighter text-[#dc2626] drop-shadow-[0_2px_6px_rgba(220,38,38,0.2)] leading-none">
-                      10,00
+                  <div className="flex items-center justify-center gap-1.5 text-center pt-0.5">
+                    <span className="text-red-600/75 text-[11px] sm:text-xs line-through font-extrabold">
+                      De R$ 47,00
                     </span>
-                    <span className="text-[11px] sm:text-[13px] font-extrabold text-gray-800 leading-none self-end mb-1">/único</span>
+                    <span className="text-gray-800 text-[11px] sm:text-xs font-black">
+                      por apenas:
+                    </span>
                   </div>
 
-                  {/* HIGH-LIGHTED DISCOUNT BADGE */}
-                  <div className="bg-gradient-to-r from-[#ff1744] to-[#ff5d00] text-white text-[11.5px] sm:text-[13.5px] font-black px-4.5 py-1.5 rounded-full shadow-[0_4px_12px_rgba(255,23,68,0.4)] uppercase tracking-wider border border-red-400 scale-105 animate-pulse flex items-center gap-1">
-                    <span>🔥 78% OFF</span>
-                    <span className="text-[9px] sm:text-[10px] opacity-90 font-extrabold bg-white/20 px-1.5 py-0.5 rounded-md">APLICADO!</span>
+                  {/* PRICE DISPLAY - PERFECTLY CENTERED & COMPACT */}
+                  <div className="flex items-center justify-center gap-1 my-0.5 w-full text-red-600">
+                    <span className="text-xl sm:text-2xl font-black leading-none self-start mt-1">R$</span>
+                    <span className="text-5xl sm:text-6xl font-black tracking-tighter leading-none text-red-600 drop-shadow-[0_4px_12px_rgba(220,38,38,0.28)]">
+                      19,90
+                    </span>
+                    <span className="text-[11px] sm:text-xs font-black text-gray-700 leading-none self-end mb-1">/único</span>
                   </div>
 
-                  <div className="bg-[#00c853]/10 text-[#008a36] text-[10px] sm:text-[11.5px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider leading-none">
-                    Você economiza R$ 37,00 hoje
+                  {/* HIGHLIGHTED DISCOUNT BADGES */}
+                  <div className="flex items-center justify-center gap-1.5 flex-wrap pt-0.5">
+                    <div className="bg-gradient-to-r from-red-600 to-amber-600 text-white text-[10px] sm:text-[11px] font-black px-3 py-0.5 rounded-full shadow-xs uppercase tracking-wider border border-red-500 flex items-center gap-1">
+                      <span>🔥 58% OFF</span>
+                      <span className="text-[9px] opacity-90 font-black bg-white/20 px-1 py-0.5 rounded">APLICADO!</span>
+                    </div>
+                    <div className="bg-emerald-100 text-emerald-800 text-[10px] sm:text-[11px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider border border-emerald-300 shadow-2xs">
+                      Economia de R$ 27,10
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* SPACE ADJUSTMENT */}
-              <div className="h-3 sm:h-4"></div>
+              {/* CTAS */}
+              <div className="flex flex-col gap-1.5 pt-0.5">
+                <motion.button 
+                  onClick={handleScrollCTAClick}
+                  className="w-full bg-gradient-to-r from-[#00ff66] via-[#00c853] to-[#009929] hover:from-[#00ff88] hover:to-[#00b33c] text-white font-black text-[13px] sm:text-[15px] py-3.5 px-4 rounded-xl border-none cursor-pointer transition-all uppercase tracking-wider flex items-center justify-center gap-2 text-center shadow-[0_10px_24px_rgba(0,200,83,0.35)] active:scale-95 border-b-[3px] border-[#007d32]"
+                  animate={{
+                    scale: [1, 1.02, 1],
+                  }}
+                  transition={{
+                    duration: 1.8,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  ⚡ QUERO GARANTIR MEU KIT
+                </motion.button>
 
-              {/* CTA BUTTON */}
-              <motion.button 
-                onClick={handleScrollCTAClick}
-                className="w-full bg-gradient-to-r from-[#00ff66] via-[#00c853] to-[#009929] hover:from-[#00ff88] hover:to-[#00b33c] text-white font-black text-[13px] sm:text-[16.5px] p-3 sm:p-[19px] rounded-[999px] border-none cursor-pointer transition-all uppercase tracking-widest flex items-center justify-center gap-2 text-center shadow-[0_12px_28px_rgba(0,200,83,0.45)] active:scale-95 border-b-[3px] sm:border-b-[4px] border-[#007d32]"
-                animate={{
-                  scale: [1, 1.04, 1],
-                }}
-                transition={{
-                  duration: 1.8,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                ⚡ COMEÇAR POR R$ 10
-              </motion.button>
-
-              {/* DECLINE LINK */}
-              <button 
-                onClick={handleScrollDeclineClick}
-                className="text-center text-[10px] sm:text-[12px] text-gray-400 hover:text-gray-600 cursor-pointer block mx-auto mt-1.5 sm:mt-3.5 font-bold transition-colors bg-transparent border-none py-1"
-              >
-                Não, prefiro continuar vendo a página
-              </button>
+                {/* DECLINE LINK */}
+                <button 
+                  onClick={handleScrollDeclineClick}
+                  className="text-center text-[10.5px] sm:text-[11px] text-gray-400 hover:text-gray-600 cursor-pointer block mx-auto font-bold transition-colors bg-transparent border-none py-0.5 px-2"
+                >
+                  Não, prefiro continuar vendo a página
+                </button>
+              </div>
 
               {/* SECURITY FOOTER */}
-              <div className="flex items-center justify-center gap-2.5 sm:gap-4 text-[9px] sm:text-[11px] text-gray-400 font-bold border-t border-gray-100 pt-2 mt-2 sm:pt-3 sm:mt-3">
+              <div className="flex items-center justify-center gap-3 text-[10px] text-gray-400 font-bold border-t border-gray-100 pt-2">
                 <span className="flex items-center gap-1">🔒 Compra Segura</span>
                 <span className="flex items-center gap-1">⚡ Acesso Imediato</span>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Pre-Checkout Loading Modal Overlay */}
+      <AnimatePresence>
+        {isPreCheckoutLoading && (
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/85 backdrop-blur-md"
+            />
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl z-10 flex flex-col items-center gap-4 border-2 border-[#2ecc71]/40"
+            >
+              <div className="relative flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full border-4 border-[#2ecc71]/20 border-t-[#2ecc71] animate-spin"></div>
+                <Sparkles className="w-7 h-7 text-[#2ecc71] absolute animate-pulse" />
+              </div>
+              <div>
+                <h3 className="text-lg font-black text-gray-900 mb-1 uppercase tracking-tight">
+                  Preparando seu Acesso...
+                </h3>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                  Gerando chave de desconto com bônus exclusivos para seu pedido.
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Pre-Checkout Bonus Orderbump Modal */}
+      <AnimatePresence>
+        {showPreCheckoutModal && preCheckoutKit && (
+          <div className="fixed inset-0 z-[99998] flex items-center justify-center p-2.5 sm:p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                setShowPreCheckoutModal(false);
+                const info = KIT_CHECKOUT_MAP[preCheckoutKit];
+                window.location.href = info.baseCheckoutUrl;
+              }}
+              className="absolute inset-0 bg-black/80 backdrop-blur-[6px]"
+            />
+
+            <motion.div 
+              id="precheckout-orderbump-modal"
+              initial={{ scale: 0.92, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0, transition: { type: "spring", damping: 22, stiffness: 150 } }}
+              exit={{ scale: 0.92, opacity: 0, y: 15 }}
+              className="relative bg-white w-full max-w-[510px] rounded-[28px] p-4 sm:p-6 shadow-[0_32px_80px_rgba(0,0,0,0.5),0_0_60px_rgba(46,204,113,0.3)] border-[3px] border-[#2ecc71] flex flex-col overflow-y-auto max-h-[96vh] custom-scrollbar z-10 gap-3"
+            >
+              {/* Close Button - Redirects to Standard Base Checkout */}
+              <button 
+                onClick={() => {
+                  setShowPreCheckoutModal(false);
+                  const info = KIT_CHECKOUT_MAP[preCheckoutKit];
+                  window.location.href = info.baseCheckoutUrl;
+                }}
+                className="absolute top-3.5 right-3.5 w-7 h-7 rounded-full bg-gray-100 text-gray-400 hover:text-gray-800 hover:bg-gray-200 flex items-center justify-center text-xs font-black transition-colors cursor-pointer z-20"
+                title="Fechar e ir para o checkout básico"
+              >
+                ✕
+              </button>
+
+              {/* HEADER BADGE & TITLE */}
+              <div className="flex flex-col items-center text-center pt-0.5 px-1 gap-1.5">
+                <span className="bg-gradient-to-r from-[#2ecc71] to-[#16a34a] text-white font-black text-[9.5px] sm:text-[10.5px] uppercase tracking-widest px-4 py-1 rounded-full shadow-md flex items-center justify-center gap-1.5 animate-pulse">
+                  <Sparkles className="w-3.5 h-3.5 text-yellow-300 fill-yellow-300" />
+                  OPORTUNIDADE ÚNICA ANTES DO CHECKOUT
+                </span>
+                
+                <h3 className="text-gray-900 text-base sm:text-xl font-black leading-tight tracking-tight mt-0.5">
+                  Deseja adicionar estes <span className="text-[#1a7a4a] underline decoration-[#2ecc71] decoration-2">3 BÔNUS EXCLUSIVOS</span> por apenas <span className="text-emerald-600 font-black">+ R$ 10,00</span> ao seu pedido?
+                </h3>
+                <p className="text-gray-500 text-[11px] sm:text-xs leading-relaxed font-medium max-w-md">
+                  Aproveite esta condição especial antes de concluir seu pagamento do <strong>{KIT_CHECKOUT_MAP[preCheckoutKit].name}</strong>:
+                </p>
+              </div>
+
+              {/* 3 BONUS CARDS BOX */}
+              <div className="bg-gradient-to-br from-emerald-50/80 via-green-50/50 to-teal-50/80 rounded-2xl p-2.5 sm:p-3.5 border border-[#2ecc71]/30 space-y-2.5 shadow-xs">
+                
+                {/* Bonus 1 */}
+                <div className="bg-white rounded-xl p-2.5 sm:p-3 border border-emerald-100 flex items-center gap-3 shadow-2xs">
+                  <div className="w-14 h-16 sm:w-16 sm:h-20 shrink-0 bg-emerald-50/60 rounded-lg border border-emerald-200/60 p-1 flex items-center justify-center shadow-2xs">
+                    <img 
+                      src="https://i.imgur.com/Mk5XBC4.png" 
+                      alt="101 Ideias para Brincar e Ensinar Pessoas com Autismo" 
+                      className="w-full h-full object-contain drop-shadow-xs"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-1">
+                      <span className="text-xs sm:text-[13px] font-black text-gray-900 leading-tight">
+                        101 Ideias para Brincar e Ensinar Pessoas com Autismo
+                      </span>
+                      <span className="text-[9px] font-extrabold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full shrink-0">
+                        INCLUSO
+                      </span>
+                    </div>
+                    <p className="text-[10.5px] sm:text-[11px] text-gray-500 font-medium leading-tight mt-1">
+                      Guia prático com atividades estimulantes de desenvolvimento cognitivo e social.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Bonus 2 */}
+                <div className="bg-white rounded-xl p-2.5 sm:p-3 border border-emerald-100 flex items-center gap-3 shadow-2xs">
+                  <div className="w-14 h-16 sm:w-16 sm:h-20 shrink-0 bg-emerald-50/60 rounded-lg border border-emerald-200/60 p-1 flex items-center justify-center shadow-2xs">
+                    <img 
+                      src="https://i.imgur.com/cPNyNe1.png" 
+                      alt="Atividades Divertidas de Regulação Emocional" 
+                      className="w-full h-full object-contain drop-shadow-xs"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-1">
+                      <span className="text-xs sm:text-[13px] font-black text-gray-900 leading-tight">
+                        Atividades Divertidas de Regulação Emocional
+                      </span>
+                      <span className="text-[9px] font-extrabold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full shrink-0">
+                        INCLUSO
+                      </span>
+                    </div>
+                    <p className="text-[10.5px] sm:text-[11px] text-gray-500 font-medium leading-tight mt-1">
+                      Ferramentas visuais lúdicas para prevenção e apoio em momentos de crise.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Bonus 3 */}
+                <div className="bg-white rounded-xl p-2.5 sm:p-3 border border-emerald-100 flex items-center gap-3 shadow-2xs">
+                  <div className="w-14 h-16 sm:w-16 sm:h-20 shrink-0 bg-emerald-50/60 rounded-lg border border-emerald-200/60 p-1 flex items-center justify-center shadow-2xs">
+                    <img 
+                      src="https://i.imgur.com/ECkKoNd.png" 
+                      alt="Guia de Como Aplicar as Rotinas Visuais" 
+                      className="w-full h-full object-contain drop-shadow-xs"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-1">
+                      <span className="text-xs sm:text-[13px] font-black text-gray-900 leading-tight">
+                        Guia de Como Aplicar as Rotinas Visuais
+                      </span>
+                      <span className="text-[9px] font-extrabold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full shrink-0">
+                        INCLUSO
+                      </span>
+                    </div>
+                    <p className="text-[10.5px] sm:text-[11px] text-gray-500 font-medium leading-tight mt-1">
+                      Passo a passo simples para rotina e comunicação visual sem estresse em casa.
+                    </p>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* SUMMARY PRICE BOX */}
+              <div className="bg-gradient-to-br from-amber-400 via-amber-300 to-yellow-500 p-[2px] rounded-2xl shadow-md overflow-hidden">
+                <div className="bg-gradient-to-b from-[#fffef5] to-[#fef9c3] rounded-[14px] p-3 sm:p-3.5 text-center flex flex-col items-center justify-center gap-1">
+                  <div className="flex items-center justify-between w-full text-[11px] sm:text-xs text-gray-700 font-bold border-b border-amber-200/80 pb-1 px-1">
+                    <span>{KIT_CHECKOUT_MAP[preCheckoutKit].name}:</span>
+                    <span>{KIT_CHECKOUT_MAP[preCheckoutKit].basePrice}</span>
+                  </div>
+                  <div className="flex items-center justify-between w-full text-[11px] sm:text-xs text-emerald-800 font-extrabold border-b border-amber-200/80 pb-1 px-1">
+                    <span>+ 3 Bônus Especiais (Oferta Pre-Checkout):</span>
+                    <span>+ R$ 10,00</span>
+                  </div>
+                  <div className="flex items-center justify-between w-full pt-1 px-1">
+                    <span className="text-xs sm:text-sm font-black text-gray-900">VALOR TOTAL FINAL:</span>
+                    <div className="flex items-center gap-1 text-[#2ecc71]">
+                      <span className="text-xl sm:text-2xl font-black">{KIT_CHECKOUT_MAP[preCheckoutKit].totalPrice}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* CTAS */}
+              <div className="flex flex-col gap-2 pt-0.5">
+                <motion.button 
+                  onClick={() => {
+                    setShowPreCheckoutModal(false);
+                    window.location.href = KIT_CHECKOUT_MAP[preCheckoutKit].bonusCheckoutUrl;
+                  }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full bg-gradient-to-r from-[#00ff66] via-[#00c853] to-[#009929] hover:from-[#00ff88] hover:to-[#00b33c] text-white font-black text-[13px] sm:text-[15px] py-3.5 px-4 rounded-xl border-none cursor-pointer transition-all uppercase tracking-wider flex items-center justify-center gap-2 text-center shadow-[0_10px_24px_rgba(0,200,83,0.35)] border-b-[3px] border-[#007d32]"
+                  animate={{
+                    scale: [1, 1.02, 1],
+                  }}
+                  transition={{
+                    duration: 1.8,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <CheckCircle2 className="w-5 h-5 shrink-0" />
+                  <span>SIM! ADICIONAR BÔNUS POR + R$ 10,00 ({KIT_CHECKOUT_MAP[preCheckoutKit].totalPrice})</span>
+                </motion.button>
+
+                <button 
+                  onClick={() => {
+                    setShowPreCheckoutModal(false);
+                    window.location.href = KIT_CHECKOUT_MAP[preCheckoutKit].baseCheckoutUrl;
+                  }}
+                  className="text-center text-[10.5px] sm:text-[11px] text-gray-400 hover:text-gray-700 font-bold cursor-pointer block mx-auto transition-colors bg-transparent border-none py-1 px-2"
+                >
+                  Não obrigado(a), quero ir para o checkout sem os bônus por {KIT_CHECKOUT_MAP[preCheckoutKit].basePrice}
+                </button>
+              </div>
+
+              {/* FOOTER GUARANTEE */}
+              <div className="flex items-center justify-center gap-3 text-[10px] text-gray-400 font-bold border-t border-gray-100 pt-2">
+                <span className="flex items-center gap-1"><Lock className="w-3 h-3 text-emerald-600" /> Checkout 100% Seguro</span>
+                <span>•</span>
+                <span>⚡ Acesso Imediato</span>
+                <span>•</span>
+                <span>🛡️ 14 Dias Garantia</span>
               </div>
             </motion.div>
           </div>
